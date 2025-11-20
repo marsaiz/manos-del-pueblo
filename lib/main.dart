@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'product.dart'; // Si usas el archivo separado, descomenta esto. Si no, usa la clase abajo.
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Manos del Pueblo',
       theme: ThemeData(
         primarySwatch: Colors.brown,
-        scaffoldBackgroundColor: const Color(0xFFF5F5DC),
+        scaffoldBackgroundColor: const Color(0xFFF5F5DC), // Beige suave
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           backgroundColor: Color(0xFF5D4037),
@@ -28,14 +27,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// --- CLASE PRODUCTO ---
+// --- CLASE PRODUCT (La definimos aquí para evitar errores de importación) ---
 class Product {
   final String id;
   final String nombre;
   final String descripcion;
   final double precio;
   final String nombreDelArtesano;
-  final String imagePath; // CAMBIO: Usamos ruta local
+  final String imagePath; 
 
   Product({
     required this.id,
@@ -47,50 +46,56 @@ class Product {
   });
 }
 
-// --- DATOS LOCALES (Tus fotos en assets/images/) ---
+// --- LISTA DE PRODUCTOS CORREGIDA (Extensiones .jpeg y mayúsculas) ---
 final List<Product> mockProducts = [
   Product(
     id: '1',
     nombre: 'Vela de Soja y Miel',
-    descripcion: 'Vela ecológica con pabilo de madera.',
+    descripcion: 'Vela ecológica con pabilo de madera que crepita al arder.',
     precio: 4500.0,
     nombreDelArtesano: 'Luz Natural',
-    imagePath: 'assets/images/vela.jpg', 
+    // CORREGIDO: .jpeg
+    imagePath: 'assets/images/vela.jpeg', 
   ),
   Product(
     id: '2',
     nombre: 'Zorro Amigurumi',
-    descripcion: 'Muñeco tejido para apego.',
+    descripcion: 'Muñeco tejido para apego, hilo de algodón suave.',
     precio: 8200.0,
     nombreDelArtesano: 'Tejidos del Valle',
-    imagePath: 'assets/images/zorro.jpg',
+    // CORREGIDO: .jpeg
+    imagePath: 'assets/images/zorro.jpeg',
   ),
   Product(
     id: '3',
     nombre: 'Mate de Algarrobo',
-    descripcion: 'Mate bocón de madera curada.',
+    descripcion: 'Mate bocón de madera curada con virola cincelada.',
     precio: 6000.0,
     nombreDelArtesano: 'Don José Maderas',
-    imagePath: 'assets/images/mate.jpg',
+    // CORREGIDO: .jpeg
+    imagePath: 'assets/images/mate.jpeg',
   ),
   Product(
     id: '4',
     nombre: 'Cuenco de Cerámica',
-    descripcion: 'Esmaltado a mano en horno de leña.',
+    descripcion: 'Esmaltado a mano en horno de leña. Pieza única.',
     precio: 3800.0,
     nombreDelArtesano: 'Barro & Fuego',
-    imagePath: 'assets/images/cuenco.jpg',
+    // CORREGIDO: C mayúscula y .jpeg (Tal como en tu captura)
+    imagePath: 'assets/images/cuenco.jpeg', 
   ),
    Product(
     id: '5',
     nombre: 'Bufanda Nórdica',
-    descripcion: 'Tejida en dos agujas con lana merino.',
+    descripcion: 'Tejida en dos agujas con lana merino súper abrigada.',
     precio: 9500.0,
     nombreDelArtesano: 'Ana Tejidos',
-    imagePath: 'assets/images/bufanda.jpg',
+    // CORREGIDO: .jpeg
+    imagePath: 'assets/images/bufanda.jpeg',
   ),
 ];
 
+// --- PANTALLA PRINCIPAL ---
 class ArtesaniasHome extends StatelessWidget {
   const ArtesaniasHome({super.key});
 
@@ -117,6 +122,7 @@ class ArtesaniasHome extends StatelessWidget {
   }
 }
 
+// --- TARJETA DEL PRODUCTO ---
 class ProductCard extends StatelessWidget {
   final Product product;
 
@@ -126,7 +132,12 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetail(product: product)));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetail(product: product),
+          ),
+        );
       },
       child: Card(
         elevation: 4,
@@ -136,21 +147,20 @@ class ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              // CAMBIO: Image.asset para cargar desde tu carpeta
               child: Image.asset(
                 product.imagePath,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Si te olvidas de subir una foto, muestra este icono
+                  // Si falla, muestra un aviso en rojo para que lo veas fácil
                   return Container(
-                    color: Colors.grey[300],
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
-                        Text("Falta imagen", style: TextStyle(fontSize: 10)),
-                      ],
+                    color: Colors.red[100],
+                    child: Center(
+                      child: Text(
+                        "Error:\n${product.imagePath}", 
+                        textAlign: TextAlign.center, 
+                        style: const TextStyle(fontSize: 10, color: Colors.red),
+                      ),
                     ),
                   );
                 },
@@ -161,8 +171,25 @@ class ProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.nombre, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
-                  Text('\$${product.precio.toStringAsFixed(0)}', style: const TextStyle(color: Colors.brown, fontWeight: FontWeight.w900)),
+                  Text(
+                    product.nombre,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.nombreDelArtesano,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '\$${product.precio.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      color: Colors.brown,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -173,6 +200,7 @@ class ProductCard extends StatelessWidget {
   }
 }
 
+// --- PANTALLA DE DETALLE ---
 class ProductDetail extends StatelessWidget {
   final Product product;
 
@@ -182,28 +210,60 @@ class ProductDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(product.nombre)),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 300,
-            width: double.infinity,
-            // CAMBIO: Image.asset aquí también
-            child: Image.asset(product.imagePath, fit: BoxFit.cover),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('\$${product.precio.toStringAsFixed(0)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.brown)),
-                const SizedBox(height: 20),
-                const Text("Historia del producto", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(product.descripcion, style: const TextStyle(fontSize: 16)),
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 300,
+              width: double.infinity,
+              child: Image.asset(product.imagePath, fit: BoxFit.cover),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${product.precio.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.brown,
+                        ),
+                      ),
+                      Chip(
+                        avatar: const Icon(Icons.person, size: 18),
+                        label: Text(product.nombreDelArtesano),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Historia del producto", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(product.descripcion, style: const TextStyle(fontSize: 16, height: 1.5)),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.message),
+                      label: const Text("Contactar al Artesano"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.brown,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
