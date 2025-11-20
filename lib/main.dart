@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart'; // <--- Importamos la pantalla nueva
+import 'package:provider/provider.dart'; // <--- Importante
+import 'providers/favorites_provider.dart'; // <--- Importante
+import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    // Envolvemos la app para que los favoritos funcionen en todos lados
+    ChangeNotifierProvider(
+      create: (context) => FavoritesProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +40,7 @@ class MyApp extends StatelessWidget {
           prefixIconColor: Colors.brown,
         ),
       ),
-      home: const HomeScreen(), // <--- Llamamos a la pantalla que está en screens
+      home: const HomeScreen(),
     );
   }
 }

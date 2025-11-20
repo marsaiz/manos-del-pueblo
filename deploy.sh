@@ -32,7 +32,7 @@ echo -e "${AZUL}📦 Subiendo cambios a GitHub...${NC}"
 
 # Pide un mensaje para el commit (si no escribes nada, usa uno por defecto)
 read -p "Escribe un mensaje para el commit (Enter para usar por defecto): " MENSAJE
-MENSAJE=${MENSAJE:-"Botón \"Compartir\" (Share): Fundamental. Que alguien vea un cuenco y pueda mandárselo a su tía por WhatsApp con un clic: \"Mira qué lindo esto para tu cocina\""}
+MENSAJE=${MENSAJE:-"Actualización automática del sitio web"}
 
 git add .
 git commit -m "$MENSAJE"

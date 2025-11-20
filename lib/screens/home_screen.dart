@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Para manejar los favoritos
+import 'package:share_plus/share_plus.dart'; // Para compartir
+
+// Tus archivos locales
+import '../providers/favorites_provider.dart'; 
 import '../models/product.dart';
 import '../data/database.dart';
 import 'artisan_profile_screen.dart'; 
-import 'package:share_plus/share_plus.dart'; // <--- IMPORTAR ESTO ARRIBA DEL ARCHIVO
+import 'favorites_screen.dart'; 
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -111,7 +116,23 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       
-      appBar: AppBar(title: const Text('Manos del Pueblo')),
+      appBar: AppBar(
+        title: const Text('Manos del Pueblo'),
+        actions: [
+          // --- BOTÓN PARA IR A FAVORITOS ---
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            tooltip: 'Ver mis favoritos',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoritesScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
       
       body: Column(
         children: [
@@ -251,11 +272,15 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // --- LOGICA DE FAVORITOS ---
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final isFav = favoritesProvider.isFavorite(product.id);
+    // ---------------------------
+    
     final nombreArtesano = getArtisanById(product.artisanId).nombre;
 
     return GestureDetector(
       onTap: () {
-        // NAVEGACIÓN AL DETALLE
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -281,6 +306,29 @@ class ProductCard extends StatelessWidget {
                           Container(color: Colors.grey[300]),
                     ),
                   ),
+                  
+                  // --- BOTÓN DE FAVORITOS (CORAZÓN) ---
+                  Positioned(
+                    top: 5,
+                    right: 5,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white.withValues(alpha: 0.8),
+                      radius: 16,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: isFav ? Colors.red : Colors.grey,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          favoritesProvider.toggleFavorite(product.id);
+                        },
+                      ),
+                    ),
+                  ),
+                  // ------------------------------------
+
                   Positioned(
                     bottom: 5,
                     right: 5,
@@ -340,13 +388,11 @@ class ProductDetail extends StatelessWidget {
 
   // Función para compartir
   void _shareProduct() {
-    // Creamos un texto bonito para compartir
     final String mensaje = 
         "¡Mira esta artesanía de ${getArtisanById(product.artisanId).nombre}!\n\n"
         "*${product.nombre}* - \$${product.precio.toStringAsFixed(0)}\n\n"
         "Ver más aquí: https://manos-del-pueblo.ar";
     
-    // Lanzamos el menú nativo de compartir del celular
     Share.share(mensaje);
   }
 
@@ -358,7 +404,7 @@ class ProductDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(product.nombre),
         actions: [
-          // --- NUEVO BOTÓN DE COMPARTIR ---
+          // Botón de compartir
           IconButton(
             icon: const Icon(Icons.share),
             tooltip: 'Compartir con amigos',
@@ -381,7 +427,6 @@ class ProductDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ... (El resto de tu código de detalle sigue igual: Precio, Chip del Artesano, etc)
                   Text(
                     '\$${product.precio.toStringAsFixed(0)}',
                     style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.brown),
