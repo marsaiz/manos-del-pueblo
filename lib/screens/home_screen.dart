@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
-import '../models/artisan.dart'; // Asegúrate de tener este archivo
 import '../data/database.dart';
+import 'artisan_profile_screen.dart'; 
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Product> _foundProducts = [];
-  // Variable para saber qué filtro está activo (para pintarlo de otro color)
   String _filtroActivo = 'Todos';
 
   @override
@@ -28,22 +27,16 @@ class _HomeScreenState extends State<HomeScreen> {
       results = globalProducts;
     } else {
       results = globalProducts.where((product) {
-        final nombreArtesano = getArtisanById(
-          product.artisanId,
-        ).nombre.toLowerCase();
-        return product.nombre.toLowerCase().contains(
-              enteredKeyword.toLowerCase(),
-            ) ||
-            product.categoria.toLowerCase().contains(
-              enteredKeyword.toLowerCase(),
-            ) ||
+        final nombreArtesano = getArtisanById(product.artisanId).nombre.toLowerCase();
+        return product.nombre.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
+            product.categoria.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
             nombreArtesano.contains(enteredKeyword.toLowerCase());
       }).toList();
     }
 
     setState(() {
       _foundProducts = results;
-      _filtroActivo = 'Búsqueda'; // Para desmarcar los avatares
+      _filtroActivo = 'Búsqueda';
     });
   }
 
@@ -55,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _filtroActivo = 'Todos';
       } else {
         _foundProducts = getProductsByArtisan(artisanId);
-        _filtroActivo = artisanId; // Guardamos el ID del artesano activo
+        _filtroActivo = artisanId;
       }
     });
   }
@@ -63,10 +56,65 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // --- MENÚ LATERAL (DRAWER) ---
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Color(0xFF5D4037)),
+              accountName: Text(
+                "Manos del Pueblo",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              accountEmail: Text("Catálogo de Artesanos Locales"),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.storefront, color: Color(0xFF5D4037), size: 35),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Nuestros Artesanos",
+                style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
+            ),
+            // Lista dinámica del menú
+            ...globalArtisans.map(
+              (artisan) => ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: AssetImage(artisan.fotoPerfil),
+                ),
+                title: Text(artisan.nombre),
+                subtitle: Text(artisan.ubicacion),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+                onTap: () {
+                  Navigator.pop(context); // Cerrar menú
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ArtisanProfileScreen(artisan: artisan),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text("Sobre Nosotros"),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+      
       appBar: AppBar(title: const Text('Manos del Pueblo')),
+      
       body: Column(
         children: [
-          // --- 1. BARRA DE BÚSQUEDA ---
+          // 1. BARRA DE BÚSQUEDA
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
             child: TextField(
@@ -76,38 +124,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 hintText: 'Ej: Mate, Decoración...',
                 hintStyle: TextStyle(color: Colors.grey),
                 prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               ),
             ),
           ),
 
-          // --- 2. CARRUSEL DE ARTESANOS (Estilo Historias) ---
+          // 2. CARRUSEL DE ARTESANOS
           SizedBox(
-            height: 110, // Altura fija para esta zona
+            height: 110,
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              scrollDirection: Axis.horizontal, // Scroll horizontal
-              // Sumamos 1 al total para incluir el botón "Todos" al principio
+              scrollDirection: Axis.horizontal,
               itemCount: globalArtisans.length + 1,
               itemBuilder: (context, index) {
-                // Lógica para el primer botón ("Todos")
                 if (index == 0) {
                   return _buildArtisanAvatar(
                     id: 'all',
                     nombre: 'Todos',
-                    imagePath: null, // Sin foto, usa icono
+                    imagePath: null,
                     isActive: _filtroActivo == 'Todos',
                   );
                 }
-
-                // Lógica para los Artesanos
                 final artisan = globalArtisans[index - 1];
                 return _buildArtisanAvatar(
                   id: artisan.id,
-                  nombre: artisan.nombre, // Nomvbre completo
+                  nombre: artisan.nombre,
                   imagePath: artisan.fotoPerfil,
                   isActive: _filtroActivo == artisan.id,
                 );
@@ -115,20 +156,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          const Divider(height: 1), // Una línea sutil de separación
-          // --- 3. GRILLA DE PRODUCTOS ---
+          const Divider(height: 1),
+
+          // 3. GRILLA DE PRODUCTOS
           Expanded(
             child: _foundProducts.isNotEmpty
                 ? GridView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: _foundProducts.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.70,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.70,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
                     itemBuilder: (context, index) {
                       return ProductCard(product: _foundProducts[index]);
                     },
@@ -149,7 +190,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // WIDGET AUXILIAR: Para dibujar cada círculo del carrusel
   Widget _buildArtisanAvatar({
     required String id,
     required String nombre,
@@ -160,11 +200,10 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () => _filterByArtisan(id),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        width: 70, // Ancho fijo para que el texto se acomode y no baile
+        width: 70,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // Alineado arriba
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // El círculo con borde
             Container(
               padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
@@ -177,24 +216,21 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.grey[200],
-                backgroundImage: imagePath != null
-                    ? AssetImage(imagePath)
-                    : null,
+                backgroundImage: imagePath != null ? AssetImage(imagePath) : null,
                 child: imagePath == null
                     ? const Icon(Icons.grid_view, color: Colors.brown)
                     : null,
               ),
             ),
             const SizedBox(height: 5),
-            // El nombre abajo (Ahora permite 2 líneas)
             Text(
               nombre,
-              textAlign: TextAlign.center, // Centrado
-              maxLines: 2, // Máximo 2 renglones
-              overflow: TextOverflow.ellipsis, // Si es muuuuy largo pone "..."
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11, // Letra un pelín más chica para que entre mejor
-                height: 1.1, // Espaciado entre renglones más ajustado
+                fontSize: 11,
+                height: 1.1,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                 color: isActive ? Colors.brown : Colors.black87,
               ),
@@ -206,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// --- PRODUCT CARD (Igual que antes) ---
+// --- TARJETA DE PRODUCTO (ProductCard) ---
 class ProductCard extends StatelessWidget {
   final Product product;
 
@@ -218,7 +254,13 @@ class ProductCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Aquí iría la navegación al detalle
+        // NAVEGACIÓN AL DETALLE
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetail(product: product),
+          ),
+        );
       },
       child: Card(
         elevation: 3,
@@ -242,20 +284,14 @@ class ProductCard extends StatelessWidget {
                     bottom: 5,
                     right: 5,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         product.categoria,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontSize: 10),
                       ),
                     ),
                   ),
@@ -269,10 +305,7 @@ class ProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.nombre,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -286,6 +319,94 @@ class ProductCard extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.brown,
                       fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- PANTALLA DE DETALLE (ProductDetail) ---
+class ProductDetail extends StatelessWidget {
+  final Product product;
+
+  const ProductDetail({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final artisan = getArtisanById(product.artisanId);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(product.nombre)),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 300,
+              width: double.infinity,
+              child: Image.asset(product.imagePath, fit: BoxFit.cover),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '\$${product.precio.toStringAsFixed(0)}',
+                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.brown),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      const Text("Creado por: ", style: TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      ActionChip(
+                        avatar: CircleAvatar(
+                          backgroundImage: AssetImage(artisan.fotoPerfil),
+                        ),
+                        label: Text(artisan.nombre, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        backgroundColor: Colors.brown[50],
+                        side: BorderSide.none,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ArtisanProfileScreen(artisan: artisan),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Historia del producto", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(product.descripcion, style: const TextStyle(fontSize: 16, height: 1.5)),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArtisanProfileScreen(artisan: artisan),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.storefront),
+                      label: const Text("Visitar Tienda del Artesano"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.brown,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
                   ),
                 ],
