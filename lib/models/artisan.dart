@@ -6,6 +6,7 @@ class Artisan {
   final String telefono;
   final String whatsapp; // Para el enlace directo
   final String ubicacion; // Ej: "Barrio Norte"
+  final String instagram;
 
   Artisan({
     required this.id,
@@ -15,5 +16,6 @@ class Artisan {
     required this.telefono,
     required this.whatsapp,
     required this.ubicacion,
+    required this.instagram,
   });
 }

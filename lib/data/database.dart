@@ -11,6 +11,7 @@ final List<Artisan> globalArtisans = [
     telefono: '3511111111',
     whatsapp: '5493511111111',
     ubicacion: 'Taller del Norte',
+    instagram: 'donjose_maderas',
   ),
   Artisan(
     id: 'a2',
@@ -20,6 +21,7 @@ final List<Artisan> globalArtisans = [
     telefono: '3512222222',
     whatsapp: '5493512222222',
     ubicacion: 'Calle de las Artes',
+    instagram: 'ana_tejidos',
   ),
   Artisan(
     id: 'a3',
@@ -29,6 +31,7 @@ final List<Artisan> globalArtisans = [
     telefono: '3513333333',
     whatsapp: '5493513333333',
     ubicacion: 'Feria del Río',
+    instagram: 'luz_natural'
   ),
   Artisan(
     id: 'a4',
@@ -38,6 +41,7 @@ final List<Artisan> globalArtisans = [
     telefono: '3514444444',
     whatsapp: '5493514444444',
     ubicacion: 'Centro Cultural',
+    instagram: 'tejidos_del_valle',
   ),
   Artisan(
     id: 'a5',
@@ -47,6 +51,7 @@ final List<Artisan> globalArtisans = [
     telefono: '3515555555',
     whatsapp: '5493515555555',
     ubicacion: 'Camino Real',
+    instagram: 'barro_y_fuego',
   ),
 ];
 

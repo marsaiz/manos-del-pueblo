@@ -4,35 +4,44 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FavoritesProvider extends ChangeNotifier {
   List<String> _favoriteIds = [];
 
+  // Getter público
   List<String> get favorites => _favoriteIds;
 
   FavoritesProvider() {
-    _loadFavorites(); // Cargar datos al iniciar
+    _loadFavorites();
   }
 
-  // Cargar de la memoria
+  // --- CARGAR DATOS ---
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     _favoriteIds = prefs.getStringList('userFavorites') ?? [];
-    notifyListeners(); // Avisar a la app que ya tenemos datos
+    
+    // ESTO SALDRÁ EN TU CONSOLA AL INICIAR
+    print("💾 Datos cargados desde memoria: $_favoriteIds"); 
+    
+    notifyListeners();
   }
 
-  // Guardar o Borrar (Toggle)
+  // --- GUARDAR / BORRAR ---
   Future<void> toggleFavorite(String productId) async {
-    final prefs = await SharedPreferences.getInstance();
-    
+    // 1. CAMBIO VISUAL PRIMERO (Para que se sienta rápido)
     if (_favoriteIds.contains(productId)) {
-      _favoriteIds.remove(productId); // Si ya estaba, lo borra
+      _favoriteIds.remove(productId);
     } else {
-      _favoriteIds.add(productId); // Si no estaba, lo agrega
+      _favoriteIds.add(productId);
     }
-    
-    // Guardamos en disco
+    // Avisamos a la pantalla YA MISMO
+    notifyListeners(); 
+
+    // 2. GUARDAR EN DISCO DESPUÉS (Segundo plano)
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('userFavorites', _favoriteIds);
-    notifyListeners(); // ¡Actualizar pantallas!
+    
+    // ESTO SALDRÁ EN TU CONSOLA AL TOCAR EL CORAZÓN
+    print("💾 Lista actualizada guardada: $_favoriteIds");
   }
 
-  // Saber si un producto es favorito
+  // Saber si es favorito
   bool isFavorite(String productId) {
     return _favoriteIds.contains(productId);
   }
