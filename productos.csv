@@ -1,0 +1,6 @@
+id,artisanId,nombre,descripcion,precio,imagePath,categoria
+p1,a3,Vela de Soja y Miel,Vela ecológica con pabilo de madera.,4500.0,assets/images/vela.jpeg,Decoración
+p2,a4,Zorro Amigurumi,Muñeco tejido para apego.,8200.0,assets/images/zorro.jpeg,Juguetes
+p3,a1,Mate de Algarrobo,Mate bocón curado.,6000.0,assets/images/mate.jpeg,Hogar
+p4,a5,Cuenco de Cerámica,Esmaltado a mano.,3800.0,assets/images/Cuenco.jpeg,Cocina
+p5,a2,Bufanda Nórdica,Lana merino súper abrigada.,9500.0,assets/images/bufanda.jpeg,Indumentaria
