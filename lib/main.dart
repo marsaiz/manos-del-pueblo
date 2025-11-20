@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// IMPORTANTE: Asegúrate de que tu archivo se llame "product.dart"
+import 'product.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -12,9 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Manos del Pueblo',
-      // TEMA: Versión simplificada para compatibilidad
       theme: ThemeData(
-        primarySwatch: Colors.brown, // Color base compatible con versiones viejas
+        primarySwatch: Colors.brown,
         scaffoldBackgroundColor: const Color(0xFFF5F5DC), // Beige suave
         appBarTheme: const AppBarTheme(
           centerTitle: true,
@@ -22,77 +23,56 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-        // Eliminamos la configuración compleja de CardTheme para evitar el error
       ),
       home: const ArtesaniasHome(),
     );
   }
 }
 
-// --- MODELO DE DATOS ---
-class Product {
-  final String id;
-  final String nombre;
-  final String descripcion;
-  final double precio;
-  final String nombreDelArtesano;
-  final String imageUrl; 
-
-  Product({
-    required this.id,
-    required this.nombre,
-    required this.descripcion,
-    required this.precio,
-    required this.nombreDelArtesano,
-    required this.imageUrl,
-  });
-}
-
-// --- DATOS DE EJEMPLO ---
+// --- DATOS DE EJEMPLO (Ahora con URLs reales de Internet) ---
 final List<Product> mockProducts = [
   Product(
     id: '1',
-    nombre: 'Vela de Soja y Lavanda',
-    descripcion: 'Vela aromática ecológica vertida a mano en frasco de vidrio reutilizable.',
+    nombre: 'Vela de Soja y Miel',
+    descripcion: 'Vela ecológica con pabilo de madera que crepita al arder. Aroma intenso a miel silvestre.',
     precio: 4500.0,
-    nombreDelArtesano: 'Clara Velas',
-    imageUrl: 'https://images.unsplash.com/photo-1602825489113-656d09143776?auto=format&fit=crop&w=500&q=60',
+    nombreDelArtesano: 'Luz Natural',
+    imageUrl: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=600&q=80',
   ),
   Product(
     id: '2',
     nombre: 'Zorro Amigurumi',
-    descripcion: 'Muñeco tejido al crochet con hilo de algodón hipoalergénico.',
+    descripcion: 'Muñeco tejido para apego, hecho con hilo de algodón suave e hipoalergénico.',
     precio: 8200.0,
     nombreDelArtesano: 'Tejidos del Valle',
-    imageUrl: 'https://images.unsplash.com/photo-1559438653-64869c80cb32?auto=format&fit=crop&w=500&q=60',
+    imageUrl: 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?auto=format&fit=crop&w=600&q=80',
   ),
   Product(
     id: '3',
     nombre: 'Mate de Algarrobo',
-    descripcion: 'Mate torneado en madera de algarrobo con virola de aluminio.',
+    descripcion: 'Mate bocón de madera curada con detalle de virola de alpaca cincelada.',
     precio: 6000.0,
-    nombreDelArtesano: 'Carpintería Don José',
-    imageUrl: 'https://images.unsplash.com/photo-1587585563431-b7c746393d1c?auto=format&fit=crop&w=500&q=60',
+    nombreDelArtesano: 'Don José Maderas',
+    imageUrl: 'https://images.unsplash.com/photo-1616438401189-2f8a0f589758?auto=format&fit=crop&w=600&q=80',
   ),
   Product(
     id: '4',
     nombre: 'Cuenco de Cerámica',
-    descripcion: 'Cuenco esmaltado a mano, apto para microondas y lavavajillas.',
+    descripcion: 'Ideal para sopas o cereales. Esmaltado a mano en horno de leña. Pieza única.',
     precio: 3800.0,
     nombreDelArtesano: 'Barro & Fuego',
-    imageUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=60',
+    imageUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80',
   ),
    Product(
     id: '5',
-    nombre: 'Bufanda de Lana',
-    descripcion: 'Bufanda tejida en telar con lana de oveja natural.',
+    nombre: 'Bufanda Nórdica',
+    descripcion: 'Tejida en dos agujas con lana merino súper abrigada. Color crudo natural.',
     precio: 9500.0,
-    nombreDelArtesano: 'Telares Andinos',
-    imageUrl: 'https://images.unsplash.com/photo-1606299362296-54b281a64445?auto=format&fit=crop&w=500&q=60',
+    nombreDelArtesano: 'Ana Tejidos',
+    imageUrl: 'https://images.unsplash.com/photo-1607366402464-c0802d24251e?auto=format&fit=crop&w=600&q=80',
   ),
 ];
 
-// --- PANTALLA PRINCIPAL ---
 class ArtesaniasHome extends StatelessWidget {
   const ArtesaniasHome({super.key});
 
@@ -107,14 +87,13 @@ class ArtesaniasHome extends StatelessWidget {
         child: GridView.builder(
           itemCount: mockProducts.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, 
-            childAspectRatio: 0.70, // Ajustado para evitar desbordamiento
+            crossAxisCount: 2,
+            childAspectRatio: 0.70, 
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
           itemBuilder: (context, index) {
-            final product = mockProducts[index];
-            return ProductCard(product: product);
+            return ProductCard(product: mockProducts[index]);
           },
         ),
       ),
@@ -122,7 +101,6 @@ class ArtesaniasHome extends StatelessWidget {
   }
 }
 
-// --- TARJETA DE PRODUCTO ---
 class ProductCard extends StatelessWidget {
   final Product product;
 
@@ -141,23 +119,23 @@ class ProductCard extends StatelessWidget {
       },
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Hero(
-                tag: product.id,
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(product.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+              // CAMBIO: Usamos Image.network para las URLs
+              child: Image.network(
+                product.imageUrl,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: const Center(child: Icon(Icons.broken_image)),
+                  );
+                },
               ),
             ),
             Padding(
@@ -167,7 +145,7 @@ class ProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.nombre,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -194,7 +172,6 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-// --- DETALLE ---
 class ProductDetail extends StatelessWidget {
   final Product product;
 
@@ -210,15 +187,13 @@ class ProductDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Hero(
-              tag: product.id,
-              child: SizedBox(
-                width: double.infinity,
-                height: 300,
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+            SizedBox(
+              height: 300,
+              width: double.infinity,
+              // CAMBIO: Image.network aquí también
+              child: Image.network(
+                product.imageUrl, 
+                fit: BoxFit.cover,
               ),
             ),
             Padding(
@@ -256,14 +231,13 @@ class ProductDetail extends StatelessWidget {
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon( // Usamos ElevatedButton clásico
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('¡Función de contacto próximamente!')),
                         );
                       },
-                      // CAMBIO: Usamos Icons.message en lugar de Icons.whatsapp
-                      icon: const Icon(Icons.message), 
+                      icon: const Icon(Icons.message),
                       label: const Text("Contactar al Artesano"),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
