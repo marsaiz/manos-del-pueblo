@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../data/database.dart';
 import 'artisan_profile_screen.dart'; 
+import 'package:share_plus/share_plus.dart'; // <--- IMPORTAR ESTO ARRIBA DEL ARCHIVO
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -337,12 +338,35 @@ class ProductDetail extends StatelessWidget {
 
   const ProductDetail({super.key, required this.product});
 
+  // Función para compartir
+  void _shareProduct() {
+    // Creamos un texto bonito para compartir
+    final String mensaje = 
+        "¡Mira esta artesanía de ${getArtisanById(product.artisanId).nombre}!\n\n"
+        "*${product.nombre}* - \$${product.precio.toStringAsFixed(0)}\n\n"
+        "Ver más aquí: https://manos-del-pueblo.ar";
+    
+    // Lanzamos el menú nativo de compartir del celular
+    Share.share(mensaje);
+  }
+
   @override
   Widget build(BuildContext context) {
     final artisan = getArtisanById(product.artisanId);
 
     return Scaffold(
-      appBar: AppBar(title: Text(product.nombre)),
+      appBar: AppBar(
+        title: Text(product.nombre),
+        actions: [
+          // --- NUEVO BOTÓN DE COMPARTIR ---
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Compartir con amigos',
+            onPressed: _shareProduct,
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,6 +381,7 @@ class ProductDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ... (El resto de tu código de detalle sigue igual: Precio, Chip del Artesano, etc)
                   Text(
                     '\$${product.precio.toStringAsFixed(0)}',
                     style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.brown),
