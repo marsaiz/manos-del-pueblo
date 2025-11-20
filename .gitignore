@@ -1,45 +1,49 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
+# -----------------------------------------
+# ARCHIVOS DEL SISTEMA Y BASURA
+# -----------------------------------------
 .DS_Store
 .atom/
-.build/
-.buildlog/
 .history
 .svn/
-.swiftpm/
-migrate_working_dir/
+Thumbs.db
 
-# IntelliJ related
+# -----------------------------------------
+# FLUTTER Y DART (Lo pesado que no se sube)
+# -----------------------------------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# Ignoramos la carpeta build original (porque es muy pesada)
+/build/
+
+# -----------------------------------------
+# DESPLIEGUE WEB (GitHub Pages)
+# -----------------------------------------
+# Esta regla es importante:
+# Aseguramos que la carpeta 'docs' NUNCA sea ignorada,
+# porque ahí vive tu página web manos-del-pueblo.ar
+!/docs/
+
+# -----------------------------------------
+# IDEs (Configuraciones de tu editor)
+# -----------------------------------------
+# VS Code
+.vscode/
+
+# IntelliJ / Android Studio
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
+# -----------------------------------------
+# ARCHIVOS GENERADOS (Android/iOS)
+# -----------------------------------------
 **/doc/api/
 **/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
