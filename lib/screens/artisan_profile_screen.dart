@@ -13,9 +13,12 @@ class ArtisanProfileScreen extends StatelessWidget {
   Future<void> _launchWhatsApp() async {
     // Limpiamos el número dejando solo dígitos
     final number = artisan.whatsapp.replaceAll(RegExp(r'[^\d]'), '');
-    final message = "Hola ${artisan.nombre}, te contacto desde Manos del Pueblo.";
+    final message =
+        "Hola ${artisan.nombre}, te contacto desde Manos del Pueblo.";
     // Codificamos la URL
-    final Uri url = Uri.parse("https://wa.me/$number?text=${Uri.encodeComponent(message)}");
+    final Uri url = Uri.parse(
+      "https://wa.me/$number?text=${Uri.encodeComponent(message)}",
+    );
 
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('No se pudo abrir WhatsApp');
@@ -97,12 +100,35 @@ class ArtisanProfileScreen extends StatelessWidget {
                 children: [
                   // Ubicación
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.location_on, color: Colors.brown),
+                      const Icon(
+                        Icons.location_on,
+                        color: Colors.brown,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
-                      Text(
-                        artisan.ubicacion,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              artisan.ubicacion,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "${artisan.direccion}\n${artisan.localidad}, ${artisan.provincia} (${artisan.codigoPostal})",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                                height: 1.3,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -119,12 +145,14 @@ class ArtisanProfileScreen extends StatelessWidget {
                             backgroundColor: Colors.green[600],
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           child: const Icon(Icons.chat),
                         ),
                       ),
-                      
+
                       const SizedBox(width: 10),
 
                       // 2. Botón Instagram (Solo si existe)
@@ -133,12 +161,19 @@ class ArtisanProfileScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: _launchInstagram,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE1306C), // Color marca Instagram
+                              backgroundColor: const Color(
+                                0xFFE1306C,
+                              ), // Color marca Instagram
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
-                            child: const FaIcon(FontAwesomeIcons.instagram, size: 24), // ✅ ESTO ES LO CORRECTO
+                            child: const FaIcon(
+                              FontAwesomeIcons.instagram,
+                              size: 24,
+                            ), // ✅ ESTO ES LO CORRECTO
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -152,7 +187,9 @@ class ArtisanProfileScreen extends StatelessWidget {
                             foregroundColor: Colors.brown,
                             side: const BorderSide(color: Colors.brown),
                             padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           child: const Icon(Icons.phone),
                         ),
@@ -164,28 +201,56 @@ class ArtisanProfileScreen extends StatelessWidget {
                   const SizedBox(height: 5),
                   Row(
                     children: [
-                      const Expanded(child: Text("WhatsApp", textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey))),
+                      const Expanded(
+                        child: Text(
+                          "WhatsApp",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ),
                       const SizedBox(width: 10),
                       if (artisan.instagram.isNotEmpty) ...[
-                        const Expanded(child: Text("Instagram", textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey))),
+                        const Expanded(
+                          child: Text(
+                            "Instagram",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
+                        ),
                         const SizedBox(width: 10),
                       ],
-                      const Expanded(child: Text("Llamar", textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey))),
+                      const Expanded(
+                        child: Text(
+                          "Llamar",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ),
                     ],
                   ),
 
                   const SizedBox(height: 25),
-                  
+
                   // Historia
-                  const Text("Mi Historia", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Mi Historia",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     artisan.historia,
-                    style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.5,
+                      color: Colors.black87,
+                    ),
                   ),
 
                   const SizedBox(height: 30),
-                  const Text("Mis Productos", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Mis Productos",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
                 ],
               ),
@@ -196,32 +261,32 @@ class ArtisanProfileScreen extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final product = myProducts[index];
-                  return Card(
-                    clipBehavior: Clip.antiAlias,
-                    elevation: 3,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Image.asset(product.imagePath, fit: BoxFit.cover),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final product = myProducts[index];
+                return Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 3,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Image.asset(
+                          product.imagePath,
+                          fit: BoxFit.cover,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            product.nombre,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          product.nombre,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
-                      ],
-                    ),
-                  );
-                },
-                childCount: myProducts.length,
-              ),
+                      ),
+                    ],
+                  ),
+                );
+              }, childCount: myProducts.length),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
@@ -230,7 +295,7 @@ class ArtisanProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Espacio final para scrolling cómodo
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],

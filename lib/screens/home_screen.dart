@@ -3,11 +3,11 @@ import 'package:provider/provider.dart'; // Para manejar los favoritos
 import 'package:share_plus/share_plus.dart'; // Para compartir
 
 // Tus archivos locales
-import '../providers/favorites_provider.dart'; 
+import '../providers/favorites_provider.dart';
 import '../models/product.dart';
 import '../data/database.dart';
-import 'artisan_profile_screen.dart'; 
-import 'favorites_screen.dart'; 
+import 'artisan_profile_screen.dart';
+import 'favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Product> _foundProducts = [];
   String _filtroActivo = 'Todos';
+  String _localidadSeleccionada = 'Todas';
 
   @override
   void initState() {
@@ -26,37 +27,56 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  // Lógica central para aplicar todos los filtros (texto, artesano y localidad)
+  void _applyFilters({String? text, String? artisanId, String? localidad}) {
+    setState(() {
+      if (artisanId != null) _filtroActivo = artisanId;
+      if (localidad != null) _localidadSeleccionada = localidad;
+
+      _foundProducts = globalProducts.where((product) {
+        final artisan = getArtisanById(product.artisanId);
+
+        // 1. Filtro por Artesano
+        final matchesArtisan =
+            _filtroActivo == 'Todos' ||
+            _filtroActivo == 'Búsqueda' ||
+            product.artisanId == _filtroActivo;
+
+        // 2. Filtro por Localidad
+        final matchesLocation =
+            _localidadSeleccionada == 'Todas' ||
+            artisan.localidad == _localidadSeleccionada;
+
+        // 3. Filtro por Texto (si hay)
+        bool matchesText = true;
+        if (text != null && text.isNotEmpty) {
+          final query = text.toLowerCase();
+          matchesText =
+              product.nombre.toLowerCase().contains(query) ||
+              product.categoria.toLowerCase().contains(query) ||
+              artisan.nombre.toLowerCase().contains(query) ||
+              artisan.localidad.toLowerCase().contains(query);
+          _filtroActivo = 'Búsqueda';
+        }
+
+        return matchesArtisan && matchesLocation && matchesText;
+      }).toList();
+    });
+  }
+
   // Filtro por TEXTO (Buscador)
   void _runFilter(String enteredKeyword) {
-    List<Product> results = [];
-    if (enteredKeyword.isEmpty) {
-      results = globalProducts;
-    } else {
-      results = globalProducts.where((product) {
-        final nombreArtesano = getArtisanById(product.artisanId).nombre.toLowerCase();
-        return product.nombre.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
-            product.categoria.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
-            nombreArtesano.contains(enteredKeyword.toLowerCase());
-      }).toList();
-    }
-
-    setState(() {
-      _foundProducts = results;
-      _filtroActivo = 'Búsqueda';
-    });
+    _applyFilters(text: enteredKeyword);
   }
 
   // Filtro por ARTESANO (Al tocar el avatar)
   void _filterByArtisan(String artisanId) {
-    setState(() {
-      if (artisanId == 'all') {
-        _foundProducts = globalProducts;
-        _filtroActivo = 'Todos';
-      } else {
-        _foundProducts = getProductsByArtisan(artisanId);
-        _filtroActivo = artisanId;
-      }
-    });
+    _applyFilters(artisanId: artisanId == 'all' ? 'Todos' : artisanId);
+  }
+
+  // Filtro por LOCALIDAD
+  void _filterByLocation(String location) {
+    _applyFilters(localidad: location);
   }
 
   @override
@@ -76,14 +96,21 @@ class _HomeScreenState extends State<HomeScreen> {
               accountEmail: Text("Catálogo de Artesanos Locales"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Icon(Icons.storefront, color: Color(0xFF5D4037), size: 35),
+                child: Icon(
+                  Icons.storefront,
+                  color: Color(0xFF5D4037),
+                  size: 35,
+                ),
               ),
             ),
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
                 "Nuestros Artesanos",
-                style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             // Lista dinámica del menú
@@ -94,13 +121,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 title: Text(artisan.nombre),
                 subtitle: Text(artisan.ubicacion),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: Colors.grey,
+                ),
                 onTap: () {
                   Navigator.pop(context); // Cerrar menú
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ArtisanProfileScreen(artisan: artisan),
+                      builder: (context) =>
+                          ArtisanProfileScreen(artisan: artisan),
                     ),
                   );
                 },
@@ -115,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      
+
       appBar: AppBar(
         title: const Text('Manos del Pueblo'),
         actions: [
@@ -126,14 +158,16 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const FavoritesScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
               );
             },
           ),
           const SizedBox(width: 10),
         ],
       ),
-      
+
       body: Column(
         children: [
           // 1. BARRA DE BÚSQUEDA
@@ -143,13 +177,62 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (value) => _runFilter(value),
               decoration: const InputDecoration(
                 labelText: 'Buscar artesanías...',
-                hintText: 'Ej: Mate, Decoración...',
+                hintText: 'Ej: Mate, Decoración, Córdoba...',
                 hintStyle: TextStyle(color: Colors.grey),
                 prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 15,
+                ),
               ),
             ),
           ),
+
+          // 1.5 FILTRO DE LOCALIDADES
+          SizedBox(
+            height: 44,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children:
+                  [
+                    'Todas',
+                    ...globalArtisans.map((a) => a.localidad).toSet().toList(),
+                  ].map((location) {
+                    final isSelected = _localidadSeleccionada == location;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(
+                          location,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isSelected ? Colors.white : Colors.brown,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (bool selected) {
+                          _filterByLocation(location);
+                        },
+                        selectedColor: Colors.brown,
+                        backgroundColor: Colors.brown[50],
+                        checkmarkColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: const BorderSide(
+                            color: Colors.brown,
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+          const SizedBox(height: 10),
 
           // 2. CARRUSEL DE ARTESANOS
           SizedBox(
@@ -186,12 +269,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? GridView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: _foundProducts.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.70,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.70,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
                     itemBuilder: (context, index) {
                       return ProductCard(product: _foundProducts[index]);
                     },
@@ -238,7 +322,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.grey[200],
-                backgroundImage: imagePath != null ? AssetImage(imagePath) : null,
+                backgroundImage: imagePath != null
+                    ? AssetImage(imagePath)
+                    : null,
                 child: imagePath == null
                     ? const Icon(Icons.grid_view, color: Colors.brown)
                     : null,
@@ -276,7 +362,7 @@ class ProductCard extends StatelessWidget {
     final favoritesProvider = Provider.of<FavoritesProvider>(context);
     final isFav = favoritesProvider.isFavorite(product.id);
     // ---------------------------
-    
+
     final nombreArtesano = getArtisanById(product.artisanId).nombre;
 
     return GestureDetector(
@@ -306,7 +392,7 @@ class ProductCard extends StatelessWidget {
                           Container(color: Colors.grey[300]),
                     ),
                   ),
-                  
+
                   // --- BOTÓN DE FAVORITOS (CORAZÓN) ---
                   Positioned(
                     top: 5,
@@ -327,20 +413,26 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // ------------------------------------
 
+                  // ------------------------------------
                   Positioned(
                     bottom: 5,
                     right: 5,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         product.categoria,
-                        style: const TextStyle(color: Colors.white, fontSize: 10),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ),
@@ -354,7 +446,10 @@ class ProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.nombre,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -388,11 +483,11 @@ class ProductDetail extends StatelessWidget {
 
   // Función para compartir
   void _shareProduct() {
-    final String mensaje = 
+    final String mensaje =
         "¡Mira esta artesanía de ${getArtisanById(product.artisanId).nombre}!\n\n"
         "*${product.nombre}* - \$${product.precio.toStringAsFixed(0)}\n\n"
         "Ver más aquí: https://manos-del-pueblo.ar";
-    
+
     Share.share(mensaje);
   }
 
@@ -429,25 +524,36 @@ class ProductDetail extends StatelessWidget {
                 children: [
                   Text(
                     '\$${product.precio.toStringAsFixed(0)}',
-                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.brown),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.brown,
+                    ),
                   ),
                   const SizedBox(height: 15),
                   Row(
                     children: [
-                      const Text("Creado por: ", style: TextStyle(fontSize: 16)),
+                      const Text(
+                        "Creado por: ",
+                        style: TextStyle(fontSize: 16),
+                      ),
                       const SizedBox(width: 8),
                       ActionChip(
                         avatar: CircleAvatar(
                           backgroundImage: AssetImage(artisan.fotoPerfil),
                         ),
-                        label: Text(artisan.nombre, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        label: Text(
+                          artisan.nombre,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         backgroundColor: Colors.brown[50],
                         side: BorderSide.none,
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ArtisanProfileScreen(artisan: artisan),
+                              builder: (context) =>
+                                  ArtisanProfileScreen(artisan: artisan),
                             ),
                           );
                         },
@@ -455,9 +561,15 @@ class ProductDetail extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  const Text("Historia del producto", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Historia del producto",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
-                  Text(product.descripcion, style: const TextStyle(fontSize: 16, height: 1.5)),
+                  Text(
+                    product.descripcion,
+                    style: const TextStyle(fontSize: 16, height: 1.5),
+                  ),
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
@@ -466,7 +578,8 @@ class ProductDetail extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ArtisanProfileScreen(artisan: artisan),
+                            builder: (context) =>
+                                ArtisanProfileScreen(artisan: artisan),
                           ),
                         );
                       },

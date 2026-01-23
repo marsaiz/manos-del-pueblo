@@ -62,6 +62,11 @@ def generar_dart():
     telefono: '{row['telefono']}',
     whatsapp: '{row['whatsapp']}',
     ubicacion: '{row['ubicacion']}',
+    direccion: '{row['direccion']}',
+    localidad: '{row['localidad']}',
+    codigoPostal: '{row['codigoPostal']}',
+    provincia: '{row['provincia']}',
+    instagram: '{row['instagram']}',
   ),\n"""
         print(f"✅ Artesanos procesados correctamente.")
     except FileNotFoundError:
