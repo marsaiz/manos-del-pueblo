@@ -4,13 +4,11 @@ import 'package:provider/provider.dart'; // <--- Importante
 import 'providers/favorites_provider.dart'; // <--- Importante
 import 'screens/home_screen.dart';
 import 'screens/about_screen.dart'; // Nueva pantalla que crearemos
-import 'services/image_upload_service.dart';
 import 'services/firebase_config.dart'; // Importamos la configuración de Firebase
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Inicializar Firebase usando la configuración centralizada
   await Firebase.initializeApp(
     options: FirebaseOptions(
@@ -23,10 +21,10 @@ void main() async {
       measurementId: FirebaseConfig.config['measurementId']!,
     ),
   );
-  
-  // Inicializar el servicio de subida de imágenes
-  await ImageUploadService.initialize();
-  
+
+  // No necesitamos llamar a ImageUploadService.initialize() porque ya inicializamos Firebase arriba
+  // y el servicio usa FirebaseStorage.instance que se conecta automáticamente.
+
   runApp(
     // Envolvemos la app para que los favoritos funcionen en todos lados
     ChangeNotifierProvider(
@@ -65,9 +63,7 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomeScreen(),
       // Definición de rutas
-      routes: {
-        '/about': (context) => const AboutScreen(),
-      },
+      routes: {'/about': (context) => const AboutScreen()},
     );
   }
 }

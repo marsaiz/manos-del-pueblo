@@ -1,27 +1,12 @@
 // lib/services/image_upload_service.dart
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:flutter/material.dart';
-import 'firebase_config.dart'; // Añade esta línea
 
 class ImageUploadService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  // Inicializa Firebase
-  static Future<void> initialize() async {
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: FirebaseConfig.config['apiKey']!,
-        authDomain: FirebaseConfig.config['authDomain']!,
-        projectId: FirebaseConfig.config['projectId']!,
-        storageBucket: FirebaseConfig.config['storageBucket']!,
-        messagingSenderId: FirebaseConfig.config['messagingSenderId']!,
-        appId: FirebaseConfig.config['appId']!,
-        measurementId: FirebaseConfig.config['measurementId']!,
-      ),
-    );
-  }
+  // Se utiliza la instancia por defecto inicializada en main.dart
 
   // Sube la imagen de perfil de un artesano
   static Future<String?> uploadArtisanProfileImage(String artisanId) async {

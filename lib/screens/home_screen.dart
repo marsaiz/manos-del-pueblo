@@ -33,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Product> allProducts,
     List<Artisan> allArtisans,
   ) {
+    if (allArtisans.isEmpty) return [];
+
     return allProducts.where((product) {
       final artisan = allArtisans.firstWhere(
         (a) => a.id == product.artisanId,
