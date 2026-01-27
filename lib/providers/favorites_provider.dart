@@ -15,10 +15,10 @@ class FavoritesProvider extends ChangeNotifier {
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     _favoriteIds = prefs.getStringList('userFavorites') ?? [];
-    
-    // ESTO SALDRÁ EN TU CONSOLA AL INICIAR
-    print("💾 Datos cargados desde memoria: $_favoriteIds"); 
-    
+
+    // Datos cargados desde memoria
+    debugPrint("💾 Datos cargados desde memoria: $_favoriteIds");
+
     notifyListeners();
   }
 
@@ -31,14 +31,14 @@ class FavoritesProvider extends ChangeNotifier {
       _favoriteIds.add(productId);
     }
     // Avisamos a la pantalla YA MISMO
-    notifyListeners(); 
+    notifyListeners();
 
     // 2. GUARDAR EN DISCO DESPUÉS (Segundo plano)
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('userFavorites', _favoriteIds);
-    
-    // ESTO SALDRÁ EN TU CONSOLA AL TOCAR EL CORAZÓN
-    print("💾 Lista actualizada guardada: $_favoriteIds");
+
+    // Lista actualizada guardada
+    debugPrint("💾 Lista actualizada guardada: $_favoriteIds");
   }
 
   // Saber si es favorito

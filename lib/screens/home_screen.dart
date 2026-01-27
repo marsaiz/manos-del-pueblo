@@ -5,9 +5,10 @@ import 'package:share_plus/share_plus.dart'; // Para compartir
 // Tus archivos locales
 import '../providers/favorites_provider.dart';
 import '../models/product.dart';
-import '../data/database.dart';
+import '../models/artisan.dart';
 import 'artisan_profile_screen.dart';
 import 'favorites_screen.dart';
+import '../services/firestore_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,282 +18,322 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Product> _foundProducts = [];
   String _filtroActivo = 'Todos';
   String _localidadSeleccionada = 'Todas';
+  final TextEditingController _searchController = TextEditingController();
+  String _searchText = '';
 
   @override
   void initState() {
-    _foundProducts = globalProducts;
     super.initState();
   }
 
   // Lógica central para aplicar todos los filtros (texto, artesano y localidad)
-  void _applyFilters({String? text, String? artisanId, String? localidad}) {
-    setState(() {
-      if (artisanId != null) _filtroActivo = artisanId;
-      if (localidad != null) _localidadSeleccionada = localidad;
+  List<Product> _getFilteredProducts(
+    List<Product> allProducts,
+    List<Artisan> allArtisans,
+  ) {
+    return allProducts.where((product) {
+      final artisan = allArtisans.firstWhere(
+        (a) => a.id == product.artisanId,
+        orElse: () => allArtisans.first,
+      );
 
-      _foundProducts = globalProducts.where((product) {
-        final artisan = getArtisanById(product.artisanId);
+      // 1. Filtro por Artesano
+      final matchesArtisan =
+          _filtroActivo == 'Todos' ||
+          _filtroActivo == 'Búsqueda' ||
+          product.artisanId == _filtroActivo;
 
-        // 1. Filtro por Artesano
-        final matchesArtisan =
-            _filtroActivo == 'Todos' ||
-            _filtroActivo == 'Búsqueda' ||
-            product.artisanId == _filtroActivo;
+      // 2. Filtro por Localidad
+      final matchesLocation =
+          _localidadSeleccionada == 'Todas' ||
+          artisan.localidad == _localidadSeleccionada;
 
-        // 2. Filtro por Localidad
-        final matchesLocation =
-            _localidadSeleccionada == 'Todas' ||
-            artisan.localidad == _localidadSeleccionada;
+      // 3. Filtro por Texto
+      bool matchesText = true;
+      if (_searchText.isNotEmpty) {
+        final query = _searchText.toLowerCase();
+        matchesText =
+            product.nombre.toLowerCase().contains(query) ||
+            product.categoria.toLowerCase().contains(query) ||
+            artisan.nombre.toLowerCase().contains(query) ||
+            artisan.localidad.toLowerCase().contains(query);
+      }
 
-        // 3. Filtro por Texto (si hay)
-        bool matchesText = true;
-        if (text != null && text.isNotEmpty) {
-          final query = text.toLowerCase();
-          matchesText =
-              product.nombre.toLowerCase().contains(query) ||
-              product.categoria.toLowerCase().contains(query) ||
-              artisan.nombre.toLowerCase().contains(query) ||
-              artisan.localidad.toLowerCase().contains(query);
-          _filtroActivo = 'Búsqueda';
-        }
-
-        return matchesArtisan && matchesLocation && matchesText;
-      }).toList();
-    });
+      return matchesArtisan && matchesLocation && matchesText;
+    }).toList();
   }
 
-  // Filtro por TEXTO (Buscador)
-  void _runFilter(String enteredKeyword) {
-    _applyFilters(text: enteredKeyword);
-  }
-
-  // Filtro por ARTESANO (Al tocar el avatar)
-  void _filterByArtisan(String artisanId) {
-    _applyFilters(artisanId: artisanId == 'all' ? 'Todos' : artisanId);
-  }
-
-  // Filtro por LOCALIDAD
-  void _filterByLocation(String location) {
-    _applyFilters(localidad: location);
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // --- MENÚ LATERAL (DRAWER) ---
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const UserAccountsDrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF5D4037)),
-              accountName: Text(
-                "Manos del Pueblo",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              accountEmail: Text("Catálogo de Artesanos Locales"),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.storefront,
-                  color: Color(0xFF5D4037),
-                  size: 35,
+    return StreamBuilder<List<Artisan>>(
+      stream: FirestoreService.getArtisans(),
+      builder: (context, artisanSnapshot) {
+        if (!artisanSnapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final artisans = artisanSnapshot.data!;
+
+        return Scaffold(
+          // --- MENÚ LATERAL (DRAWER) ---
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                const UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(color: Color(0xFF5D4037)),
+                  accountName: Text(
+                    "Manos del Pueblo",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  accountEmail: Text("Catálogo de Artesanos Locales"),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.storefront,
+                      color: Color(0xFF5D4037),
+                      size: 35,
+                    ),
+                  ),
                 ),
-              ),
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Nuestros Artesanos",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                // Lista dinámica del menú (usando datos de Firestore)
+                ...artisans.map(
+                  (artisan) => ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: (artisan.fotoPerfil.startsWith('http'))
+                          ? NetworkImage(artisan.fotoPerfil)
+                          : AssetImage(artisan.fotoPerfil) as ImageProvider,
+                    ),
+                    title: Text(artisan.nombre),
+                    subtitle: Text(artisan.ubicacion),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: Colors.grey,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context); // Cerrar menú
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ArtisanProfileScreen(artisan: artisan),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: const Text("Sobre Nosotros"),
+                  onTap: () {
+                    Navigator.pop(context); // Cerrar el menú
+                    Navigator.pushNamed(context, '/about');
+                  },
+                ),
+              ],
             ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                "Nuestros Artesanos",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            // Lista dinámica del menú
-            ...globalArtisans.map(
-              (artisan) => ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage(artisan.fotoPerfil),
-                ),
-                title: Text(artisan.nombre),
-                subtitle: Text(artisan.ubicacion),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.grey,
-                ),
-                onTap: () {
-                  Navigator.pop(context); // Cerrar menú
+          ),
+
+          appBar: AppBar(
+            title: const Text('Manos del Pueblo'),
+            actions: [
+              // --- BOTÓN PARA IR A FAVORITOS ---
+              IconButton(
+                icon: const Icon(Icons.favorite),
+                tooltip: 'Ver mis favoritos',
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ArtisanProfileScreen(artisan: artisan),
+                      builder: (context) => const FavoritesScreen(),
                     ),
                   );
                 },
               ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: const Text("Sobre Nosotros"),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
+              const SizedBox(width: 10),
+            ],
+          ),
 
-      appBar: AppBar(
-        title: const Text('Manos del Pueblo'),
-        actions: [
-          // --- BOTÓN PARA IR A FAVORITOS ---
-          IconButton(
-            icon: const Icon(Icons.favorite),
-            tooltip: 'Ver mis favoritos',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FavoritesScreen(),
-                ),
+          body: StreamBuilder<List<Product>>(
+            stream: FirestoreService.getProducts(),
+            builder: (context, productSnapshot) {
+              if (!productSnapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final allProducts = productSnapshot.data!;
+              final filteredProducts = _getFilteredProducts(
+                allProducts,
+                artisans,
+              );
+
+              return Column(
+                children: [
+                  // 1. BARRA DE BÚSQUEDA
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          _searchText = value;
+                          if (value.isNotEmpty) _filtroActivo = 'Búsqueda';
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Buscar artesanías...',
+                        hintText: 'Ej: Mate, Decoración, Córdoba...',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        prefixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 1.5 FILTRO DE LOCALIDADES
+                  SizedBox(
+                    height: 44,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children:
+                          [
+                            'Todas',
+                            ...artisans.map((a) => a.localidad).toSet(),
+                          ].map((location) {
+                            final isSelected =
+                                _localidadSeleccionada == location;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(
+                                  location,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.brown,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                                selected: isSelected,
+                                onSelected: (bool selected) {
+                                  setState(() {
+                                    _localidadSeleccionada = location;
+                                  });
+                                },
+                                selectedColor: Colors.brown,
+                                backgroundColor: Colors.brown[50],
+                                checkmarkColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: const BorderSide(
+                                    color: Colors.brown,
+                                    width: 0.5,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // 2. CARRUSEL DE ARTESANOS
+                  SizedBox(
+                    height: 110,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: artisans.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return _buildArtisanAvatar(
+                            id: 'all',
+                            nombre: 'Todos',
+                            imagePath: null,
+                            isActive: _filtroActivo == 'Todos',
+                          );
+                        }
+                        final artisan = artisans[index - 1];
+                        return _buildArtisanAvatar(
+                          id: artisan.id,
+                          nombre: artisan.nombre,
+                          imagePath: artisan.fotoPerfil,
+                          isActive: _filtroActivo == artisan.id,
+                        );
+                      },
+                    ),
+                  ),
+
+                  const Divider(height: 1),
+
+                  // 3. GRILLA DE PRODUCTOS
+                  Expanded(
+                    child: filteredProducts.isNotEmpty
+                        ? GridView.builder(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: filteredProducts.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.70,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                ),
+                            itemBuilder: (context, index) {
+                              return ProductCard(
+                                product: filteredProducts[index],
+                                artisans: artisans,
+                              );
+                            },
+                          )
+                        : const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 10),
+                                Text("No hay productos aquí"),
+                              ],
+                            ),
+                          ),
+                  ),
+                ],
               );
             },
           ),
-          const SizedBox(width: 10),
-        ],
-      ),
-
-      body: Column(
-        children: [
-          // 1. BARRA DE BÚSQUEDA
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-            child: TextField(
-              onChanged: (value) => _runFilter(value),
-              decoration: const InputDecoration(
-                labelText: 'Buscar artesanías...',
-                hintText: 'Ej: Mate, Decoración, Córdoba...',
-                hintStyle: TextStyle(color: Colors.grey),
-                prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 15,
-                ),
-              ),
-            ),
-          ),
-
-          // 1.5 FILTRO DE LOCALIDADES
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children:
-                  [
-                    'Todas',
-                    ...globalArtisans.map((a) => a.localidad).toSet().toList(),
-                  ].map((location) {
-                    final isSelected = _localidadSeleccionada == location;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: Text(
-                          location,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isSelected ? Colors.white : Colors.brown,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                        selected: isSelected,
-                        onSelected: (bool selected) {
-                          _filterByLocation(location);
-                        },
-                        selectedColor: Colors.brown,
-                        backgroundColor: Colors.brown[50],
-                        checkmarkColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: const BorderSide(
-                            color: Colors.brown,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          // 2. CARRUSEL DE ARTESANOS
-          SizedBox(
-            height: 110,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              scrollDirection: Axis.horizontal,
-              itemCount: globalArtisans.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _buildArtisanAvatar(
-                    id: 'all',
-                    nombre: 'Todos',
-                    imagePath: null,
-                    isActive: _filtroActivo == 'Todos',
-                  );
-                }
-                final artisan = globalArtisans[index - 1];
-                return _buildArtisanAvatar(
-                  id: artisan.id,
-                  nombre: artisan.nombre,
-                  imagePath: artisan.fotoPerfil,
-                  isActive: _filtroActivo == artisan.id,
-                );
-              },
-            ),
-          ),
-
-          const Divider(height: 1),
-
-          // 3. GRILLA DE PRODUCTOS
-          Expanded(
-            child: _foundProducts.isNotEmpty
-                ? GridView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _foundProducts.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.70,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
-                    itemBuilder: (context, index) {
-                      return ProductCard(product: _foundProducts[index]);
-                    },
-                  )
-                : const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search_off, size: 50, color: Colors.grey),
-                        SizedBox(height: 10),
-                        Text("No hay productos aquí"),
-                      ],
-                    ),
-                  ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -303,7 +344,11 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isActive,
   }) {
     return GestureDetector(
-      onTap: () => _filterByArtisan(id),
+      onTap: () {
+        setState(() {
+          _filtroActivo = id == 'all' ? 'Todos' : id;
+        });
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         width: 70,
@@ -322,10 +367,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.grey[200],
-                backgroundImage: imagePath != null
-                    ? AssetImage(imagePath)
+                backgroundImage: (imagePath != null && imagePath.isNotEmpty)
+                    ? (imagePath.startsWith('http')
+                          ? NetworkImage(imagePath)
+                          : AssetImage(imagePath) as ImageProvider)
                     : null,
-                child: imagePath == null
+                child: (imagePath == null || imagePath.isEmpty)
                     ? const Icon(Icons.grid_view, color: Colors.brown)
                     : null,
               ),
@@ -353,8 +400,9 @@ class _HomeScreenState extends State<HomeScreen> {
 // --- TARJETA DE PRODUCTO (ProductCard) ---
 class ProductCard extends StatelessWidget {
   final Product product;
+  final List<Artisan> artisans;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, required this.artisans});
 
   @override
   Widget build(BuildContext context) {
@@ -363,14 +411,19 @@ class ProductCard extends StatelessWidget {
     final isFav = favoritesProvider.isFavorite(product.id);
     // ---------------------------
 
-    final nombreArtesano = getArtisanById(product.artisanId).nombre;
+    final artisan = artisans.firstWhere(
+      (a) => a.id == product.artisanId,
+      orElse: () => artisans.first,
+    );
+    final nombreArtesano = artisan.nombre;
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetail(product: product),
+            builder: (context) =>
+                ProductDetail(product: product, artisan: artisan),
           ),
         );
       },
@@ -385,12 +438,19 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: Image.asset(
-                      product.imagePath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Container(color: Colors.grey[300]),
-                    ),
+                    child: (product.imagePath.startsWith('http'))
+                        ? Image.network(
+                            product.imagePath,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(color: Colors.grey[300]),
+                          )
+                        : Image.asset(
+                            product.imagePath,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(color: Colors.grey[300]),
+                          ),
                   ),
 
                   // --- BOTÓN DE FAVORITOS (CORAZÓN) ---
@@ -478,23 +538,26 @@ class ProductCard extends StatelessWidget {
 // --- PANTALLA DE DETALLE (ProductDetail) ---
 class ProductDetail extends StatelessWidget {
   final Product product;
+  final Artisan artisan;
 
-  const ProductDetail({super.key, required this.product});
+  const ProductDetail({
+    super.key,
+    required this.product,
+    required this.artisan,
+  });
 
   // Función para compartir
-  void _shareProduct() {
+  void _shareProduct() async {
     final String mensaje =
-        "¡Mira esta artesanía de ${getArtisanById(product.artisanId).nombre}!\n\n"
+        "¡Mira esta artesanía de ${artisan.nombre}!\n\n"
         "*${product.nombre}* - \$${product.precio.toStringAsFixed(0)}\n\n"
         "Ver más aquí: https://manos-del-pueblo.ar";
 
-    Share.share(mensaje);
+    await Share.share(mensaje);
   }
 
   @override
   Widget build(BuildContext context) {
-    final artisan = getArtisanById(product.artisanId);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(product.nombre),
@@ -515,7 +578,9 @@ class ProductDetail extends StatelessWidget {
             SizedBox(
               height: 300,
               width: double.infinity,
-              child: Image.asset(product.imagePath, fit: BoxFit.cover),
+              child: (product.imagePath.startsWith('http'))
+                  ? Image.network(product.imagePath, fit: BoxFit.cover)
+                  : Image.asset(product.imagePath, fit: BoxFit.cover),
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -540,7 +605,10 @@ class ProductDetail extends StatelessWidget {
                       const SizedBox(width: 8),
                       ActionChip(
                         avatar: CircleAvatar(
-                          backgroundImage: AssetImage(artisan.fotoPerfil),
+                          backgroundImage:
+                              (artisan.fotoPerfil.startsWith('http'))
+                              ? NetworkImage(artisan.fotoPerfil)
+                              : AssetImage(artisan.fotoPerfil) as ImageProvider,
                         ),
                         label: Text(
                           artisan.nombre,

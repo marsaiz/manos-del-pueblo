@@ -79,6 +79,20 @@ final List<Artisan> globalArtisans = [
     instagram: 'barro_y_fuego',
   ),
 
+  Artisan(
+    id: 'a6',
+    nombre: 'Cmtc Artesanias',
+    historia: 'Artisanias en Madera',
+    fotoPerfil: '',
+    telefono: '+2302467992',
+    whatsapp: '+5490230215467992',
+    ubicacion: '',
+    direccion: '25 de Mayo',
+    localidad: 'Eduardo Castex',
+    codigoPostal: '6380',
+    provincia: 'La Pampa',
+    instagram: '',
+  ),
 ];
 
 // --- LISTA DE PRODUCTOS ---
@@ -128,14 +142,13 @@ final List<Product> globalProducts = [
     imagePath: 'assets/images/bufanda.jpeg',
     categoria: 'Indumentaria',
   ),
-
 ];
 
 // --- FUNCIONES DE AYUDA ---
 Artisan getArtisanById(String id) {
   return globalArtisans.firstWhere(
     (artisan) => artisan.id == id,
-    orElse: () => globalArtisans.first, 
+    orElse: () => globalArtisans.first,
   );
 }
 
