@@ -75,26 +75,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Artisan>>(
-      stream: FirestoreService.getArtisans(),
-      builder: (context, artisanSnapshot) {
-        if (artisanSnapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Text("Error (Artesanos): ${artisanSnapshot.error}"),
-            ),
-          );
-        }
-        if (!artisanSnapshot.hasData) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final artisans = artisanSnapshot.data!;
-
-        return Scaffold(
-          // --- MENÚ LATERAL (DRAWER) ---
-          drawer: Drawer(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Manos del Pueblo'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            tooltip: 'Ver mis favoritos',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      drawer: StreamBuilder<List<Artisan>>(
+        stream: FirestoreService.getArtisans(),
+        builder: (context, snapshot) {
+          final artisans = snapshot.data ?? [];
+          return Drawer(
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
@@ -114,88 +118,90 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Nuestros Artesanos",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                // Lista dinámica del menú (usando datos de Firestore)
-                ...artisans.map(
-                  (artisan) => ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: (artisan.fotoPerfil.startsWith('http'))
-                          ? NetworkImage(artisan.fotoPerfil)
-                          : AssetImage(artisan.fotoPerfil) as ImageProvider,
-                    ),
-                    title: Text(artisan.nombre),
-                    subtitle: Text(artisan.ubicacion),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 14,
-                      color: Colors.grey,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // Cerrar menú
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ArtisanProfileScreen(artisan: artisan),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const Divider(),
                 ListTile(
                   leading: const Icon(Icons.info_outline),
                   title: const Text("Sobre Nosotros"),
                   onTap: () {
-                    Navigator.pop(context); // Cerrar el menú
+                    Navigator.pop(context);
                     Navigator.pushNamed(context, '/about');
                   },
                 ),
+                if (artisans.isNotEmpty) ...[
+                  const Divider(),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      "Nuestros Artesanos",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ...artisans.map(
+                    (artisan) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: (artisan.fotoPerfil.startsWith('http'))
+                            ? NetworkImage(artisan.fotoPerfil)
+                            : AssetImage(artisan.fotoPerfil) as ImageProvider,
+                      ),
+                      title: Text(artisan.nombre),
+                      subtitle: Text(artisan.ubicacion),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ArtisanProfileScreen(artisan: artisan),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ],
             ),
-          ),
-
-          appBar: AppBar(
-            title: const Text('Manos del Pueblo'),
-            actions: [
-              // --- BOTÓN PARA IR A FAVORITOS ---
-              IconButton(
-                icon: const Icon(Icons.favorite),
-                tooltip: 'Ver mis favoritos',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FavoritesScreen(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(width: 10),
-            ],
-          ),
-
-          body: StreamBuilder<List<Product>>(
+          );
+        },
+      ),
+      body: StreamBuilder<List<Artisan>>(
+        stream: FirestoreService.getArtisans(),
+        builder: (context, artisanSnapshot) {
+          return StreamBuilder<List<Product>>(
             stream: FirestoreService.getProducts(),
             builder: (context, productSnapshot) {
-              if (productSnapshot.hasError) {
+              if (artisanSnapshot.hasError || productSnapshot.hasError) {
                 return Center(
-                  child: Text("Error (Productos): ${productSnapshot.error}"),
+                  child: Text(
+                    "Error de conexión. Prueba sincronizar datos en el menú.",
+                  ),
                 );
               }
-              if (!productSnapshot.hasData) {
+              if (!artisanSnapshot.hasData || !productSnapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
+              final artisans = artisanSnapshot.data!;
               final allProducts = productSnapshot.data!;
+
+              if (artisans.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.cloud_off, size: 80, color: Colors.grey),
+                      const SizedBox(height: 20),
+                      const Text("No hay datos cargados aún"),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pushNamed(context, '/about'),
+                        child: const Text("Ir a Sincronizar"),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               final filteredProducts = _getFilteredProducts(
                 allProducts,
                 artisans,
@@ -345,9 +351,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               );
             },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
