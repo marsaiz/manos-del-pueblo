@@ -78,6 +78,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<List<Artisan>>(
       stream: FirestoreService.getArtisans(),
       builder: (context, artisanSnapshot) {
+        if (artisanSnapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Text("Error (Artesanos): ${artisanSnapshot.error}"),
+            ),
+          );
+        }
         if (!artisanSnapshot.hasData) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -180,6 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
           body: StreamBuilder<List<Product>>(
             stream: FirestoreService.getProducts(),
             builder: (context, productSnapshot) {
+              if (productSnapshot.hasError) {
+                return Center(
+                  child: Text("Error (Productos): ${productSnapshot.error}"),
+                );
+              }
               if (!productSnapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
