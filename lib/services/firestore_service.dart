@@ -53,18 +53,18 @@ class FirestoreService {
       return snapshot.docs.map((doc) {
         final data = doc.data();
         return Artisan(
-          id: data['id'],
-          nombre: data['nombre'],
-          historia: data['historia'],
-          fotoPerfil: data['fotoPerfil'],
-          telefono: data['telefono'],
-          whatsapp: data['whatsapp'],
-          ubicacion: data['ubicacion'],
-          direccion: data['direccion'],
-          localidad: data['localidad'],
-          codigoPostal: data['codigoPostal'],
-          provincia: data['provincia'],
-          instagram: data['instagram'],
+          id: data['id'] ?? '',
+          nombre: data['nombre'] ?? '',
+          historia: data['historia'] ?? '',
+          fotoPerfil: data['fotoPerfil'] ?? '',
+          telefono: data['telefono'] ?? '',
+          whatsapp: data['whatsapp'] ?? '',
+          ubicacion: data['ubicacion'] ?? '',
+          direccion: data['direccion'] ?? '',
+          localidad: data['localidad'] ?? '',
+          codigoPostal: data['codigoPostal'] ?? '',
+          provincia: data['provincia'] ?? '',
+          instagram: data['instagram'] ?? '',
         );
       }).toList();
     });
@@ -76,13 +76,13 @@ class FirestoreService {
       return snapshot.docs.map((doc) {
         final data = doc.data();
         return Product(
-          id: data['id'],
-          artisanId: data['artisanId'],
-          nombre: data['nombre'],
-          descripcion: data['descripcion'],
-          precio: (data['precio'] as num).toDouble(),
-          imagePath: data['imagePath'],
-          categoria: data['categoria'],
+          id: data['id'] ?? '',
+          artisanId: data['artisanId'] ?? '',
+          nombre: data['nombre'] ?? '',
+          descripcion: data['descripcion'] ?? '',
+          precio: (data['precio'] ?? 0.0).toDouble(),
+          imagePath: data['imagePath'] ?? '',
+          categoria: data['categoria'] ?? '',
         );
       }).toList();
     });
