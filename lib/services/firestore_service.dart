@@ -6,7 +6,7 @@ import '../models/product.dart';
 import '../data/database.dart';
 
 class FirestoreService {
-  static final FirebaseFirestore _db = FirebaseFirestore.instance;
+  static FirebaseFirestore get _db => FirebaseFirestore.instance;
 
   // --- MIGRACIÓN (EJECUTAR UNA VEZ) ---
   static Future<void> syncDatabaseToFirestore() async {

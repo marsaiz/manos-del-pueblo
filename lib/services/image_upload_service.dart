@@ -4,7 +4,7 @@ import 'package:image_picker_web/image_picker_web.dart';
 import 'package:flutter/material.dart';
 
 class ImageUploadService {
-  static final FirebaseStorage _storage = FirebaseStorage.instance;
+  static FirebaseStorage get _storage => FirebaseStorage.instance;
 
   // Se utiliza la instancia por defecto inicializada en main.dart
 
