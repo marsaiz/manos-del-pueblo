@@ -140,6 +140,15 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             ListTile(
+              leading: const Icon(Icons.person_add, color: Colors.brown),
+              title: const Text('Añadir Nuevo Artesano'),
+              subtitle: const Text('Crear perfil desde el celular'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.pushNamed(context, '/add-artisan');
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.cloud_upload, color: Colors.brown),
               title: const Text('Subir Imágenes'),
               subtitle: const Text('Artesanos y Productos'),

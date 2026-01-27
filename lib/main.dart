@@ -5,6 +5,7 @@ import 'providers/favorites_provider.dart'; // <--- Importante
 import 'screens/home_screen.dart';
 import 'screens/about_screen.dart'; // Nueva pantalla que crearemos
 import 'services/firebase_config.dart'; // Importamos la configuración de Firebase
+import 'screens/admin/add_artisan_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,7 +64,10 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomeScreen(),
       // Definición de rutas
-      routes: {'/about': (context) => const AboutScreen()},
+      routes: {
+        '/about': (context) => const AboutScreen(),
+        '/add-artisan': (context) => const AddArtisanScreen(),
+      },
     );
   }
 }

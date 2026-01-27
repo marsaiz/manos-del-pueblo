@@ -106,4 +106,34 @@ class FirestoreService {
       'imagePath': photoUrl,
     });
   }
+
+  // --- NUEVAS ALTAS ---
+  static Future<void> addArtisan(Artisan artisan) async {
+    await _db.collection('artisans').doc(artisan.id).set({
+      'id': artisan.id,
+      'nombre': artisan.nombre,
+      'historia': artisan.historia,
+      'fotoPerfil': artisan.fotoPerfil,
+      'telefono': artisan.telefono,
+      'whatsapp': artisan.whatsapp,
+      'ubicacion': artisan.ubicacion,
+      'direccion': artisan.direccion,
+      'localidad': artisan.localidad,
+      'codigoPostal': artisan.codigoPostal,
+      'provincia': artisan.provincia,
+      'instagram': artisan.instagram,
+    });
+  }
+
+  static Future<void> addProduct(Product product) async {
+    await _db.collection('products').doc(product.id).set({
+      'id': product.id,
+      'artisanId': product.artisanId,
+      'nombre': product.nombre,
+      'descripcion': product.descripcion,
+      'precio': product.precio,
+      'imagePath': product.imagePath,
+      'categoria': product.categoria,
+    });
+  }
 }
