@@ -13,12 +13,18 @@ class ImageUploadService {
     return await _uploadImage('artesanos/$artisanId/perfil', 'profile_');
   }
 
-   // --- MODIFICACIÓN AQUÍ ---
+  // --- MODIFICACIÓN AQUÍ ---
   // Ahora pedimos también el productId para generar un nombre de archivo ordenado
-  static Future<String?> uploadProductImage(String artisanId, String productId) async {
+  static Future<String?> uploadProductImage(
+    String artisanId,
+    String productId,
+  ) async {
     // Guardamos en: artesanos/a1/productos/product_p1.jpg
     // Usamos el productId en el nombre del archivo
-    return await _uploadImage('artesanos/$artisanId/productos', 'product_${productId}_');
+    return await _uploadImage(
+      'artesanos/$artisanId/productos',
+      'product_${productId}_',
+    );
   }
 
   // Método privado para manejar la subida de imágenes
@@ -63,6 +69,28 @@ class ImageUploadService {
     } catch (e) {
       debugPrint('Error al eliminar la imagen: $e');
       rethrow;
+    }
+  }
+
+  // Elimina toda la carpeta de un artesano (perfil y productos)
+  static Future<void> deleteArtisanFolder(String artisanId) async {
+    try {
+      final listResult = await _storage.ref('artesanos/$artisanId').listAll();
+
+      // Eliminar archivos en la raíz (como el perfil si estuviera ahí) y subcarpetas
+      for (var prefix in listResult.prefixes) {
+        // Recursivamente para 'productos' y 'perfil'
+        final subList = await prefix.listAll();
+        for (var item in subList.items) {
+          await item.delete();
+        }
+      }
+      for (var item in listResult.items) {
+        await item.delete();
+      }
+      debugPrint("✅ Carpeta de Storage del artesano $artisanId eliminada");
+    } catch (e) {
+      debugPrint('Error al eliminar carpeta de Storage: $e');
     }
   }
 }

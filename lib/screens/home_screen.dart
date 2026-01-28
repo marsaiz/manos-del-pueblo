@@ -41,21 +41,22 @@ class _HomeScreenState extends State<HomeScreen> {
         orElse: () => allArtisans.first,
       );
 
-      // 1. Filtro por Artesano
+      // 1. Filtro por Artesano (ID exacto)
       final matchesArtisan =
           _filtroActivo == 'Todos' ||
           _filtroActivo == 'Búsqueda' ||
           product.artisanId == _filtroActivo;
 
-      // 2. Filtro por Localidad
+      // 2. Filtro por Localidad (Insensible a mayúsculas/minúsculas)
       final matchesLocation =
           _localidadSeleccionada == 'Todas' ||
-          artisan.localidad == _localidadSeleccionada;
+          artisan.localidad.trim().toLowerCase() ==
+              _localidadSeleccionada.trim().toLowerCase();
 
-      // 3. Filtro por Texto
+      // 3. Filtro por Texto (Búsqueda parcial en nombre, categoría, artesano y localidad)
       bool matchesText = true;
       if (_searchText.isNotEmpty) {
-        final query = _searchText.toLowerCase();
+        final query = _searchText.trim().toLowerCase();
         matchesText =
             product.nombre.toLowerCase().contains(query) ||
             product.categoria.toLowerCase().contains(query) ||
@@ -261,10 +262,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       children:
                           [
                             'Todas',
-                            ...artisans.map((a) => a.localidad).toSet(),
+                            // Obtenemos localidades únicas, normalizadas para el set pero mostradas como están
+                            ...artisans
+                                .map((a) => a.localidad.trim())
+                                .where((l) => l.isNotEmpty)
+                                .toSet(),
                           ].map((location) {
                             final isSelected =
-                                _localidadSeleccionada == location;
+                                _localidadSeleccionada.toLowerCase() ==
+                                location.toLowerCase();
                             return Padding(
                               padding: const EdgeInsets.only(right: 8),
                               child: FilterChip(
@@ -283,6 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 selected: isSelected,
                                 onSelected: (bool selected) {
                                   setState(() {
+                                    // Guardamos la localidad seleccionada
                                     _localidadSeleccionada = location;
                                   });
                                 },

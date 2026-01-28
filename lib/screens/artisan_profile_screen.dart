@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Para el icon
 import '../models/artisan.dart';
 import '../models/product.dart';
 import '../services/firestore_service.dart';
+import '../services/image_upload_service.dart'; // Para borrar carpeta de Storage
+import 'home_screen.dart';
 
 class ArtisanProfileScreen extends StatelessWidget {
   final Artisan artisan;
@@ -48,6 +50,100 @@ class ArtisanProfileScreen extends StatelessWidget {
     final Uri url = Uri.parse("tel:${artisan.telefono}");
     if (!await launchUrl(url)) {
       throw Exception('No se pudo llamar');
+    }
+  }
+
+  // --- 4. Lógica para Eliminar Artesano ---
+  Future<void> _deleteArtisan(BuildContext context) async {
+    final TextEditingController pinController = TextEditingController();
+
+    // Diálogo de confirmación con PIN
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Eliminar Artesano?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Esta acción borrará permanentemente al artesano, todos sus productos e imágenes.',
+              style: TextStyle(color: Colors.red),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: pinController,
+              decoration: const InputDecoration(
+                labelText: 'Ingresa el PIN de seguridad',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('CANCELAR'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (pinController.text == '1234') {
+                Navigator.pop(context, true);
+              } else {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('PIN incorrecto')));
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text(
+              'ELIMINAR TODO',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        // Mostrar indicador de carga
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+
+        // A. Eliminar de Firestore (Artisano + Productos)
+        await FirestoreService.deleteArtisanCascade(artisan.id);
+
+        // B. Eliminar carpeta de Storage
+        await ImageUploadService.deleteArtisanFolder(artisan.id);
+
+        if (context.mounted) {
+          // Cerrar cargador
+          Navigator.pop(context);
+          // Ir al home
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Artesano y datos eliminados con éxito'),
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          Navigator.pop(context); // Cerrar cargador
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('❌ Error al eliminar: $e')));
+        }
+      }
     }
   }
 
@@ -342,7 +438,25 @@ class ArtisanProfileScreen extends StatelessWidget {
               ),
 
               // Espacio final para scrolling cómodo
-              const SliverToBoxAdapter(child: SizedBox(height: 40)),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 40,
+                  ),
+                  child: OutlinedButton.icon(
+                    onPressed: () => _deleteArtisan(context),
+                    icon: const Icon(Icons.delete_forever, color: Colors.grey),
+                    label: const Text(
+                      "ELIMINAR ARTESANO",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         );

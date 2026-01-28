@@ -136,4 +136,28 @@ class FirestoreService {
       'categoria': product.categoria,
     });
   }
+
+  // --- ELIMINACIÓN EN CASCADA ---
+  static Future<void> deleteArtisanCascade(String artisanId) async {
+    final batch = _db.batch();
+
+    // 1. Obtener todos los productos del artesano
+    final productsSnapshot = await _db
+        .collection('products')
+        .where('artisanId', isEqualTo: artisanId)
+        .get();
+
+    // 2. Marcar productos para eliminar en el batch
+    for (var doc in productsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // 3. Marcar al artesano para eliminar
+    batch.delete(_db.collection('artisans').doc(artisanId));
+
+    // 4. Ejecutar todas las eliminaciones en Firestore
+    await batch.commit();
+
+    debugPrint("✅ Artesano y sus productos eliminados de Firestore");
+  }
 }
