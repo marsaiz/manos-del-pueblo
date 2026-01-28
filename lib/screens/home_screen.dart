@@ -478,30 +478,29 @@ class ProductCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.grey[100],
-                      child: Hero(
-                        tag: 'product_image_${product.id}',
-                        child: (product.imagePath.startsWith('http'))
-                            ? Image.network(
-                                product.imagePath,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(color: Colors.grey[300]),
-                              )
-                            : Image.asset(
-                                product.imagePath,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(color: Colors.grey[300]),
-                              ),
-                      ),
+                  Container(
+                    color: Colors.grey[100],
+                    child: Hero(
+                      tag: 'product_image_${product.id}',
+                      child: (product.imagePath.startsWith('http'))
+                          ? Image.network(
+                              product.imagePath,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(color: Colors.grey[300]),
+                            )
+                          : Image.asset(
+                              product.imagePath,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(color: Colors.grey[300]),
+                            ),
                     ),
                   ),
 

@@ -406,76 +406,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                 sliver: SliverGrid(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final product = myProducts[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductDetail(
-                              product: product,
-                              artisan: artisan,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                color: Colors.grey[100],
-                                child: Hero(
-                                  tag: 'product_image_${product.id}',
-                                  child: (product.imagePath.startsWith('http'))
-                                      ? Image.network(
-                                          product.imagePath,
-                                          fit: BoxFit.contain,
-                                        )
-                                      : Image.asset(
-                                          product.imagePath,
-                                          fit: BoxFit.contain,
-                                        ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.nombre,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    double.tryParse(product.precio) != null
-                                        ? '\$${product.precio}'
-                                        : product.precio,
-                                    style: const TextStyle(
-                                      color: Colors.brown,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    return ProductCard(product: product, artisans: [artisan]);
                   }, childCount: myProducts.length),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
