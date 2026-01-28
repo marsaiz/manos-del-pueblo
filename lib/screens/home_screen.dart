@@ -127,6 +127,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 ListTile(
+                  leading: const Icon(
+                    Icons.add_shopping_cart,
+                    color: Colors.brown,
+                  ),
+                  title: const Text('Añadir Producto'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/add-product');
+                  },
+                ),
+                ListTile(
                   leading: const Icon(Icons.info_outline),
                   title: const Text("Sobre Nosotros"),
                   onTap: () {
