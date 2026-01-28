@@ -88,7 +88,7 @@ class ArtisanProfileScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              if (pinController.text == '1234') {
+              if (pinController.text == '919345') {
                 Navigator.pop(context, true);
               } else {
                 ScaffoldMessenger.of(
