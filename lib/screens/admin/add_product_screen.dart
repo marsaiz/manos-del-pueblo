@@ -105,7 +105,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       artisanId: _selectedArtisan!.id,
       nombre: _nombreController.text.trim(),
       descripcion: _descripcionController.text.trim(),
-      precio: double.tryParse(_precioController.text) ?? 0.0,
+      precio: _precioController.text.trim(),
       imagePath: _fotoUrl ?? '',
       categoria: _categoriaController.text.trim(),
     );
@@ -237,7 +237,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 _precioController,
                 "Precio",
                 Icons.attach_money,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
               ),
               _buildTextField(
                 _categoriaController,

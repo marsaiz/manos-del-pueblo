@@ -484,19 +484,22 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: (product.imagePath.startsWith('http'))
-                        ? Image.network(
-                            product.imagePath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(color: Colors.grey[300]),
-                          )
-                        : Image.asset(
-                            product.imagePath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(color: Colors.grey[300]),
-                          ),
+                    child: Hero(
+                      tag: 'product_image_${product.id}',
+                      child: (product.imagePath.startsWith('http'))
+                          ? Image.network(
+                              product.imagePath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(color: Colors.grey[300]),
+                            )
+                          : Image.asset(
+                              product.imagePath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(color: Colors.grey[300]),
+                            ),
+                    ),
                   ),
 
                   // --- BOTÓN DE FAVORITOS (CORAZÓN) ---
@@ -565,7 +568,9 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${product.precio.toStringAsFixed(0)}',
+                    double.tryParse(product.precio) != null
+                        ? '\$${product.precio}'
+                        : product.precio,
                     style: const TextStyle(
                       color: Colors.brown,
                       fontWeight: FontWeight.w900,
@@ -596,7 +601,7 @@ class ProductDetail extends StatelessWidget {
   void _shareProduct() async {
     final String mensaje =
         "¡Mira esta artesanía de ${artisan.nombre}!\n\n"
-        "*${product.nombre}* - \$${product.precio.toStringAsFixed(0)}\n\n"
+        "*${product.nombre}* - ${double.tryParse(product.precio) != null ? '\$${product.precio}' : product.precio}\n\n"
         "Ver más aquí: https://manos-del-pueblo.ar";
 
     await Share.share(mensaje);
@@ -621,12 +626,16 @@ class ProductDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 300,
+            Container(
+              height: 350,
               width: double.infinity,
-              child: (product.imagePath.startsWith('http'))
-                  ? Image.network(product.imagePath, fit: BoxFit.cover)
-                  : Image.asset(product.imagePath, fit: BoxFit.cover),
+              color: Colors.grey[100],
+              child: Hero(
+                tag: 'product_image_${product.id}',
+                child: (product.imagePath.startsWith('http'))
+                    ? Image.network(product.imagePath, fit: BoxFit.contain)
+                    : Image.asset(product.imagePath, fit: BoxFit.contain),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -634,7 +643,9 @@ class ProductDetail extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '\$${product.precio.toStringAsFixed(0)}',
+                    double.tryParse(product.precio) != null
+                        ? '\$${product.precio}'
+                        : product.precio,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

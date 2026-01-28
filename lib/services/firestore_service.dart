@@ -36,7 +36,7 @@ class FirestoreService {
           'artisanId': product.artisanId,
           'nombre': product.nombre,
           'descripcion': product.descripcion,
-          'precio': product.precio,
+          'precio': product.precio.toString(),
           'imagePath': product.imagePath,
           'categoria': product.categoria,
         });
@@ -80,7 +80,7 @@ class FirestoreService {
           artisanId: data['artisanId'] ?? '',
           nombre: data['nombre'] ?? '',
           descripcion: data['descripcion'] ?? '',
-          precio: (data['precio'] ?? 0.0).toDouble(),
+          precio: (data['precio'] ?? '').toString(),
           imagePath: data['imagePath'] ?? '',
           categoria: data['categoria'] ?? '',
         );

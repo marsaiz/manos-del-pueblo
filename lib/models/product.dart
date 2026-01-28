@@ -3,7 +3,7 @@ class Product {
   final String artisanId; // NUEVO: El enlace con el artesano
   final String nombre;
   final String descripcion;
-  final double precio;
+  final String precio;
   final String imagePath;
   final String categoria;
 
