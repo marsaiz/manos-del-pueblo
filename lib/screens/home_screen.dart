@@ -484,21 +484,24 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: Hero(
-                      tag: 'product_image_${product.id}',
-                      child: (product.imagePath.startsWith('http'))
-                          ? Image.network(
-                              product.imagePath,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(color: Colors.grey[300]),
-                            )
-                          : Image.asset(
-                              product.imagePath,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(color: Colors.grey[300]),
-                            ),
+                    child: Container(
+                      color: Colors.grey[100],
+                      child: Hero(
+                        tag: 'product_image_${product.id}',
+                        child: (product.imagePath.startsWith('http'))
+                            ? Image.network(
+                                product.imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(color: Colors.grey[300]),
+                              )
+                            : Image.asset(
+                                product.imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(color: Colors.grey[300]),
+                              ),
+                      ),
                     ),
                   ),
 
