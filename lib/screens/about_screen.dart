@@ -167,13 +167,43 @@ class AboutScreen extends StatelessWidget {
               title: const Text('Sincronizar con Nube'),
               subtitle: const Text('Ejecutar solo una vez para migrar datos'),
               onTap: () async {
-                await FirestoreService.syncDatabaseToFirestore();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Datos sincronizados con éxito'),
+                final bool? confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('⚠️ Advertencia: Sincronización'),
+                    content: const Text(
+                      'Esta acción sobreescribirá los datos de la nube con la configuración local de "fábrica".\n\n'
+                      'Si has subido fotos nuevas recientemente, se podrían desvincular de los productos.\n\n'
+                      '¿Deseas continuar de todas formas?',
                     ),
-                  );
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('CANCELAR'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text(
+                          'SINCRONIZAR TODO',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  await FirestoreService.syncDatabaseToFirestore();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('✅ Datos sincronizados con éxito'),
+                      ),
+                    );
+                  }
                 }
               },
             ),

@@ -412,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: CircleAvatar(
                 radius: 30,
-                backgroundColor: Colors.grey[200],
+                backgroundColor: Colors.grey[100],
                 backgroundImage: (imagePath != null && imagePath.isNotEmpty)
                     ? (imagePath.startsWith('http')
                           ? NetworkImage(imagePath)
@@ -552,7 +552,7 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -565,11 +565,12 @@ class ProductCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     nombreArtesano,
                     style: TextStyle(color: Colors.grey[600], fontSize: 11),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     double.tryParse(product.precio) != null
                         ? '\$${product.precio}'
@@ -577,6 +578,7 @@ class ProductCard extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.brown,
                       fontWeight: FontWeight.w900,
+                      fontSize: 13,
                     ),
                   ),
                 ],

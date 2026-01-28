@@ -180,23 +180,32 @@ class ArtisanProfileScreen extends StatelessWidget {
                       shadows: [Shadow(blurRadius: 10, color: Colors.black)],
                     ),
                   ),
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      (artisan.fotoPerfil.startsWith('http'))
-                          ? Image.network(artisan.fotoPerfil, fit: BoxFit.cover)
-                          : Image.asset(artisan.fotoPerfil, fit: BoxFit.cover),
-                      // Degradado para legibilidad
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [Colors.black54, Colors.transparent],
+                  background: Container(
+                    color: const Color(0xFF5D4037).withValues(alpha: 0.1),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        (artisan.fotoPerfil.startsWith('http'))
+                            ? Image.network(
+                                artisan.fotoPerfil,
+                                fit: BoxFit.contain,
+                              )
+                            : Image.asset(
+                                artisan.fotoPerfil,
+                                fit: BoxFit.contain,
+                              ),
+                        // Degradado para legibilidad (opcional con contain, pero mantenido para estilo)
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [Colors.black26, Colors.transparent],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -470,7 +479,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                   }, childCount: myProducts.length),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 0.70,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),

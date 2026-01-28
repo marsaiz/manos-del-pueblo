@@ -13,11 +13,23 @@ class FirestoreService {
     try {
       // 1. Sincronizar Artesanos
       for (var artisan in globalArtisans) {
-        await _db.collection('artisans').doc(artisan.id).set({
+        final docRef = _db.collection('artisans').doc(artisan.id);
+        final docSnap = await docRef.get();
+
+        // Solo sobreescribimos si no existe o si la foto actual no es remota (http)
+        String finalFoto = artisan.fotoPerfil;
+        if (docSnap.exists) {
+          final existingFoto = docSnap.data()?['fotoPerfil'] ?? '';
+          if (existingFoto.startsWith('http')) {
+            finalFoto = existingFoto;
+          }
+        }
+
+        await docRef.set({
           'id': artisan.id,
           'nombre': artisan.nombre,
           'historia': artisan.historia,
-          'fotoPerfil': artisan.fotoPerfil,
+          'fotoPerfil': finalFoto,
           'telefono': artisan.telefono,
           'whatsapp': artisan.whatsapp,
           'ubicacion': artisan.ubicacion,
@@ -31,13 +43,24 @@ class FirestoreService {
 
       // 2. Sincronizar Productos
       for (var product in globalProducts) {
-        await _db.collection('products').doc(product.id).set({
+        final docRef = _db.collection('products').doc(product.id);
+        final docSnap = await docRef.get();
+
+        String finalImage = product.imagePath;
+        if (docSnap.exists) {
+          final existingImage = docSnap.data()?['imagePath'] ?? '';
+          if (existingImage.startsWith('http')) {
+            finalImage = existingImage;
+          }
+        }
+
+        await docRef.set({
           'id': product.id,
           'artisanId': product.artisanId,
           'nombre': product.nombre,
           'descripcion': product.descripcion,
           'precio': product.precio.toString(),
-          'imagePath': product.imagePath,
+          'imagePath': finalImage,
           'categoria': product.categoria,
         });
       }
