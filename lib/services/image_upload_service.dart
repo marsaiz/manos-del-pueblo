@@ -13,9 +13,12 @@ class ImageUploadService {
     return await _uploadImage('artesanos/$artisanId/perfil', 'profile_');
   }
 
-  // Sube una imagen de un producto
-  static Future<String?> uploadProductImage(String artisanId) async {
-    return await _uploadImage('artesanos/$artisanId/productos', 'product_');
+   // --- MODIFICACIÓN AQUÍ ---
+  // Ahora pedimos también el productId para generar un nombre de archivo ordenado
+  static Future<String?> uploadProductImage(String artisanId, String productId) async {
+    // Guardamos en: artesanos/a1/productos/product_p1.jpg
+    // Usamos el productId en el nombre del archivo
+    return await _uploadImage('artesanos/$artisanId/productos', 'product_${productId}_');
   }
 
   // Método privado para manejar la subida de imágenes
