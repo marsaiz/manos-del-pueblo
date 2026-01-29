@@ -1,25 +1,26 @@
-// lib/screens/admin/add_product_screen.dart
+// lib/screens/admin/edit_product_screen.dart
 import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../models/product.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+class EditProductScreen extends StatefulWidget {
+  final Product product;
+  const EditProductScreen({super.key, required this.product});
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  State<EditProductScreen> createState() => _EditProductScreenState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _EditProductScreenState extends State<EditProductScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controladores
-  final _nombreController = TextEditingController();
-  final _descripcionController = TextEditingController();
-  final _precioController = TextEditingController();
-  final _customCategoriaController = TextEditingController();
+  late TextEditingController _nombreController;
+  late TextEditingController _descripcionController;
+  late TextEditingController _precioController;
+  late TextEditingController _customCategoriaController;
   final _pinController = TextEditingController();
 
   final List<String> _categorias = [
@@ -43,109 +44,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool _isUploading = false;
   bool _isSaving = false;
 
-  Future<void> _pickAndUploadImage() async {
-    if (_selectedArtisan == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, selecciona un artesano primero'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isUploading = true);
-    try {
-      // Usamos un ID temporal o basado en el tiempo para el nombre del archivo
-      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
-      debugPrint(
-        "Iniciando subida para artesano: ${_selectedArtisan!.id}, tempId: $tempId",
-      );
-
-      final url = await ImageUploadService.uploadProductImage(
-        _selectedArtisan!.id,
-        tempId,
-      );
-
-      if (url != null) {
-        setState(() => _fotoUrl = url);
-        debugPrint("Imagen subida con éxito: $url");
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('La subida fue cancelada o falló')),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint("Error subiendo imagen: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al subir imagen: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isUploading = false);
-    }
-  }
-
-  Future<void> _saveProduct() async {
-    if (!_formKey.currentState!.validate() || _selectedArtisan == null) {
-      if (_selectedArtisan == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor, selecciona un artesano')),
-        );
-      }
-      return;
-    }
-
-    if (_pinController.text != '4628') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN de seguridad incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isSaving = true);
-
-    final String finalCategoria = _selectedCategoria == 'Otro...'
-        ? _customCategoriaController.text.trim()
-        : _selectedCategoria ?? '';
-
-    final String newId = "p${DateTime.now().millisecondsSinceEpoch}";
-
-    final newProduct = Product(
-      id: newId,
-      artisanId: _selectedArtisan!.id,
-      nombre: _nombreController.text.trim(),
-      descripcion: _descripcionController.text.trim(),
-      precio: _precioController.text.trim(),
-      imagePath: _fotoUrl ?? '',
-      categoria: finalCategoria,
+  @override
+  void initState() {
+    super.initState();
+    _nombreController = TextEditingController(text: widget.product.nombre);
+    _descripcionController = TextEditingController(
+      text: widget.product.descripcion,
     );
+    _precioController = TextEditingController(text: widget.product.precio);
+    _fotoUrl = widget.product.imagePath;
 
-    try {
-      await FirestoreService.addProduct(newProduct);
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Producto guardado con éxito')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('❌ Error al guardar: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
+    if (_categorias.contains(widget.product.categoria)) {
+      _selectedCategoria = widget.product.categoria;
+      _customCategoriaController = TextEditingController();
+    } else {
+      _selectedCategoria = 'Otro...';
+      _customCategoriaController = TextEditingController(
+        text: widget.product.categoria,
+      );
     }
   }
 
@@ -159,10 +75,102 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 
+  Future<void> _pickAndUploadImage() async {
+    if (_selectedArtisan == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, selecciona un artesano primero'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isUploading = true);
+    try {
+      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+      final url = await ImageUploadService.uploadProductImage(
+        _selectedArtisan!.id,
+        tempId,
+      );
+
+      if (url != null) {
+        setState(() => _fotoUrl = url);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al subir imagen: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  Future<void> _updateProduct() async {
+    if (!_formKey.currentState!.validate() || _selectedArtisan == null) {
+      if (_selectedArtisan == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor, selecciona un artesano')),
+        );
+      }
+      return;
+    }
+
+    if (_pinController.text != '1234') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PIN de seguridad incorrecto'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    final String finalCategoria =
+        _selectedCategoria == 'Otro...' || _selectedCategoria == 'Otros'
+        ? _customCategoriaController.text.trim()
+        : _selectedCategoria ?? '';
+
+    final updatedProduct = Product(
+      id: widget.product.id,
+      artisanId: _selectedArtisan!.id,
+      nombre: _nombreController.text.trim(),
+      descripcion: _descripcionController.text.trim(),
+      precio: _precioController.text.trim(),
+      imagePath: _fotoUrl ?? widget.product.imagePath,
+      categoria: finalCategoria,
+    );
+
+    try {
+      await FirestoreService.updateProduct(updatedProduct);
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Producto actualizado con éxito')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('❌ Error al actualizar: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Añadir Nuevo Producto'), elevation: 0),
+      appBar: AppBar(title: const Text('Editar Producto'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -175,6 +183,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 stream: FirestoreService.getArtisans(),
                 builder: (context, snapshot) {
                   final artisans = snapshot.data ?? [];
+
+                  // Intentamos encontrar el artesano actual si aún no está seleccionado
+                  if (_selectedArtisan == null && artisans.isNotEmpty) {
+                    try {
+                      _selectedArtisan = artisans.firstWhere(
+                        (a) => a.id == widget.product.artisanId,
+                      );
+                    } catch (_) {
+                      // Si no existe, dejamos que el usuario elija
+                    }
+                  }
+
                   return DropdownButtonFormField<String>(
                     initialValue: _selectedArtisan?.id,
                     decoration: InputDecoration(
@@ -197,7 +217,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         _selectedArtisan = artisans.firstWhere(
                           (a) => a.id == value,
                         );
-                        _fotoUrl = null;
                       });
                     },
                     validator: (value) =>
@@ -217,14 +236,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       decoration: BoxDecoration(
                         color: Colors.brown[50],
                         borderRadius: BorderRadius.circular(12),
-                        image: _fotoUrl != null
+                        image: _fotoUrl != null && _fotoUrl!.isNotEmpty
                             ? DecorationImage(
-                                image: NetworkImage(_fotoUrl!),
+                                image: _fotoUrl!.startsWith('http')
+                                    ? NetworkImage(_fotoUrl!)
+                                    : AssetImage(_fotoUrl!) as ImageProvider,
                                 fit: BoxFit.cover,
                               )
                             : null,
                       ),
-                      child: _fotoUrl == null && !_isUploading
+                      child:
+                          (_fotoUrl == null || _fotoUrl!.isEmpty) &&
+                              !_isUploading
                           ? const Icon(
                               Icons.image,
                               size: 60,
@@ -263,12 +286,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 Icons.description,
                 maxLines: 3,
               ),
-              _buildTextField(
-                _precioController,
-                "Precio",
-                Icons.attach_money,
-                keyboardType: TextInputType.text,
-              ),
+              _buildTextField(_precioController, "Precio", Icons.attach_money),
 
               _buildSectionTitle("Categoría"),
               DropdownButtonFormField<String>(
@@ -282,7 +300,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   fillColor: Colors.grey[50],
                 ),
                 hint: const Text("Selecciona una categoría"),
-                items: [..._categorias, 'Otro...'].map((categoria) {
+                items: [..._categorias].map((categoria) {
                   return DropdownMenuItem<String>(
                     value: categoria,
                     child: Text(categoria),
@@ -297,7 +315,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     value == null ? "Selecciona una categoría" : null,
               ),
 
-              if (_selectedCategoria == 'Otro...') ...[
+              if (_selectedCategoria == 'Otro...' ||
+                  _selectedCategoria == 'Otros') ...[
                 const SizedBox(height: 16),
                 _buildTextField(
                   _customCategoriaController,
@@ -322,7 +341,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               SizedBox(
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveProduct,
+                  onPressed: _isSaving ? null : _updateProduct,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.brown,
                     foregroundColor: Colors.white,
@@ -333,7 +352,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: _isSaving
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
-                          "GUARDAR PRODUCTO",
+                          "ACTUALIZAR PRODUCTO",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -351,7 +370,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16, top: 16),
       child: Text(
         title.toUpperCase(),
         style: TextStyle(

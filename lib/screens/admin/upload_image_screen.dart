@@ -20,7 +20,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   bool _isUploading = false;
   String? _imageUrl;
   ImageType _selectedType = ImageType.artisanProfile;
-  
+
   final TextEditingController _artisanIdController = TextEditingController();
   final TextEditingController _productIdController = TextEditingController();
 
@@ -46,9 +46,9 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   // --- FUNCIÓN HELPER PARA MOSTRAR MENSAJES ---
   void _showSnack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _uploadImage() async {
@@ -115,10 +115,13 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                       children: [
                         const Text(
                           'Datos de Identificación:',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 10),
-                        
+
                         // CAMPO ARTESANO
                         TextField(
                           controller: _artisanIdController,
@@ -148,7 +151,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                 ),
 
                 const SizedBox(height: 16),
-                
+
                 // SELECTOR DE TIPO
                 Card(
                   child: Padding(
@@ -157,13 +160,19 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                       children: [
                         const Text(
                           'Tipo de imagen:',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _buildTypeSelector('Perfil', ImageType.artisanProfile),
+                            _buildTypeSelector(
+                              'Perfil',
+                              ImageType.artisanProfile,
+                            ),
                             const SizedBox(width: 20),
                             _buildTypeSelector('Producto', ImageType.product),
                           ],
@@ -179,34 +188,49 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                 ElevatedButton(
                   onPressed: _isUploading ? null : _uploadImage,
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                   child: _isUploading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Seleccionar y Subir Imagen'),
                 ),
 
                 // VISTA PREVIA Y URL
                 if (_imageUrl != null) ...[
                   const SizedBox(height: 30),
-                  const Text('Vista previa:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Vista previa:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
                   Image.network(_imageUrl!, height: 200),
                   const SizedBox(height: 20),
-                  
+
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: SelectableText(_imageUrl!, style: const TextStyle(fontSize: 12)),
+                    child: SelectableText(
+                      _imageUrl!,
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
                   const SizedBox(height: 10),
-                  
+
                   ElevatedButton.icon(
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: _imageUrl!)).then((_) {
+                      Clipboard.setData(ClipboardData(text: _imageUrl!)).then((
+                        _,
+                      ) {
                         _showSnack('URL copiada al portapapeles');
                       });
                     },
@@ -230,7 +254,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
       onSelected: (selected) {
         if (selected) setState(() => _selectedType = type);
       },
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
       backgroundColor: Colors.grey[200],
     );
   }

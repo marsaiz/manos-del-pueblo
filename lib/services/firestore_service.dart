@@ -160,6 +160,17 @@ class FirestoreService {
     });
   }
 
+  static Future<void> updateProduct(Product product) async {
+    await _db.collection('products').doc(product.id).update({
+      'nombre': product.nombre,
+      'descripcion': product.descripcion,
+      'precio': product.precio,
+      'imagePath': product.imagePath,
+      'categoria': product.categoria,
+      'artisanId': product.artisanId,
+    });
+  }
+
   // --- ELIMINACIÓN EN CASCADA ---
   static Future<void> deleteArtisanCascade(String artisanId) async {
     final batch = _db.batch();

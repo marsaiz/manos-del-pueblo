@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'admin/upload_image_screen.dart';
-import '../services/firestore_service.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});

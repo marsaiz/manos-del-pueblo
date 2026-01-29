@@ -9,6 +9,9 @@ import '../models/artisan.dart';
 import 'artisan_profile_screen.dart';
 import 'favorites_screen.dart';
 import '../services/firestore_service.dart';
+import 'admin/edit_product_screen.dart';
+
+enum SortMethod { random, alphabetical }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
 
+  // Control de ordenamiento
+  SortMethod _currentSort = SortMethod.random;
+  List<String> _shuffledProductIds = [];
+
   @override
   void initState() {
     super.initState();
@@ -35,25 +42,23 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     if (allArtisans.isEmpty) return [];
 
-    return allProducts.where((product) {
+    // 1. Aplicamos filtros básicos
+    final filtered = allProducts.where((product) {
       final artisan = allArtisans.firstWhere(
         (a) => a.id == product.artisanId,
         orElse: () => allArtisans.first,
       );
 
-      // 1. Filtro por Artesano (ID exacto)
       final matchesArtisan =
           _filtroActivo == 'Todos' ||
           _filtroActivo == 'Búsqueda' ||
           product.artisanId == _filtroActivo;
 
-      // 2. Filtro por Localidad (Insensible a mayúsculas/minúsculas)
       final matchesLocation =
           _localidadSeleccionada == 'Todas' ||
           artisan.localidad.trim().toLowerCase() ==
               _localidadSeleccionada.trim().toLowerCase();
 
-      // 3. Filtro por Texto (Búsqueda parcial en nombre, categoría, artesano y localidad)
       bool matchesText = true;
       if (_searchText.isNotEmpty) {
         final query = _searchText.trim().toLowerCase();
@@ -66,6 +71,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return matchesArtisan && matchesLocation && matchesText;
     }).toList();
+
+    // 2. Aplicamos el ordenamiento seleccionado
+    if (_currentSort == SortMethod.alphabetical) {
+      filtered.sort(
+        (a, b) => a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()),
+      );
+    } else {
+      // Orden aleatorio persistente durante la sesión
+      if (_shuffledProductIds.isEmpty && allProducts.isNotEmpty) {
+        final ids = allProducts.map((p) => p.id).toList()..shuffle();
+        _shuffledProductIds = ids;
+      }
+
+      // Ordenamos según el orden aleatorio generado
+      filtered.sort((a, b) {
+        int indexA = _shuffledProductIds.indexOf(a.id);
+        int indexB = _shuffledProductIds.indexOf(b.id);
+        // Si un ID no está (producto nuevo), va al final
+        if (indexA == -1) indexA = 999;
+        if (indexB == -1) indexB = 999;
+        return indexA.compareTo(indexB);
+      });
+    }
+
+    return filtered;
   }
 
   @override
@@ -90,6 +120,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context) => const FavoritesScreen(),
                 ),
               );
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              _currentSort == SortMethod.random
+                  ? Icons.shuffle
+                  : Icons.sort_by_alpha,
+            ),
+            tooltip: _currentSort == SortMethod.random
+                ? 'Orden: Aleatorio'
+                : 'Orden: Alfabético',
+            onPressed: () {
+              setState(() {
+                _currentSort = _currentSort == SortMethod.random
+                    ? SortMethod.alphabetical
+                    : SortMethod.random;
+              });
             },
           ),
           const SizedBox(width: 10),
@@ -617,6 +664,19 @@ class ProductDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(product.nombre),
         actions: [
+          // Botón de editar
+          IconButton(
+            icon: const Icon(Icons.edit),
+            tooltip: 'Editar producto',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditProductScreen(product: product),
+                ),
+              );
+            },
+          ),
           // Botón de compartir
           IconButton(
             icon: const Icon(Icons.share),

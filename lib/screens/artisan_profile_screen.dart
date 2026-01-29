@@ -107,6 +107,7 @@ class ArtisanProfileScreen extends StatelessWidget {
     );
 
     if (confirm == true) {
+      if (!context.mounted) return;
       try {
         // Mostrar indicador de carga
         showDialog(
