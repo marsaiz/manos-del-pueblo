@@ -45,6 +45,23 @@ class ArtisanProfileScreen extends StatelessWidget {
     }
   }
 
+  // --- 2.5 Lógica para abrir Facebook ---
+  Future<void> _launchFacebook() async {
+    String fb = artisan.facebook.trim();
+    if (fb.isEmpty) return;
+
+    Uri url;
+    if (fb.startsWith('http')) {
+      url = Uri.parse(fb);
+    } else {
+      url = Uri.parse("https://www.facebook.com/$fb");
+    }
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('No se pudo abrir Facebook');
+    }
+  }
+
   // --- 3. Lógica para Llamar ---
   Future<void> _launchCall() async {
     final Uri url = Uri.parse("tel:${artisan.telefono}");
@@ -277,7 +294,6 @@ class ArtisanProfileScreen extends StatelessWidget {
 
                           const SizedBox(width: 10),
 
-                          // 2. Botón Instagram (Solo si existe)
                           if (artisan.instagram.isNotEmpty) ...[
                             Expanded(
                               child: ElevatedButton(
@@ -298,6 +314,27 @@ class ArtisanProfileScreen extends StatelessWidget {
                                   FontAwesomeIcons.instagram,
                                   size: 24,
                                 ), // ✅ ESTO ES LO CORRECTO
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+
+                          // 2.5 Botón Facebook (Solo si existe)
+                          if (artisan.facebook.isNotEmpty) ...[
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: _launchFacebook,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1877F2),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: const Icon(Icons.facebook),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -342,6 +379,19 @@ class ArtisanProfileScreen extends StatelessWidget {
                             const Expanded(
                               child: Text(
                                 "Instagram",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                          if (artisan.facebook.isNotEmpty) ...[
+                            const Expanded(
+                              child: Text(
+                                "Facebook",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 11,

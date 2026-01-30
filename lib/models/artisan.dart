@@ -11,6 +11,7 @@ class Artisan {
   final String codigoPostal;
   final String provincia;
   final String instagram;
+  final String facebook;
 
   Artisan({
     required this.id,
@@ -25,6 +26,7 @@ class Artisan {
     required this.codigoPostal,
     required this.provincia,
     required this.instagram,
+    required this.facebook,
   });
 
   @override

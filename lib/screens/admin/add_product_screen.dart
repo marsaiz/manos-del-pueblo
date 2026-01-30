@@ -102,7 +102,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    if (_pinController.text != '4628') {
+    if (_pinController.text != '1234') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('PIN de seguridad incorrecto'),

@@ -25,6 +25,7 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _cpController = TextEditingController();
   final _provinciaController = TextEditingController(text: 'Córdoba');
   final _instagramController = TextEditingController();
+  final _facebookController = TextEditingController();
   final _pinController = TextEditingController();
 
   String? _fotoUrl;
@@ -49,7 +50,7 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     // PIN de seguridad básico (puedes cambiarlo)
-    if (_pinController.text != '1234') {
+    if (_pinController.text != '4628') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('PIN de seguridad incorrecto'),
@@ -77,6 +78,7 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
       codigoPostal: _cpController.text.trim(),
       provincia: _provinciaController.text.trim(),
       instagram: _instagramController.text.trim(),
+      facebook: _facebookController.text.trim(),
     );
 
     try {
@@ -212,6 +214,11 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
                 _instagramController,
                 "Instagram (Usuario sin @)",
                 Icons.camera_alt,
+              ),
+              _buildTextField(
+                _facebookController,
+                "Facebook (URL o Usuario)",
+                Icons.facebook,
               ),
 
               const SizedBox(height: 32),

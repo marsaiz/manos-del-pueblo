@@ -38,6 +38,7 @@ class FirestoreService {
           'codigoPostal': artisan.codigoPostal,
           'provincia': artisan.provincia,
           'instagram': artisan.instagram,
+          'facebook': artisan.facebook,
         });
       }
 
@@ -88,6 +89,7 @@ class FirestoreService {
           codigoPostal: data['codigoPostal'] ?? '',
           provincia: data['provincia'] ?? '',
           instagram: data['instagram'] ?? '',
+          facebook: data['facebook'] ?? '',
         );
       }).toList();
     });
@@ -145,6 +147,7 @@ class FirestoreService {
       'codigoPostal': artisan.codigoPostal,
       'provincia': artisan.provincia,
       'instagram': artisan.instagram,
+      'facebook': artisan.facebook,
     });
   }
 

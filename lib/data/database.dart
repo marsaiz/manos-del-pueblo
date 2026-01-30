@@ -21,6 +21,7 @@ final List<Artisan> globalArtisans = [
     codigoPostal: '5105',
     provincia: 'Córdoba',
     instagram: 'donjose_maderas',
+    facebook: '',
   ),
   Artisan(
     id: 'a2',
@@ -35,6 +36,7 @@ final List<Artisan> globalArtisans = [
     codigoPostal: '5220',
     provincia: 'Córdoba',
     instagram: 'ana_tejidos',
+    facebook: '',
   ),
   Artisan(
     id: 'a3',
@@ -49,6 +51,7 @@ final List<Artisan> globalArtisans = [
     codigoPostal: '5000',
     provincia: 'Córdoba',
     instagram: 'luz_natural',
+    facebook: '',
   ),
   Artisan(
     id: 'a4',
@@ -63,6 +66,7 @@ final List<Artisan> globalArtisans = [
     codigoPostal: '5174',
     provincia: 'Córdoba',
     instagram: 'tejidos_del_valle',
+    facebook: '',
   ),
   Artisan(
     id: 'a5',
@@ -77,6 +81,7 @@ final List<Artisan> globalArtisans = [
     codigoPostal: '5282',
     provincia: 'Córdoba',
     instagram: 'barro_y_fuego',
+    facebook: '',
   ),
 
   Artisan(
@@ -92,6 +97,7 @@ final List<Artisan> globalArtisans = [
     codigoPostal: '6380',
     provincia: 'La Pampa',
     instagram: '',
+    facebook: '',
   ),
 ];
 
