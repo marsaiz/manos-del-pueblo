@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../widgets/app_drawer.dart';
 
 class AddArtisanScreen extends StatefulWidget {
   const AddArtisanScreen({super.key});
@@ -103,6 +104,7 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Añadir Nuevo Artesano'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),

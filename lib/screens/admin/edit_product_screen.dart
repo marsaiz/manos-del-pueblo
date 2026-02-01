@@ -4,6 +4,7 @@ import '../../models/artisan.dart';
 import '../../models/product.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../widgets/app_drawer.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -186,6 +187,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Editar Producto'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
