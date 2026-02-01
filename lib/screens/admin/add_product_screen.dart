@@ -34,16 +34,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
     'Utensilios',
     'Joyería',
     'Útiles Escolares',
+    'Jardinería',
+    'Instrumentos Musicales',
     'Otros',
   ];
 
   Artisan? _selectedArtisan;
   String? _selectedCategoria;
-  String? _fotoUrl;
-  bool _isUploading = false;
+
+  // Lista fija de 3 posiciones para las URLs de las fotos
+  final List<String?> _fotoUrls = [null, null, null];
+  final List<bool> _isUploadingList = [false, false, false];
+
   bool _isSaving = false;
 
-  Future<void> _pickAndUploadImage() async {
+  Future<void> _pickAndUploadImage(int index) async {
     if (_selectedArtisan == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -54,31 +59,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    setState(() => _isUploading = true);
+    setState(() => _isUploadingList[index] = true);
     try {
-      // Usamos un ID temporal o basado en el tiempo para el nombre del archivo
-      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
-      debugPrint(
-        "Iniciando subida para artesano: ${_selectedArtisan!.id}, tempId: $tempId",
-      );
-
+      final tempId = "${DateTime.now().millisecondsSinceEpoch}_$index";
       final url = await ImageUploadService.uploadProductImage(
         _selectedArtisan!.id,
         tempId,
       );
 
       if (url != null) {
-        setState(() => _fotoUrl = url);
-        debugPrint("Imagen subida con éxito: $url");
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('La subida fue cancelada o falló')),
-          );
-        }
+        setState(() => _fotoUrls[index] = url);
+        debugPrint("Imagen $index subida con éxito: $url");
       }
     } catch (e) {
-      debugPrint("Error subiendo imagen: $e");
+      debugPrint("Error subiendo imagen $index: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -88,8 +82,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isUploading = false);
+      if (mounted) setState(() => _isUploadingList[index] = false);
     }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _fotoUrls[index] = null;
+    });
   }
 
   Future<void> _saveProduct() async {
@@ -120,13 +120,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     final String newId = "p${DateTime.now().millisecondsSinceEpoch}";
 
+    // Filtramos las URLs nulas para guardar solo las válidas
+    final List<String> validUrls = _fotoUrls.whereType<String>().toList();
+
     final newProduct = Product(
       id: newId,
       artisanId: _selectedArtisan!.id,
       nombre: _nombreController.text.trim(),
       descripcion: _descripcionController.text.trim(),
       precio: _precioController.text.trim(),
-      imagePath: _fotoUrl ?? '',
+      imagePaths: validUrls, // Ahora pasamos la lista
       categoria: finalCategoria,
     );
 
@@ -197,7 +200,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         _selectedArtisan = artisans.firstWhere(
                           (a) => a.id == value,
                         );
-                        _fotoUrl = null;
+                        // Reiniciar fotos al cambiar de artesano para evitar mezclar carpetas
+                        for (int i = 0; i < 3; i++) _fotoUrls[i] = null;
                       });
                     },
                     validator: (value) =>
@@ -207,46 +211,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 24),
 
-              _buildSectionTitle("Foto del Producto"),
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[50],
-                        borderRadius: BorderRadius.circular(12),
-                        image: _fotoUrl != null
-                            ? DecorationImage(
-                                image: NetworkImage(_fotoUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
+              _buildSectionTitle("Fotos del Producto (Hasta 3)"),
+              Row(
+                children: List.generate(
+                  3,
+                  (index) => Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: index == 0 ? 0 : 4,
+                        right: index == 2 ? 0 : 4,
                       ),
-                      child: _fotoUrl == null && !_isUploading
-                          ? const Icon(
-                              Icons.image,
-                              size: 60,
-                              color: Colors.brown,
-                            )
-                          : null,
+                      child: _buildImageSlot(index),
                     ),
-                    if (_isUploading)
-                      const Positioned.fill(
-                        child: Center(
-                          child: CircularProgressIndicator(color: Colors.brown),
-                        ),
-                      ),
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: FloatingActionButton.small(
-                        onPressed: _isUploading ? null : _pickAndUploadImage,
-                        child: const Icon(Icons.camera_alt),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -342,6 +319,60 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
               ),
               const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageSlot(int index) {
+    final url = _fotoUrls[index];
+    final isUploading = _isUploadingList[index];
+
+    return AspectRatio(
+      aspectRatio: 1,
+      child: GestureDetector(
+        onTap: isUploading ? null : () => _pickAndUploadImage(index),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.brown[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.brown[200]!),
+            image: url != null
+                ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
+                : null,
+          ),
+          child: Stack(
+            children: [
+              if (url == null && !isUploading)
+                const Center(
+                  child: Icon(Icons.add_a_photo, color: Colors.brown, size: 30),
+                ),
+              if (isUploading)
+                const Center(
+                  child: CircularProgressIndicator(color: Colors.brown),
+                ),
+              if (url != null && !isUploading)
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: () => _removeImage(index),
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

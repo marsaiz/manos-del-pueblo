@@ -47,11 +47,20 @@ class FirestoreService {
         final docRef = _db.collection('products').doc(product.id);
         final docSnap = await docRef.get();
 
-        String finalImage = product.imagePath;
+        // Manejar migración de imagePath (String) a imagePaths (List)
+        List<String> finalImages = product.imagePaths;
         if (docSnap.exists) {
-          final existingImage = docSnap.data()?['imagePath'] ?? '';
-          if (existingImage.startsWith('http')) {
-            finalImage = existingImage;
+          final data = docSnap.data();
+          if (data != null) {
+            if (data.containsKey('imagePaths')) {
+              final List<dynamic> existingPaths = data['imagePaths'] ?? [];
+              finalImages = existingPaths.cast<String>();
+            } else if (data.containsKey('imagePath')) {
+              final String existingPath = data['imagePath'] ?? '';
+              if (existingPath.isNotEmpty) {
+                finalImages = [existingPath];
+              }
+            }
           }
         }
 
@@ -61,7 +70,7 @@ class FirestoreService {
           'nombre': product.nombre,
           'descripcion': product.descripcion,
           'precio': product.precio.toString(),
-          'imagePath': finalImage,
+          'imagePaths': finalImages, // Guardamos la lista
           'categoria': product.categoria,
         });
       }
@@ -100,13 +109,22 @@ class FirestoreService {
     return _db.collection('products').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         final data = doc.data();
+
+        // Soporte para migración: si no hay imagePaths, usamos imagePath
+        List<String> paths = [];
+        if (data.containsKey('imagePaths')) {
+          paths = List<String>.from(data['imagePaths'] ?? []);
+        } else if (data.containsKey('imagePath')) {
+          paths = [data['imagePath'] ?? ''];
+        }
+
         return Product(
           id: data['id'] ?? '',
           artisanId: data['artisanId'] ?? '',
           nombre: data['nombre'] ?? '',
           descripcion: data['descripcion'] ?? '',
           precio: (data['precio'] ?? '').toString(),
-          imagePath: data['imagePath'] ?? '',
+          imagePaths: paths,
           categoria: data['categoria'] ?? '',
         );
       }).toList();
@@ -158,7 +176,7 @@ class FirestoreService {
       'nombre': product.nombre,
       'descripcion': product.descripcion,
       'precio': product.precio,
-      'imagePath': product.imagePath,
+      'imagePaths': product.imagePaths,
       'categoria': product.categoria,
     });
   }
@@ -168,7 +186,7 @@ class FirestoreService {
       'nombre': product.nombre,
       'descripcion': product.descripcion,
       'precio': product.precio,
-      'imagePath': product.imagePath,
+      'imagePaths': product.imagePaths,
       'categoria': product.categoria,
       'artisanId': product.artisanId,
     });

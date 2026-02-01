@@ -38,10 +38,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'Otros',
   ];
 
-  Artisan? _selectedArtisan;
+  Artisan? _selectedArtesano;
   String? _selectedCategoria;
-  String? _fotoUrl;
-  bool _isUploading = false;
+
+  // Lista fija de 3 posiciones para las URLs de las fotos
+  final List<String?> _fotoUrls = [null, null, null];
+  final List<bool> _isUploadingList = [false, false, false];
+
   bool _isSaving = false;
 
   @override
@@ -52,7 +55,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       text: widget.product.descripcion,
     );
     _precioController = TextEditingController(text: widget.product.precio);
-    _fotoUrl = widget.product.imagePath;
+
+    // Inicializar fotos existentes
+    for (int i = 0; i < widget.product.imagePaths.length && i < 3; i++) {
+      _fotoUrls[i] = widget.product.imagePaths[i];
+    }
 
     if (_categorias.contains(widget.product.categoria)) {
       _selectedCategoria = widget.product.categoria;
@@ -75,8 +82,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.dispose();
   }
 
-  Future<void> _pickAndUploadImage() async {
-    if (_selectedArtisan == null) {
+  Future<void> _pickAndUploadImage(int index) async {
+    if (_selectedArtesano == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, selecciona un artesano primero'),
@@ -86,16 +93,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
 
-    setState(() => _isUploading = true);
+    setState(() => _isUploadingList[index] = true);
     try {
-      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+      final tempId = "${DateTime.now().millisecondsSinceEpoch}_$index";
       final url = await ImageUploadService.uploadProductImage(
-        _selectedArtisan!.id,
+        _selectedArtesano!.id,
         tempId,
       );
 
       if (url != null) {
-        setState(() => _fotoUrl = url);
+        setState(() => _fotoUrls[index] = url);
       }
     } catch (e) {
       if (mounted) {
@@ -107,13 +114,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isUploading = false);
+      if (mounted) setState(() => _isUploadingList[index] = false);
     }
   }
 
+  void _removeImage(int index) {
+    setState(() {
+      _fotoUrls[index] = null;
+    });
+  }
+
   Future<void> _updateProduct() async {
-    if (!_formKey.currentState!.validate() || _selectedArtisan == null) {
-      if (_selectedArtisan == null) {
+    if (!_formKey.currentState!.validate() || _selectedArtesano == null) {
+      if (_selectedArtesano == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Por favor, selecciona un artesano')),
         );
@@ -138,13 +151,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
         ? _customCategoriaController.text.trim()
         : _selectedCategoria ?? '';
 
+    // Filtramos las URLs nulas para guardar solo las válidas
+    final List<String> validUrls = _fotoUrls.whereType<String>().toList();
+
     final updatedProduct = Product(
       id: widget.product.id,
-      artisanId: _selectedArtisan!.id,
+      artisanId: _selectedArtesano!.id,
       nombre: _nombreController.text.trim(),
       descripcion: _descripcionController.text.trim(),
       precio: _precioController.text.trim(),
-      imagePath: _fotoUrl ?? widget.product.imagePath,
+      imagePaths: validUrls,
       categoria: finalCategoria,
     );
 
@@ -185,9 +201,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   final artisans = snapshot.data ?? [];
 
                   // Intentamos encontrar el artesano actual si aún no está seleccionado
-                  if (_selectedArtisan == null && artisans.isNotEmpty) {
+                  if (_selectedArtesano == null && artisans.isNotEmpty) {
                     try {
-                      _selectedArtisan = artisans.firstWhere(
+                      _selectedArtesano = artisans.firstWhere(
                         (a) => a.id == widget.product.artisanId,
                       );
                     } catch (_) {
@@ -196,7 +212,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   }
 
                   return DropdownButtonFormField<String>(
-                    initialValue: _selectedArtisan?.id,
+                    initialValue: _selectedArtesano?.id,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.person, color: Colors.brown),
                       border: OutlineInputBorder(
@@ -214,7 +230,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedArtisan = artisans.firstWhere(
+                        _selectedArtesano = artisans.firstWhere(
                           (a) => a.id == value,
                         );
                       });
@@ -226,50 +242,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               const SizedBox(height: 24),
 
-              _buildSectionTitle("Foto del Producto"),
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[50],
-                        borderRadius: BorderRadius.circular(12),
-                        image: _fotoUrl != null && _fotoUrl!.isNotEmpty
-                            ? DecorationImage(
-                                image: _fotoUrl!.startsWith('http')
-                                    ? NetworkImage(_fotoUrl!)
-                                    : AssetImage(_fotoUrl!) as ImageProvider,
-                                fit: BoxFit.cover,
-                              )
-                            : null,
+              _buildSectionTitle("Fotos del Producto (Hasta 3)"),
+              Row(
+                children: List.generate(
+                  3,
+                  (index) => Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: index == 0 ? 0 : 4,
+                        right: index == 2 ? 0 : 4,
                       ),
-                      child:
-                          (_fotoUrl == null || _fotoUrl!.isEmpty) &&
-                              !_isUploading
-                          ? const Icon(
-                              Icons.image,
-                              size: 60,
-                              color: Colors.brown,
-                            )
-                          : null,
+                      child: _buildImageSlot(index),
                     ),
-                    if (_isUploading)
-                      const Positioned.fill(
-                        child: Center(
-                          child: CircularProgressIndicator(color: Colors.brown),
-                        ),
-                      ),
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: FloatingActionButton.small(
-                        onPressed: _isUploading ? null : _pickAndUploadImage,
-                        child: const Icon(Icons.camera_alt),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -300,7 +285,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   fillColor: Colors.grey[50],
                 ),
                 hint: const Text("Selecciona una categoría"),
-                items: [..._categorias].map((categoria) {
+                items: [..._categorias, 'Otro...'].map((categoria) {
                   return DropdownMenuItem<String>(
                     value: categoria,
                     child: Text(categoria),
@@ -361,6 +346,65 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
               ),
               const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageSlot(int index) {
+    final url = _fotoUrls[index];
+    final isUploading = _isUploadingList[index];
+
+    return AspectRatio(
+      aspectRatio: 1,
+      child: GestureDetector(
+        onTap: isUploading ? null : () => _pickAndUploadImage(index),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.brown[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.brown[200]!),
+            image: url != null
+                ? DecorationImage(
+                    image: url.startsWith('http')
+                        ? NetworkImage(url)
+                        : AssetImage(url) as ImageProvider,
+                    fit: BoxFit.cover,
+                  )
+                : null,
+          ),
+          child: Stack(
+            children: [
+              if (url == null && !isUploading)
+                const Center(
+                  child: Icon(Icons.add_a_photo, color: Colors.brown, size: 30),
+                ),
+              if (isUploading)
+                const Center(
+                  child: CircularProgressIndicator(color: Colors.brown),
+                ),
+              if (url != null && !isUploading)
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: () => _removeImage(index),
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

@@ -109,7 +109,7 @@ final List<Product> globalProducts = [
     nombre: 'Vela de Soja y Miel',
     descripcion: 'Vela ecológica con pabilo de madera.',
     precio: '4500',
-    imagePath: 'assets/images/vela.jpeg',
+    imagePaths: ['assets/images/vela.jpeg'],
     categoria: 'Decoración',
   ),
   Product(
@@ -118,7 +118,7 @@ final List<Product> globalProducts = [
     nombre: 'Zorro Amigurumi',
     descripcion: 'Muñeco tejido para apego.',
     precio: '8200',
-    imagePath: 'assets/images/zorro.jpeg',
+    imagePaths: ['assets/images/zorro.jpeg'],
     categoria: 'Juguetes',
   ),
   Product(
@@ -127,7 +127,7 @@ final List<Product> globalProducts = [
     nombre: 'Mate de Algarrobo',
     descripcion: 'Mate bocón curado.',
     precio: '6000',
-    imagePath: 'assets/images/mate.jpeg',
+    imagePaths: ['assets/images/mate.jpeg'],
     categoria: 'Hogar',
   ),
   Product(
@@ -136,7 +136,7 @@ final List<Product> globalProducts = [
     nombre: 'Cuenco de Cerámica',
     descripcion: 'Esmaltado a mano.',
     precio: '3800',
-    imagePath: 'assets/images/Cuenco.jpeg',
+    imagePaths: ['assets/images/Cuenco.jpeg'],
     categoria: 'Cocina',
   ),
   Product(
@@ -145,7 +145,7 @@ final List<Product> globalProducts = [
     nombre: 'Bufanda Nórdica',
     descripcion: 'Lana merino súper abrigada.',
     precio: '9500',
-    imagePath: 'assets/images/bufanda.jpeg',
+    imagePaths: ['assets/images/bufanda.jpeg'],
     categoria: 'Indumentaria',
   ),
 ];

@@ -1,20 +1,22 @@
 class Product {
   final String id;
-  final String artisanId; // NUEVO: El enlace con el artesano
+  final String artisanId;
   final String nombre;
   final String descripcion;
   final String precio;
-  final String imagePath;
+  final List<String> imagePaths; // Cambiado de String a List<String>
   final String categoria;
 
   Product({
     required this.id,
-    required this.artisanId, // Agregamos esto
+    required this.artisanId,
     required this.nombre,
     required this.descripcion,
     required this.precio,
-    required this.imagePath,
+    required this.imagePaths,
     required this.categoria,
-    // Borramos 'nombreDelArtesano' de aquí porque ya no hace falta
   });
+
+  // Getter para compatibilidad con código que use imagePath
+  String get imagePath => imagePaths.isNotEmpty ? imagePaths.first : '';
 }

@@ -6,6 +6,7 @@ import '../models/product.dart';
 import '../services/firestore_service.dart';
 import '../services/image_upload_service.dart'; // Para borrar carpeta de Storage
 import 'home_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class ArtisanProfileScreen extends StatelessWidget {
   final Artisan artisan;
@@ -182,6 +183,7 @@ class ArtisanProfileScreen extends StatelessWidget {
             .toList();
 
         return Scaffold(
+          drawer: const AppDrawer(),
           body: CustomScrollView(
             slivers: [
               // --- A. ENCABEZADO (FOTO + NOMBRE) ---
