@@ -21,17 +21,32 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 20),
             // Logo o imagen representativa
             Container(
-              width: 150,
-              height: 150,
+              width: 200,
+              height: 200,
               decoration: BoxDecoration(
-                color: Colors.brown[100],
+                color: const Color(0xFFF5F5DC),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.brown, width: 2),
+                border: Border.all(color: Colors.brown, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.brown.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: const Icon(
-                Icons.handyman,
-                size: 80,
-                color: Color(0xFF5D4037),
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: ClipOval(
+                  child: Center(
+                    child: Image.asset(
+                      'assets/logo_manos.png',
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                      isAntiAlias: true,
+                    ),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -117,7 +132,7 @@ class AboutScreen extends StatelessWidget {
                 _buildSocialButton(
                   icon: Icons.email,
                   color: Colors.grey[700]!,
-                  onTap: () => _launchURL('mailto:contacto@manosdelpueblo.com'),
+                  onTap: () => _launchURL('mailto:marcelosaizestudio@gmail.com'),
                 ),
                 const SizedBox(width: 20),
                 _buildSocialButton(
