@@ -184,6 +184,66 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
+  Future<void> _deleteProduct() async {
+    // Mostrar diálogo de confirmación
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Eliminación'),
+        content: Text(
+          '¿Estás seguro de que deseas eliminar el producto "${widget.product.nombre}"?\n\nEsta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    // Verificar PIN
+    if (_pinController.text != '1234') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PIN de seguridad incorrecto'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      await FirestoreService.deleteProduct(widget.product.id);
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Producto eliminado con éxito')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error al eliminar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -345,6 +405,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 55,
+                child: OutlinedButton.icon(
+                  onPressed: _isSaving ? null : _deleteProduct,
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text(
+                    "ELIMINAR PRODUCTO",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),

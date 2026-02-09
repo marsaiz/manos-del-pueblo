@@ -123,7 +123,7 @@ class AboutScreen extends StatelessWidget {
                 _buildSocialButton(
                   icon: Icons.phone,
                   color: Colors.green,
-                  onTap: () => _launchURL('tel:+5493512345678'),
+                  onTap: () => _launchURL('tel:+5492302609175'),
                 ),
               ],
             ),

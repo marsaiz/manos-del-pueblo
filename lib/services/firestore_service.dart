@@ -192,6 +192,11 @@ class FirestoreService {
     });
   }
 
+  static Future<void> deleteProduct(String productId) async {
+    await _db.collection('products').doc(productId).delete();
+    debugPrint("✅ Producto eliminado de Firestore");
+  }
+
   // --- ELIMINACIÓN EN CASCADA ---
   static Future<void> deleteArtisanCascade(String artisanId) async {
     final batch = _db.batch();
