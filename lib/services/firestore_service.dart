@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/artisan.dart';
 import '../models/product.dart';
+import '../models/course.dart';
 import '../data/database.dart';
 
 class FirestoreService {
@@ -219,5 +220,27 @@ class FirestoreService {
     await batch.commit();
 
     debugPrint("✅ Artesano y sus productos eliminados de Firestore");
+  }
+
+  // --- CURSOS ---
+  static Stream<List<Course>> getCourses() {
+    return _db.collection('courses').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return Course.fromMap(doc.data());
+      }).toList();
+    });
+  }
+
+  static Future<void> addCourse(Course course) async {
+    await _db.collection('courses').doc(course.id).set(course.toMap());
+  }
+
+  static Future<void> updateCourse(Course course) async {
+    await _db.collection('courses').doc(course.id).update(course.toMap());
+  }
+
+  static Future<void> deleteCourse(String courseId) async {
+    await _db.collection('courses').doc(courseId).delete();
+    debugPrint("✅ Curso eliminado de Firestore");
   }
 }

@@ -203,7 +203,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           (a) => a.id == value,
                         );
                         // Reiniciar fotos al cambiar de artesano para evitar mezclar carpetas
-                        for (int i = 0; i < 3; i++) _fotoUrls[i] = null;
+                        for (int i = 0; i < 3; i++) {
+                          _fotoUrls[i] = null;
+                        }
                       });
                     },
                     validator: (value) =>
