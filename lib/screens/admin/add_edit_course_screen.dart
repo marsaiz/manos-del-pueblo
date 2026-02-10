@@ -26,6 +26,7 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
   late TextEditingController _pinController;
 
   bool _isLoading = false;
+  bool _isUploadingImage = false;
 
   @override
   void initState() {
@@ -49,9 +50,7 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
     _whatsappController = TextEditingController(
       text: widget.course?.contactWhatsApp ?? '',
     );
-    _priceController = TextEditingController(
-      text: widget.course?.price.toString() ?? '0',
-    );
+    _priceController = TextEditingController(text: widget.course?.price ?? '');
     _pinController = TextEditingController();
   }
 
@@ -67,6 +66,29 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
     _priceController.dispose();
     _pinController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    setState(() => _isUploadingImage = true);
+    try {
+      // Usamos una carpeta específica para cursos
+      final url = await ImageUploadService.uploadProductImage(
+        'admin', // Usamos 'admin' como ID de artesano para cursos generales
+        'course_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
+      if (url != null) {
+        setState(() => _imageUrlController.text = url);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al subir imagen: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingImage = false);
+    }
   }
 
   Future<void> _saveCourse() async {
@@ -93,7 +115,7 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
       location: _locationController.text,
       imageUrl: _imageUrlController.text,
       contactWhatsApp: _whatsappController.text,
-      price: double.tryParse(_priceController.text) ?? 0,
+      price: _priceController.text,
     );
 
     try {
@@ -126,6 +148,8 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    _buildImageSection(),
+                    const SizedBox(height: 24),
                     TextFormField(
                       controller: _titleController,
                       decoration: const InputDecoration(
@@ -167,25 +191,16 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _priceController,
-                      decoration: const InputDecoration(labelText: 'Precio'),
-                      keyboardType: TextInputType.number,
-                      validator: (value) => double.tryParse(value!) == null
-                          ? 'Número inválido'
-                          : null,
+                      decoration: const InputDecoration(
+                        labelText: 'Precio (Ej: 5000 o "Consultar")',
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _whatsappController,
                       decoration: const InputDecoration(
                         labelText: 'WhatsApp (sin +, ej: 54911...)',
-                      ),
-                      validator: (value) => value!.isEmpty ? 'Requerido' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _imageUrlController,
-                      decoration: const InputDecoration(
-                        labelText: 'URL de la Imagen',
                       ),
                       validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
@@ -221,6 +236,73 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildImageSection() {
+    final hasImage = _imageUrlController.text.isNotEmpty;
+    return GestureDetector(
+      onTap: _isUploadingImage ? null : _pickAndUploadImage,
+      child: Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.brown[50],
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.brown[200]!),
+          image: hasImage
+              ? DecorationImage(
+                  image: NetworkImage(_imageUrlController.text),
+                  fit: BoxFit.cover,
+                )
+              : null,
+        ),
+        child: Stack(
+          children: [
+            if (!hasImage && !_isUploadingImage)
+              const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_a_photo, color: Colors.brown, size: 50),
+                    SizedBox(height: 8),
+                    Text(
+                      'Toca para subir imagen',
+                      style: TextStyle(color: Colors.brown),
+                    ),
+                  ],
+                ),
+              ),
+            if (_isUploadingImage)
+              const Center(
+                child: CircularProgressIndicator(color: Colors.brown),
+              ),
+            if (hasImage && !_isUploadingImage)
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.edit, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        'Cambiar imagen',
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

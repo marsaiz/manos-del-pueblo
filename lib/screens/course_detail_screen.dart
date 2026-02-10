@@ -81,9 +81,14 @@ class CourseDetailScreen extends StatelessWidget {
                         _InfoRow(
                           icon: Icons.payments,
                           label: 'Precio',
-                          value: course.price == 0
+                          value:
+                              course.price.toLowerCase() == '0' ||
+                                  course.price.toLowerCase() == 'gratis' ||
+                                  course.price.toLowerCase() == 'gratuito'
                               ? 'Gratuito'
-                              : '\$${course.price.toStringAsFixed(2)}',
+                              : course.price.contains('\$')
+                              ? course.price
+                              : '\$${course.price}',
                         ),
                       ],
                     ),

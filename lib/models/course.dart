@@ -7,7 +7,7 @@ class Course {
   final String location;
   final String imageUrl;
   final String contactWhatsApp; // WhatsApp number for inquiries
-  final double price;
+  final String price;
 
   Course({
     required this.id,
@@ -45,7 +45,7 @@ class Course {
       location: map['location'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
       contactWhatsApp: map['contactWhatsApp'] ?? '',
-      price: (map['price'] ?? 0).toDouble(),
+      price: (map['price'] ?? '').toString(),
     );
   }
 }
