@@ -183,7 +183,6 @@ class ArtisanProfileScreen extends StatelessWidget {
             .toList();
 
         return Scaffold(
-          drawer: const AppDrawer(),
           body: CustomScrollView(
             slivers: [
               // --- A. ENCABEZADO (FOTO + NOMBRE) ---
@@ -471,24 +470,8 @@ class ArtisanProfileScreen extends StatelessWidget {
               ),
 
               // Espacio final para scrolling cómodo
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 40,
-                  ),
-                  child: OutlinedButton.icon(
-                    onPressed: () => _deleteArtisan(context),
-                    icon: const Icon(Icons.delete_forever, color: Colors.grey),
-                    label: const Text(
-                      "ELIMINAR ARTESANO",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.grey),
-                    ),
-                  ),
-                ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 40),
               ),
             ],
           ),

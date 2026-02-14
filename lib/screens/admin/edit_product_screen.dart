@@ -247,7 +247,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Editar Producto'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),

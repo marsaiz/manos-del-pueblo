@@ -45,14 +45,6 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.person_add, color: Colors.brown),
-                title: const Text('Añadir Artesano'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/add-artisan');
-                },
-              ),
-              ListTile(
                 leading: const Icon(
                   Icons.add_shopping_cart,
                   color: Colors.brown,

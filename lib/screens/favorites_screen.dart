@@ -16,7 +16,6 @@ class FavoritesScreen extends StatelessWidget {
     final favoriteIds = Provider.of<FavoritesProvider>(context).favorites;
 
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text("Mis Favoritos ❤️")),
       body: StreamBuilder<List<Artisan>>(
         stream: FirestoreService.getArtisans(),

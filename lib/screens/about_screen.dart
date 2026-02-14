@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'admin/upload_image_screen.dart';
+import 'admin/manage_artisans_screen.dart';
 import '../widgets/app_drawer.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -11,7 +12,6 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Sobre Nosotros')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -156,29 +156,19 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             ListTile(
-              leading: const Icon(Icons.person_add, color: Colors.brown),
-              title: const Text('Añadir Nuevo Artesano'),
-              subtitle: const Text('Crear perfil desde el celular'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.pushNamed(context, '/add-artisan');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.cloud_upload, color: Colors.brown),
-              title: const Text('Subir Imágenes'),
-              subtitle: const Text('Artesanos y Productos'),
+              leading: const Icon(Icons.people, color: Colors.brown),
+              title: const Text('Administrar Artesanos'),
+              subtitle: const Text('Añadir, eliminar y subir imágenes'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const UploadImageScreen(),
+                    builder: (context) => const ManageArtisansScreen(),
                   ),
                 );
               },
             ),
-            // Botón de sincronización oculto por seguridad/destructividad
             const SizedBox(height: 30),
             // Créditos
             const Text(

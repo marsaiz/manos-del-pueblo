@@ -104,7 +104,6 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: AppBar(title: const Text('Añadir Nuevo Artesano'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
