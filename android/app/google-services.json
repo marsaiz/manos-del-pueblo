@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "948131229423",
+    "project_id": "fooddelivery-7bd5e",
+    "storage_bucket": "fooddelivery-7bd5e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948131229423:android:f10e7d9bf06f65f192f51a",
+        "android_client_info": {
+          "package_name": "ar.com.gulapp.cliente"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbIWjQtv7TXxYKxyo8kWEV8tyQKOopRHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948131229423:android:e6a9561150ba95e192f51a",
+        "android_client_info": {
+          "package_name": "ar.manosdelpueblo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbIWjQtv7TXxYKxyo8kWEV8tyQKOopRHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

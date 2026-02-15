@@ -14,6 +14,7 @@ class AddArtisanScreen extends StatefulWidget {
 
 class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _formKey = GlobalKey<FormState>();
+  static const String _adminCode = '4628';
 
   // Controladores
   final _nombreController = TextEditingController();
@@ -27,7 +28,6 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _provinciaController = TextEditingController(text: 'Córdoba');
   final _instagramController = TextEditingController();
   final _facebookController = TextEditingController();
-  final _pinController = TextEditingController();
 
   String? _fotoUrl;
   bool _isUploading = false;
@@ -50,16 +50,8 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   Future<void> _saveArtisan() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // PIN de seguridad básico (puedes cambiarlo)
-    if (_pinController.text != '4628') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN de seguridad incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    final isUnlocked = await _promptAdminCode();
+    if (!isUnlocked) return;
 
     setState(() => _isSaving = true);
 
@@ -99,6 +91,54 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  Future<bool> _promptAdminCode() async {
+    final controller = TextEditingController();
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Codigo de administracion'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'Ingresar codigo',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(
+              context,
+              controller.text.trim() == _adminCode,
+            ),
+            child: const Text('Ingresar'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return false;
+
+    if (result == true) {
+      return true;
+    }
+
+    if (result == false) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Codigo incorrecto.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    return false;
   }
 
   @override
@@ -223,17 +263,6 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
               ),
 
               const SizedBox(height: 32),
-              const Divider(),
-              const SizedBox(height: 16),
-              _buildSectionTitle("Confirmación"),
-              _buildTextField(
-                _pinController,
-                "PIN de Seguridad",
-                Icons.lock,
-                isPassword: true,
-                keyboardType: TextInputType.number,
-              ),
-
               const SizedBox(height: 40),
               SizedBox(
                 height: 55,

@@ -44,9 +44,11 @@ dependencies:
   firebase_core: ^3.4.0
   firebase_storage: ^12.2.0
   cloud_firestore: ^5.6.2
+  firebase_remote_config: ^5.5.0
   
   # Para subir archivos en web
   image_picker_web: ^4.0.0
+  image_picker: ^1.1.2
   
   # Para mostrar imágenes de internet
   cached_network_image: ^3.4.1

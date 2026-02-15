@@ -1,0 +1,212 @@
+import 'package:flutter/material.dart';
+import '../../models/artisan.dart';
+import '../../services/firestore_service.dart';
+import '../../services/image_upload_service.dart';
+import 'add_artisan_screen.dart';
+import 'upload_image_screen.dart';
+
+class AdminArtisansScreen extends StatefulWidget {
+  const AdminArtisansScreen({super.key});
+
+  @override
+  State<AdminArtisansScreen> createState() => _AdminArtisansScreenState();
+}
+
+class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
+  Future<void> _confirmDelete(Artisan artisan) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar artesano'),
+        content: Text(
+          'Se eliminara el artesano "${artisan.nombre}" y sus productos. Esta accion no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !mounted) return;
+
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      await FirestoreService.deleteArtisanCascade(artisan.id);
+      await ImageUploadService.deleteArtisanFolder(artisan.id);
+
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Artesano eliminado.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
+    }
+  }
+
+  Widget _buildListTab() {
+    return StreamBuilder<List<Artisan>>(
+      stream: FirestoreService.getArtisans(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(child: Text('Error cargando artesanos'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final artisans = snapshot.data!;
+        if (artisans.isEmpty) {
+          return const Center(child: Text('No hay artesanos.'));
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(12),
+          itemCount: artisans.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final artisan = artisans[index];
+            return ListTile(
+              tileColor: Colors.brown.withValues(alpha: 0.05),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              leading: CircleAvatar(
+                backgroundColor: Colors.brown[50],
+                backgroundImage: artisan.fotoPerfil.startsWith('http')
+                    ? NetworkImage(artisan.fotoPerfil)
+                    : null,
+                child: artisan.fotoPerfil.startsWith('http')
+                    ? null
+                    : const Icon(Icons.person, color: Colors.brown),
+              ),
+              title: Text(artisan.nombre),
+              subtitle: Text('${artisan.localidad} • ID: ${artisan.id}'),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _confirmDelete(artisan),
+                tooltip: 'Eliminar',
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildActionTab({
+    required String title,
+    required String description,
+    required IconData icon,
+    required VoidCallback onOpen,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Card(
+          elevation: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 48, color: Colors.brown),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: onOpen,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Abrir'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Administrar Artesanos'),
+          bottom: const TabBar(
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(icon: Icon(Icons.list), text: 'Lista'),
+              Tab(icon: Icon(Icons.add), text: 'Añadir'),
+              Tab(icon: Icon(Icons.image), text: 'Imagenes'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildListTab(),
+            _buildActionTab(
+              title: 'Añadir artesano',
+              description: 'Crear un perfil nuevo desde el celular.',
+              icon: Icons.person_add,
+              onOpen: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddArtisanScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildActionTab(
+              title: 'Subir imagenes',
+              description: 'Cargar imagenes para artesanos y productos.',
+              icon: Icons.cloud_upload,
+              onOpen: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UploadImageScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

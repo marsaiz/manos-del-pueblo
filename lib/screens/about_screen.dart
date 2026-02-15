@@ -3,11 +3,61 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'admin/upload_image_screen.dart';
-import 'admin/manage_artisans_screen.dart';
 import '../widgets/app_drawer.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
+
+  @override
+  State<AboutScreen> createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  static const String _adminCode = '4628';
+  bool _adminUnlocked = false;
+
+  Future<void> _promptAdminCode() async {
+    final controller = TextEditingController();
+    final isUnlocked = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Codigo de administracion'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            decoration: const InputDecoration(
+              hintText: 'Ingresar codigo',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.pop(context, controller.text == _adminCode),
+              child: const Text('Ingresar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted) return;
+
+    if (isUnlocked == true) {
+      setState(() {
+        _adminUnlocked = true;
+      });
+    } else if (isUnlocked == false) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Codigo incorrecto.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,19 +206,29 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             ListTile(
-              leading: const Icon(Icons.people, color: Colors.brown),
-              title: const Text('Administrar Artesanos'),
-              subtitle: const Text('Añadir, eliminar y subir imágenes'),
+              leading: const Icon(Icons.person_add, color: Colors.brown),
+              title: const Text('Añadir Nuevo Artesano'),
+              subtitle: const Text('Crear perfil desde el celular'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.pushNamed(context, '/add-artisan');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cloud_upload, color: Colors.brown),
+              title: const Text('Subir Imágenes'),
+              subtitle: const Text('Artesanos y Productos'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ManageArtisansScreen(),
+                    builder: (context) => const UploadImageScreen(),
                   ),
                 );
               },
             ),
+            // Botón de sincronización oculto por seguridad/destructividad
             const SizedBox(height: 30),
             // Créditos
             const Text(

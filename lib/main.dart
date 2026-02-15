@@ -4,27 +4,22 @@ import 'package:provider/provider.dart'; // <--- Importante
 import 'providers/favorites_provider.dart'; // <--- Importante
 import 'screens/home_screen.dart';
 import 'screens/about_screen.dart'; // Nueva pantalla que crearemos
-import 'services/firebase_config.dart'; // Importamos la configuración de Firebase
+import 'firebase_options.dart';
 import 'screens/admin/add_artisan_screen.dart';
 import 'screens/admin/add_product_screen.dart';
 import 'screens/admin/admin_courses_screen.dart';
 import 'screens/courses_screen.dart';
+import 'services/remote_config_service.dart';
+import 'screens/admin/admin_artisans_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar Firebase usando la configuración centralizada
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: FirebaseConfig.config['apiKey']!,
-      authDomain: FirebaseConfig.config['authDomain']!,
-      projectId: FirebaseConfig.config['projectId']!,
-      storageBucket: FirebaseConfig.config['storageBucket']!,
-      messagingSenderId: FirebaseConfig.config['messagingSenderId']!,
-      appId: FirebaseConfig.config['appId']!,
-      measurementId: FirebaseConfig.config['measurementId']!,
-    ),
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await RemoteConfigService().initialize();
 
   // No necesitamos llamar a ImageUploadService.initialize() porque ya inicializamos Firebase arriba
   // y el servicio usa FirebaseStorage.instance que se conecta automáticamente.
@@ -73,6 +68,7 @@ class MyApp extends StatelessWidget {
         '/add-product': (context) => const AddProductScreen(),
         '/courses': (context) => const CoursesScreen(),
         '/admin-courses': (context) => const AdminCoursesScreen(),
+        '/admin-artisans': (context) => const AdminArtisansScreen(),
       },
     );
   }

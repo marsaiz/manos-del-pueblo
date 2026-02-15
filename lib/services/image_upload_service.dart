@@ -1,7 +1,7 @@
 // lib/services/image_upload_service.dart
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker_web/image_picker_web.dart';
 import 'package:flutter/material.dart';
+import 'image_picker_bridge.dart';
 
 class ImageUploadService {
   static FirebaseStorage get _storage => FirebaseStorage.instance;
@@ -31,7 +31,7 @@ class ImageUploadService {
   static Future<String?> _uploadImage(String folder, String prefix) async {
     try {
       // Seleccionar imagen
-      final mediaData = await ImagePickerWeb.getImageInfo();
+      final mediaData = await pickImageData();
       if (mediaData == null) return null;
 
       // Crear referencia al almacenamiento
@@ -41,8 +41,8 @@ class ImageUploadService {
 
       // Subir la imagen (usando putData para Uint8List)
       final uploadTask = storageRef.putData(
-        mediaData.data!,
-        SettableMetadata(contentType: 'image/jpeg'),
+        mediaData.bytes,
+        SettableMetadata(contentType: mediaData.mimeType ?? 'image/jpeg'),
       );
 
       // Esperar a que se complete la carga

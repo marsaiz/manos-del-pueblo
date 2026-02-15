@@ -1,9 +1,10 @@
 // lib/screens/admin/upload_image_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../models/artisan.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/firestore_service.dart';
+import '../../models/artisan.dart';
+import '../../models/product.dart';
 
 enum ImageType { artisanProfile, product }
 
@@ -20,22 +21,27 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   ImageType _selectedType = ImageType.artisanProfile;
   bool _isPinVerified = false;
 
-  Artisan? _selectedArtisan;
-  final TextEditingController _productIdController = TextEditingController();
+  String? _selectedArtisanId;
+  String? _selectedProductId;
   final TextEditingController _pinController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Inicializar variables solo si necesitas valores por defecto
+  }
+
+  @override
   void dispose() {
-    _productIdController.dispose();
     _pinController.dispose();
     super.dispose();
   }
 
   void _showSnack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _verifyPin() {
@@ -48,45 +54,33 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   }
 
   Future<void> _uploadImage() async {
-    if (_selectedArtisan == null) {
+    final artisanId = _selectedArtisanId ?? '';
+    final productId = _selectedProductId ?? '';
+    if (artisanId.isEmpty) {
       _showSnack('Por favor, selecciona un artesano');
       return;
     }
-
-    if (_selectedType == ImageType.product &&
-        _productIdController.text.trim().isEmpty) {
-      _showSnack('Por favor, ingresa el ID del producto');
+    if (_selectedType == ImageType.product && productId.isEmpty) {
+      _showSnack('Por favor, selecciona un producto');
       return;
     }
-
     setState(() {
       _isUploading = true;
       _imageUrl = null;
     });
-
     try {
       String? url;
       if (_selectedType == ImageType.artisanProfile) {
-        url = await ImageUploadService.uploadArtisanProfileImage(
-          _selectedArtisan!.id,
-        );
+        url = await ImageUploadService.uploadArtisanProfileImage(artisanId);
       } else {
-        url = await ImageUploadService.uploadProductImage(
-          _selectedArtisan!.id,
-          _productIdController.text.trim(),
-        );
+        url = await ImageUploadService.uploadProductImage(artisanId, productId);
       }
-
       setState(() => _imageUrl = url);
-
       if (url != null) {
         if (_selectedType == ImageType.artisanProfile) {
-          await FirestoreService.updateArtisanPhoto(_selectedArtisan!.id, url);
+          await FirestoreService.updateArtisanPhoto(artisanId, url);
         } else {
-          await FirestoreService.updateProductPhoto(
-            _productIdController.text.trim(),
-            url,
-          );
+          await FirestoreService.updateProductPhoto(productId, url);
         }
         _showSnack('¡Imagen subida y base de datos actualizada!');
       }
@@ -149,166 +143,210 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   }
 
   Widget _buildUploadInterface() {
-    return StreamBuilder<List<Artisan>>(
-      stream: FirestoreService.getArtisans(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final artisans = snapshot.data!;
-
-        return Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // SELECTOR DE ARTESANO
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Selecciona el Artesano:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        DropdownButtonFormField<Artisan>(
-                          value: _selectedArtisan,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.person),
-                          ),
-                          hint: const Text('Selecciona un artesano'),
-                          items: artisans.map((artisan) {
-                            return DropdownMenuItem<Artisan>(
-                              value: artisan,
-                              child: Text(
-                                '${artisan.nombre} (${artisan.id})',
-                                overflow: TextOverflow.ellipsis,
-                              ),
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // SELECTOR DE ARTESANO
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Selecciona el Artesano:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    StreamBuilder<List<Artisan>>(
+                      stream: FirestoreService.getArtisans(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const Text('Error cargando artesanos');
+                        }
+                        if (!snapshot.hasData) {
+                          return const CircularProgressIndicator();
+                        }
+                        final artisans = snapshot.data!;
+                        if (artisans.isEmpty) {
+                          return const Text('No hay artesanos registrados');
+                        }
+                        return DropdownButtonFormField<String>(
+                          initialValue: _selectedArtisanId,
+                          items: artisans.map((Artisan a) {
+                            final nombre = a.nombre;
+                            final id = a.id;
+                            return DropdownMenuItem<String>(
+                              value: id,
+                              child: Text('$nombre (ID: $id)'),
                             );
                           }).toList(),
                           onChanged: (value) {
-                            setState(() => _selectedArtisan = value);
+                            setState(() {
+                              _selectedArtisanId = value;
+                              _selectedProductId =
+                                  null; // Reset producto al cambiar artesano
+                            });
                           },
-                        ),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Selecciona un artesano',
+                            prefixIcon: Icon(Icons.person),
+                          ),
+                        );
+                      },
+                    ),
 
-                        // CAMPO PRODUCTO (Visible solo si es tipo producto)
-                        if (_selectedType == ImageType.product) ...[
-                          const SizedBox(height: 15),
-                          TextField(
-                            controller: _productIdController,
+                    // SELECTOR DE PRODUCTO
+                    if (_selectedType == ImageType.product) ...[
+                      const SizedBox(height: 15),
+                      StreamBuilder<List<Product>>(
+                        stream: FirestoreService.getProducts(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text('Error cargando productos');
+                          }
+                          if (!snapshot.hasData) {
+                            return const CircularProgressIndicator();
+                          }
+                          final products = snapshot.data!;
+                          final artisanId = _selectedArtisanId ?? '';
+                          final filteredProducts = artisanId.isNotEmpty
+                              ? products
+                                    .where(
+                                      (Product p) => p.artisanId == artisanId,
+                                    )
+                                    .toList()
+                              : <Product>[];
+                          if (products.isEmpty) {
+                            return const Text('No hay productos registrados');
+                          }
+                          if (artisanId.isNotEmpty &&
+                              filteredProducts.isEmpty) {
+                            return const Text(
+                              'No hay productos para este artesano',
+                            );
+                          }
+                          return DropdownButtonFormField<String>(
+                            initialValue: _selectedProductId,
+                            items: filteredProducts.map((Product p) {
+                              final nombre = p.nombre;
+                              final id = p.id;
+                              return DropdownMenuItem<String>(
+                                value: id,
+                                child: Text('$nombre (ID: $id)'),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedProductId = value;
+                              });
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'ID del Producto (ej: p1)',
-                              hintText: 'El ID que tiene en la base de datos',
+                              labelText: 'Selecciona un producto',
                               prefixIcon: Icon(Icons.shopping_bag),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                          );
+                        },
+                      ),
+                    ],
+                  ],
                 ),
-
-                const SizedBox(height: 16),
-
-                // SELECTOR DE TIPO
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Tipo de imagen:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildTypeSelector(
-                              'Perfil',
-                              ImageType.artisanProfile,
-                            ),
-                            const SizedBox(width: 20),
-                            _buildTypeSelector('Producto', ImageType.product),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // BOTÓN SUBIR
-                ElevatedButton(
-                  onPressed: _isUploading ? null : _uploadImage,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                  ),
-                  child: _isUploading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Seleccionar y Subir Imagen'),
-                ),
-
-                // VISTA PREVIA Y URL
-                if (_imageUrl != null) ...[
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Vista previa:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  Image.network(_imageUrl!, height: 200),
-                  const SizedBox(height: 20),
-
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: SelectableText(
-                      _imageUrl!,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: _imageUrl!))
-                          .then((_) {
-                        _showSnack('URL copiada al portapapeles');
-                      });
-                    },
-                    icon: const Icon(Icons.copy),
-                    label: const Text('Copiar URL'),
-                  ),
-                ],
-              ],
+              ),
             ),
-          ),
-        );
-      },
+
+            const SizedBox(height: 16),
+
+            // SELECTOR DE TIPO
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Tipo de imagen:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildTypeSelector('Perfil', ImageType.artisanProfile),
+                        const SizedBox(width: 20),
+                        _buildTypeSelector('Producto', ImageType.product),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // BOTÓN SUBIR
+            ElevatedButton(
+              onPressed: _isUploading ? null : _uploadImage,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              child: _isUploading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Seleccionar y Subir Imagen'),
+            ),
+
+            // VISTA PREVIA Y URL
+            if (_imageUrl != null) ...[
+              const SizedBox(height: 30),
+              const Text(
+                'Vista previa:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Image.network(_imageUrl!, height: 200),
+              const SizedBox(height: 20),
+
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: SelectableText(
+                  _imageUrl!,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              ElevatedButton.icon(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _imageUrl!)).then((_) {
+                    _showSnack('URL copiada al portapapeles');
+                  });
+                },
+                icon: const Icon(Icons.copy),
+                label: const Text('Copiar URL'),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
