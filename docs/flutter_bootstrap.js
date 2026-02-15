@@ -38,10 +38,6 @@ _flutter.buildConfig = {"engineRevision":"587c18f873b8ab57330422bce09047420d9c7f
 
 _flutter.loader.load({
   serviceWorkerSettings: {
-<<<<<<< HEAD
-    serviceWorkerVersion: "3830128833"
-=======
-    serviceWorkerVersion: "3034090156"
->>>>>>> a6a0da1 (modificaciones e incorporaciones para convertir manos del pueblo en app para andriod e ios. Y algunos cambios menores)
+    serviceWorkerVersion: "4069137725"
   }
 });

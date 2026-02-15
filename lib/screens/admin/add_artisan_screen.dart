@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
-import '../../widgets/app_drawer.dart';
 
 class AddArtisanScreen extends StatefulWidget {
   const AddArtisanScreen({super.key});
@@ -29,6 +28,9 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _instagramController = TextEditingController();
   final _facebookController = TextEditingController();
 
+  bool _isPinVerified = false;
+  final _pinController = TextEditingController();
+
   String? _fotoUrl;
   bool _isUploading = false;
   bool _isSaving = false;
@@ -49,10 +51,6 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
 
   Future<void> _saveArtisan() async {
     if (!_formKey.currentState!.validate()) return;
-
-    final isUnlocked = await _promptAdminCode();
-    if (!isUnlocked) return;
-
     setState(() => _isSaving = true);
 
     // Generar ID único
@@ -93,204 +91,219 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     }
   }
 
-  Future<bool> _promptAdminCode() async {
-    final controller = TextEditingController();
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Codigo de administracion'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          obscureText: true,
-          decoration: const InputDecoration(
-            labelText: 'Ingresar codigo',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(
-              context,
-              controller.text.trim() == _adminCode,
-            ),
-            child: const Text('Ingresar'),
-          ),
-        ],
-      ),
-    );
-
-    if (!mounted) return false;
-
-    if (result == true) {
-      return true;
-    }
-
-    if (result == false) {
+  void _verifyPin() {
+    if (_pinController.text.trim() == _adminCode) {
+      setState(() => _isPinVerified = true);
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Codigo incorrecto.'),
+          content: Text('PIN incorrecto'),
           backgroundColor: Colors.red,
         ),
       );
     }
-    return false;
+  }
+
+  Widget _buildPinGate() {
+    return Center(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_person, size: 60, color: Colors.brown),
+              const SizedBox(height: 20),
+              const Text(
+                'Acceso Administrativo',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _pinController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Ingresar PIN',
+                  prefixIcon: Icon(Icons.password),
+                ),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                onSubmitted: (_) => _verifyPin(),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _verifyPin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('VERIFICAR'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Añadir Nuevo Artesano'), elevation: 0),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Foto de Perfil
-              Center(
-                child: Stack(
+      body: !_isPinVerified
+          ? _buildPinGate()
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.brown[50],
-                      backgroundImage: _fotoUrl != null
-                          ? NetworkImage(_fotoUrl!)
-                          : null,
-                      child: _fotoUrl == null && !_isUploading
-                          ? const Icon(
-                              Icons.person,
-                              size: 60,
-                              color: Colors.brown,
-                            )
-                          : null,
-                    ),
-                    if (_isUploading)
-                      const Positioned.fill(
-                        child: CircularProgressIndicator(color: Colors.brown),
+                    // Foto de Perfil
+                    Center(
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.brown[50],
+                            backgroundImage: _fotoUrl != null
+                                ? NetworkImage(_fotoUrl!)
+                                : null,
+                            child: _fotoUrl == null && !_isUploading
+                                ? const Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: Colors.brown,
+                                  )
+                                : null,
+                          ),
+                          if (_isUploading)
+                            const Positioned.fill(
+                              child: CircularProgressIndicator(
+                                color: Colors.brown,
+                              ),
+                            ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: FloatingActionButton.small(
+                              onPressed: _isUploading
+                                  ? null
+                                  : _pickAndUploadImage,
+                              child: const Icon(Icons.camera_alt),
+                            ),
+                          ),
+                        ],
                       ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: FloatingActionButton.small(
-                        onPressed: _isUploading ? null : _pickAndUploadImage,
-                        child: const Icon(Icons.camera_alt),
+                    ),
+                    const SizedBox(height: 32),
+
+                    _buildSectionTitle("Información Personal"),
+                    _buildTextField(
+                      _nombreController,
+                      "Nombre Completo",
+                      Icons.person,
+                    ),
+                    _buildTextField(
+                      _historiaController,
+                      "Historia / Biografía",
+                      Icons.history,
+                      maxLines: 3,
+                    ),
+
+                    const SizedBox(height: 24),
+                    _buildSectionTitle("Ubicación"),
+                    _buildTextField(
+                      _localidadController,
+                      "Localidad",
+                      Icons.location_city,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(
+                            _cpController,
+                            "C.P.",
+                            Icons.mark_as_unread,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildTextField(
+                            _provinciaController,
+                            "Provincia",
+                            Icons.map,
+                          ),
+                        ),
+                      ],
+                    ),
+                    _buildTextField(
+                      _ubicacionController,
+                      "Barrio / Zona",
+                      Icons.place,
+                    ),
+                    _buildTextField(
+                      _direccionController,
+                      "Dirección (Opcional)",
+                      Icons.home,
+                    ),
+
+                    const SizedBox(height: 24),
+                    _buildSectionTitle("Contacto y Redes"),
+                    _buildTextField(
+                      _whatsappController,
+                      "WhatsApp (ej: 549351...)",
+                      Icons.chat,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    _buildTextField(
+                      _telefonoController,
+                      "Teléfono Fijo (Opcional)",
+                      Icons.phone,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    _buildTextField(
+                      _instagramController,
+                      "Instagram (Usuario sin @)",
+                      Icons.camera_alt,
+                    ),
+                    _buildTextField(
+                      _facebookController,
+                      "Facebook (URL o Usuario)",
+                      Icons.facebook,
+                    ),
+
+                    const SizedBox(height: 32),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _saveArtisan,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.brown,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: _isSaving
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text(
+                                "GUARDAR ARTESANO",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
-
-              _buildSectionTitle("Información Personal"),
-              _buildTextField(
-                _nombreController,
-                "Nombre Completo",
-                Icons.person,
-              ),
-              _buildTextField(
-                _historiaController,
-                "Historia / Biografía",
-                Icons.history,
-                maxLines: 3,
-              ),
-
-              const SizedBox(height: 24),
-              _buildSectionTitle("Ubicación"),
-              _buildTextField(
-                _localidadController,
-                "Localidad",
-                Icons.location_city,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      _cpController,
-                      "C.P.",
-                      Icons.mark_as_unread,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      _provinciaController,
-                      "Provincia",
-                      Icons.map,
-                    ),
-                  ),
-                ],
-              ),
-              _buildTextField(
-                _ubicacionController,
-                "Barrio / Zona",
-                Icons.place,
-              ),
-              _buildTextField(
-                _direccionController,
-                "Dirección (Opcional)",
-                Icons.home,
-              ),
-
-              const SizedBox(height: 24),
-              _buildSectionTitle("Contacto y Redes"),
-              _buildTextField(
-                _whatsappController,
-                "WhatsApp (ej: 549351...)",
-                Icons.chat,
-                keyboardType: TextInputType.phone,
-              ),
-              _buildTextField(
-                _telefonoController,
-                "Teléfono Fijo (Opcional)",
-                Icons.phone,
-                keyboardType: TextInputType.phone,
-              ),
-              _buildTextField(
-                _instagramController,
-                "Instagram (Usuario sin @)",
-                Icons.camera_alt,
-              ),
-              _buildTextField(
-                _facebookController,
-                "Facebook (URL o Usuario)",
-                Icons.facebook,
-              ),
-
-              const SizedBox(height: 32),
-              const SizedBox(height: 40),
-              SizedBox(
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveArtisan,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.brown,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isSaving
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          "GUARDAR ARTESANO",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 

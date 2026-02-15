@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'admin/upload_image_screen.dart';
-import '../widgets/app_drawer.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -27,9 +25,7 @@ class _AboutScreenState extends State<AboutScreen> {
             controller: controller,
             keyboardType: TextInputType.number,
             obscureText: true,
-            decoration: const InputDecoration(
-              hintText: 'Ingresar codigo',
-            ),
+            decoration: const InputDecoration(hintText: 'Ingresar codigo'),
           ),
           actions: [
             TextButton(
@@ -53,9 +49,9 @@ class _AboutScreenState extends State<AboutScreen> {
         _adminUnlocked = true;
       });
     } else if (isUnlocked == false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Codigo incorrecto.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Codigo incorrecto.')));
     }
   }
 
@@ -79,7 +75,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 border: Border.all(color: Colors.brown, width: 3),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.brown.withOpacity(0.2),
+                    color: Colors.brown.withValues(alpha: 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -182,7 +178,8 @@ class _AboutScreenState extends State<AboutScreen> {
                 _buildSocialButton(
                   icon: Icons.email,
                   color: Colors.grey[700]!,
-                  onTap: () => _launchURL('mailto:marcelosaizestudio@gmail.com'),
+                  onTap: () =>
+                      _launchURL('mailto:marcelosaizestudio@gmail.com'),
                 ),
                 const SizedBox(width: 20),
                 _buildSocialButton(
@@ -196,38 +193,54 @@ class _AboutScreenState extends State<AboutScreen> {
             // Sección Administrativa
             const Divider(),
             const SizedBox(height: 20),
-            const Text(
-              'Administración',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF5D4037),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Administración',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5D4037),
+                  ),
+                ),
+                if (!_adminUnlocked)
+                  IconButton(
+                    icon: const Icon(Icons.lock_outline, color: Colors.brown),
+                    onPressed: _promptAdminCode,
+                    tooltip: 'Activar Modo Administrador',
+                  )
+                else
+                  const Icon(Icons.lock_open, color: Colors.green),
+              ],
             ),
             const SizedBox(height: 10),
-            ListTile(
-              leading: const Icon(Icons.person_add, color: Colors.brown),
-              title: const Text('Añadir Nuevo Artesano'),
-              subtitle: const Text('Crear perfil desde el celular'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.pushNamed(context, '/add-artisan');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.cloud_upload, color: Colors.brown),
-              title: const Text('Subir Imágenes'),
-              subtitle: const Text('Artesanos y Productos'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const UploadImageScreen(),
-                  ),
-                );
-              },
-            ),
+
+            if (!_adminUnlocked)
+              ListTile(
+                leading: const Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.grey,
+                ),
+                title: const Text('Acceso Restringido'),
+                subtitle: const Text(
+                  'Toca el candado para desbloquear opciones',
+                ),
+                onTap: _promptAdminCode,
+              )
+            else ...[
+              ListTile(
+                leading: const Icon(Icons.people_outline, color: Colors.brown),
+                title: const Text('Gestionar Artesanos'),
+                subtitle: const Text(
+                  'Ver lista, añadir, eliminar o subir imágenes',
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.pushNamed(context, '/admin-artisans');
+                },
+              ),
+            ],
             // Botón de sincronización oculto por seguridad/destructividad
             const SizedBox(height: 30),
             // Créditos

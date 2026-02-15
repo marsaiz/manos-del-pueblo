@@ -13,25 +13,115 @@ class AdminArtisansScreen extends StatefulWidget {
 }
 
 class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
+  bool _isPinVerified = false;
+  final _pinController = TextEditingController();
+  static const String _adminCode = '4628';
+  static const String _deleteCode = '919345';
+
+  void _verifyPin() {
+    if (_pinController.text.trim() == _adminCode) {
+      setState(() => _isPinVerified = true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PIN incorrecto'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Widget _buildPinGate() {
+    return Center(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_person, size: 60, color: Colors.brown),
+              const SizedBox(height: 20),
+              const Text(
+                'Acceso Administrativo',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _pinController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Ingresar PIN',
+                  prefixIcon: Icon(Icons.password),
+                ),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                onSubmitted: (_) => _verifyPin(),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _verifyPin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('VERIFICAR'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _confirmDelete(Artisan artisan) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar artesano'),
-        content: Text(
-          'Se eliminara el artesano "${artisan.nombre}" y sus productos. Esta accion no se puede deshacer.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+      builder: (context) {
+        final specialPinController = TextEditingController();
+        return AlertDialog(
+          title: const Text('Confirmar Eliminación'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Se eliminara el artesano "${artisan.nombre}" y sus productos. Esta accion no se puede deshacer.',
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: specialPinController,
+                decoration: const InputDecoration(
+                  labelText: 'PIN de Seguridad (Especial)',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Eliminar'),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (specialPinController.text.trim() == _deleteCode) {
+                  Navigator.pop(context, true);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('PIN especial incorrecto'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Eliminar'),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirm != true || !mounted) return;
@@ -48,9 +138,9 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
 
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Artesano eliminado.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Artesano eliminado.')));
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context);
@@ -136,10 +226,7 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  description,
-                  textAlign: TextAlign.center,
-                ),
+                Text(description, textAlign: TextAlign.center),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: onOpen,
@@ -175,37 +262,39 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildListTab(),
-            _buildActionTab(
-              title: 'Añadir artesano',
-              description: 'Crear un perfil nuevo desde el celular.',
-              icon: Icons.person_add,
-              onOpen: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddArtisanScreen(),
+        body: !_isPinVerified
+            ? _buildPinGate()
+            : TabBarView(
+                children: [
+                  _buildListTab(),
+                  _buildActionTab(
+                    title: 'Añadir artesano',
+                    description: 'Crear un perfil nuevo desde el celular.',
+                    icon: Icons.person_add,
+                    onOpen: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddArtisanScreen(),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-            _buildActionTab(
-              title: 'Subir imagenes',
-              description: 'Cargar imagenes para artesanos y productos.',
-              icon: Icons.cloud_upload,
-              onOpen: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const UploadImageScreen(),
+                  _buildActionTab(
+                    title: 'Subir imagenes',
+                    description: 'Cargar imagenes para artesanos y productos.',
+                    icon: Icons.cloud_upload,
+                    onOpen: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const UploadImageScreen(),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                ],
+              ),
       ),
     );
   }
