@@ -3,6 +3,8 @@ workflows:
     name: iOS Release
     max_build_duration: 120
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic
     environment:
       flutter: stable
       xcode: latest
@@ -11,10 +13,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: ar.manosdelpueblo.app
-      vars:
-        APP_STORE_CONNECT_ISSUER_ID: "56ae558b-a2e0-4e17-9574-70197f224ca4"
-        APP_STORE_CONNECT_KEY_ID: "N33443FRDZ"
-        APP_ID: "ar.manosdelpueblo.app"
     scripts:
       - name: Flutter pub get
         script: flutter pub get
@@ -25,8 +23,5 @@ workflows:
       - build/ios/ipa/*.dSYM.zip
     publishing:
       app_store_connect:
-        api_key:
-          key_id: "$APP_STORE_CONNECT_KEY_ID"
-          issuer_id: "$APP_STORE_CONNECT_ISSUER_ID"
-          private_key: "$APP_STORE_CONNECT_PRIVATE_KEY"
+        auth: integration
         submit_to_testflight: true
