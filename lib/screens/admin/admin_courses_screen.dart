@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/course.dart';
 import '../../services/firestore_service.dart';
+import '../../widgets/pin_dialog.dart';
 import 'add_edit_course_screen.dart';
 
 class AdminCoursesScreen extends StatelessWidget {
@@ -83,27 +84,13 @@ class AdminCoursesScreen extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context, Course course) {
-    showDialog(
+    showPinDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar Curso'),
-        content: Text(
-          '¿Estás seguro de que deseas eliminar el curso "${course.title}"?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await FirestoreService.deleteCourse(course.id);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+      title: 'Eliminar Curso',
+      message: '¿Estás seguro de que deseas eliminar el curso "${course.title}"?',
+      onConfirm: () async {
+        await FirestoreService.deleteCourse(course.id);
+      },
     );
   }
 }

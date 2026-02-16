@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../widgets/pin_dialog.dart';
 import 'add_artisan_screen.dart';
 import 'upload_image_screen.dart';
 
@@ -74,80 +75,26 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
   }
 
   Future<void> _confirmDelete(Artisan artisan) async {
-    final confirm = await showDialog<bool>(
+    showPinDialog(
       context: context,
-      builder: (context) {
-        final specialPinController = TextEditingController();
-        return AlertDialog(
-          title: const Text('Confirmar Eliminación'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Se eliminara el artesano "${artisan.nombre}" y sus productos. Esta accion no se puede deshacer.',
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: specialPinController,
-                decoration: const InputDecoration(
-                  labelText: 'PIN de Seguridad (Especial)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                obscureText: true,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (specialPinController.text.trim() == _deleteCode) {
-                  Navigator.pop(context, true);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('PIN especial incorrecto'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              style: FilledButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Eliminar'),
-            ),
-          ],
+      title: 'Confirmar Eliminación',
+      message: 'Se eliminará el artesano "${artisan.nombre}" y sus productos. Esta acción no se puede deshacer.',
+      correctPin: _deleteCode,
+      onConfirm: () async {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => const Center(child: CircularProgressIndicator()),
         );
+
+        await FirestoreService.deleteArtisanCascade(artisan.id);
+        await ImageUploadService.deleteArtisanFolder(artisan.id);
+
+        if (mounted) {
+          Navigator.pop(context); // Cerrar loading
+        }
       },
     );
-
-    if (confirm != true || !mounted) return;
-
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(child: CircularProgressIndicator()),
-      );
-
-      await FirestoreService.deleteArtisanCascade(artisan.id);
-      await ImageUploadService.deleteArtisanFolder(artisan.id);
-
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Artesano eliminado.')));
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
-    }
   }
 
   Widget _buildListTab() {

@@ -623,7 +623,11 @@ class _ProductDetailState extends State<ProductDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product.nombre),
+        title: Text(
+          widget.product.nombre,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           // Botón de editar
           IconButton(
@@ -839,6 +843,8 @@ class _ProductDetailState extends State<ProductDetail> {
                       ),
                     ),
                   ),
+                  // Espacio adicional para evitar que los botones de navegación de Android tapen el contenido
+                  const SizedBox(height: 80),
                 ],
               ),
             ),

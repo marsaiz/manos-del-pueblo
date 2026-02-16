@@ -193,9 +193,13 @@ class ArtisanProfileScreen extends StatelessWidget {
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
                     artisan.nombre,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
                       shadows: [Shadow(blurRadius: 10, color: Colors.black)],
                     ),
                   ),

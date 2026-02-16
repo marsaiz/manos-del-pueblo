@@ -4,7 +4,7 @@ import '../../models/artisan.dart';
 import '../../models/product.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
-import '../../widgets/app_drawer.dart';
+import '../../widgets/pin_dialog.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -22,7 +22,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   late TextEditingController _descripcionController;
   late TextEditingController _precioController;
   late TextEditingController _customCategoriaController;
-  final _pinController = TextEditingController();
 
   final List<String> _categorias = [
     'Indumentaria',
@@ -79,7 +78,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _descripcionController.dispose();
     _precioController.dispose();
     _customCategoriaController.dispose();
-    _pinController.dispose();
     super.dispose();
   }
 
@@ -135,16 +133,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
 
-    if (_pinController.text != '1234') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN de seguridad incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    // Mostrar diálogo de PIN antes de actualizar
+    showPinDialog(
+      context: context,
+      title: 'Confirmar Actualización',
+      message: '¿Deseas actualizar este producto?',
+      correctPin: '1234',
+      onConfirm: () async {
+        await _performUpdate();
+      },
+    );
+  }
 
+  Future<void> _performUpdate() async {
     setState(() => _isSaving = true);
 
     final String finalCategoria =
@@ -185,63 +186,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> _deleteProduct() async {
-    // Mostrar diálogo de confirmación
-    final confirmed = await showDialog<bool>(
+    showPinDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar Eliminación'),
-        content: Text(
-          '¿Estás seguro de que deseas eliminar el producto "${widget.product.nombre}"?\n\nEsta acción no se puede deshacer.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Eliminar'),
-          ),
-        ],
-      ),
+      title: 'Confirmar Eliminación',
+      message: '¿Estás seguro de que deseas eliminar el producto "${widget.product.nombre}"?\n\nEsta acción no se puede deshacer.',
+      correctPin: '1234',
+      onConfirm: () async {
+        await FirestoreService.deleteProduct(widget.product.id);
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      },
     );
-
-    if (confirmed != true) return;
-
-    // Verificar PIN
-    if (_pinController.text != '1234') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN de seguridad incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isSaving = true);
-
-    try {
-      await FirestoreService.deleteProduct(widget.product.id);
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Producto eliminado con éxito')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Error al eliminar: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
-    }
   }
 
   @override
@@ -374,14 +330,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
               const SizedBox(height: 24),
               const Divider(),
               const SizedBox(height: 16),
-              _buildSectionTitle("Confirmación"),
-              _buildTextField(
-                _pinController,
-                "PIN de Seguridad",
-                Icons.lock,
-                isPassword: true,
-                keyboardType: TextInputType.number,
-              ),
 
               const SizedBox(height: 40),
               SizedBox(

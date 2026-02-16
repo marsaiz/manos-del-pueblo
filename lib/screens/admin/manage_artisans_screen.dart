@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../widgets/pin_dialog.dart';
 import 'package:flutter/services.dart';
 
 enum ImageType { artisanProfile, product }
@@ -66,56 +67,11 @@ class _ListArtisansTab extends StatelessWidget {
   const _ListArtisansTab();
 
   Future<void> _deleteArtisan(BuildContext context, Artisan artisan) async {
-    final TextEditingController pinController = TextEditingController();
-
-    final bool? confirm = await showDialog<bool>(
+    showPinDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('¿Eliminar Artesano?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Vas a eliminar a "${artisan.nombre}" y todos sus productos e imágenes.',
-              style: const TextStyle(color: Colors.red),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: pinController,
-              decoration: const InputDecoration(
-                labelText: 'PIN de seguridad',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-              obscureText: true,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCELAR'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (pinController.text == '4628') {
-                Navigator.pop(context, true);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('PIN incorrecto')),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('ELIMINAR', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      if (!context.mounted) return;
-      try {
+      title: '¿Eliminar Artesano?',
+      message: 'Vas a eliminar a "${artisan.nombre}" y todos sus productos e imágenes.',
+      onConfirm: () async {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -126,20 +82,10 @@ class _ListArtisansTab extends StatelessWidget {
         await ImageUploadService.deleteArtisanFolder(artisan.id);
 
         if (context.mounted) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('✅ Artesano eliminado con éxito')),
-          );
+          Navigator.pop(context); // Cerrar loading
         }
-      } catch (e) {
-        if (context.mounted) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('❌ Error al eliminar: $e')),
-          );
-        }
-      }
-    }
+      },
+    );
   }
 
   @override

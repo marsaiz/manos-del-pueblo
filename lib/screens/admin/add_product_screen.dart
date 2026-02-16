@@ -4,7 +4,7 @@ import '../../models/artisan.dart';
 import '../../models/product.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
-import '../../widgets/app_drawer.dart';
+import '../../widgets/pin_dialog.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -21,7 +21,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _descripcionController = TextEditingController();
   final _precioController = TextEditingController();
   final _customCategoriaController = TextEditingController();
-  final _pinController = TextEditingController();
 
   final List<String> _categorias = [
     'Indumentaria',
@@ -103,16 +102,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    if (_pinController.text != '1234') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN de seguridad incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    // Mostrar diálogo de PIN antes de guardar
+    showPinDialog(
+      context: context,
+      title: 'Confirmar Producto',
+      message: '¿Deseas guardar este producto?',
+      correctPin: '1234',
+      onConfirm: () async {
+        await _performSave();
+      },
+    );
+  }
 
+  Future<void> _performSave() async {
     setState(() => _isSaving = true);
 
     final String finalCategoria = _selectedCategoria == 'Otro...'
@@ -159,7 +161,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _descripcionController.dispose();
     _precioController.dispose();
     _customCategoriaController.dispose();
-    _pinController.dispose();
     super.dispose();
   }
 
@@ -289,14 +290,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 24),
               const Divider(),
               const SizedBox(height: 16),
-              _buildSectionTitle("Confirmación"),
-              _buildTextField(
-                _pinController,
-                "PIN de Seguridad",
-                Icons.lock,
-                isPassword: true,
-                keyboardType: TextInputType.number,
-              ),
 
               const SizedBox(height: 40),
               SizedBox(

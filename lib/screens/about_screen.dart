@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../widgets/pin_dialog.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -15,44 +16,19 @@ class _AboutScreenState extends State<AboutScreen> {
   bool _adminUnlocked = false;
 
   Future<void> _promptAdminCode() async {
-    final controller = TextEditingController();
-    final isUnlocked = await showDialog<bool>(
+    showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Codigo de administracion'),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            obscureText: true,
-            decoration: const InputDecoration(hintText: 'Ingresar codigo'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.pop(context, controller.text == _adminCode),
-              child: const Text('Ingresar'),
-            ),
-          ],
-        );
-      },
+      builder: (context) => PinDialog(
+        title: 'Código de administración',
+        message: 'Ingresa el código para desbloquear el modo administrador',
+        correctPin: _adminCode,
+        onSuccess: () {
+          setState(() {
+            _adminUnlocked = true;
+          });
+        },
+      ),
     );
-
-    if (!mounted) return;
-
-    if (isUnlocked == true) {
-      setState(() {
-        _adminUnlocked = true;
-      });
-    } else if (isUnlocked == false) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Codigo incorrecto.')));
-    }
   }
 
   @override
