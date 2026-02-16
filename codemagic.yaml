@@ -6,22 +6,142 @@ workflows:
     integrations:
       app_store_connect: codemagic
     environment:
-      flutter: stable
-      xcode: latest
-      groups:
-        - appstore
       ios_signing:
         distribution_type: app_store
         bundle_identifier: ar.manosdelpueblo.app
+      groups:
+        - appstore
+      vars:
+        BUNDLE_ID: "ar.manosdelpueblo.app"
+        APP_STORE_APPLE_ID: 1234567890  # Reemplazar con tu App Store ID
+        APPLE_TEAM_ID: "S2668973BN"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
     scripts:
-      - name: Flutter pub get
-        script: flutter pub get
+      - name: Add certificates to keychain
+        script: |
+          # Instalar los certificados/provisioning profiles subidos en Codemagic
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Verify export options presence
+        script: |
+          if [ -f "$HOME/export_options.plist" ]; then
+            echo "✅ export_options.plist found at $HOME/export_options.plist"
+            # Print only keys to avoid leaking sensitive values
+            /usr/libexec/PlistBuddy -c "Print" "$HOME/export_options.plist" | sed -n '1,40p'
+          else
+            echo "❌ export_options.plist not found"
+            exit 1
+          fi
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios
+          pod install --repo-update
+          cd ..
+      - name: Flutter analyze
+        script: |
+          flutter analyze || true
       - name: Flutter build ipa
-        script: flutter build ipa --release
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=$HOME/export_options.plist \
+            --build-name=1.0.0 \
+            --build-number=1
     artifacts:
       - build/ios/ipa/*.ipa
-      - build/ios/ipa/*.dSYM.zip
+      - build/ios/archive/*.xcarchive
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
     publishing:
+      email:
+        recipients:
+          - tu-email@ejemplo.com  # Reemplazar con tu email
+        notify:
+          success: true
+          failure: true
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        submit_to_testflight: false  # Cambiar a true cuando hayas completado Test Information
+        # beta_groups:  # Descomentar cuando crees el grupo en TestFlight
+        #   - Manos del Pueblo Test
+        submit_to_app_store: false
+
+  android-release:
+    name: Android Release
+    max_build_duration: 120
+    instance_type: linux_x2
+    environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: "ar.manosdelpueblo.app"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Build APK with Flutter
+        script: |
+          flutter build apk --release
+      - name: Build Android App Bundle
+        script: |
+          flutter build appbundle --release
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - tu-email@ejemplo.com  # Reemplazar con tu email
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+
+  ios-dry-run:
+    name: iOS Dry Run (no codesign)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter analyze
+        script: |
+          flutter analyze || true
+      - name: Build iOS app (no codesign)
+        script: |
+          flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
