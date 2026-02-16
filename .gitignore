@@ -48,6 +48,11 @@ Thumbs.db
 /android/app/profile
 /android/app/release
 
+# Archivos de firma de Android (NUNCA subir al repositorio)
+/android/key.properties
+*.jks
+*.keystore
+
 /linux/flutter/generated_plugin_registrant.*
 /linux/flutter/generated_plugins.cmake
 /macos/Flutter/GeneratedPluginRegistrant.swift
