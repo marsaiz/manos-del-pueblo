@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/favorites_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/about_screen.dart';
+import 'screens/privacy_policy_screen.dart';
 import 'firebase_options.dart';
 import 'screens/admin/add_artisan_screen.dart';
 import 'screens/admin/add_product_screen.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomeScreen(),
         '/about': (context) => const AboutScreen(),
+        '/privacy-policy': (context) => const PrivacyPolicyScreen(),
         '/add-artisan': (context) => const AddArtisanScreen(),
         '/add-product': (context) => const AddProductScreen(),
         '/courses': (context) => const CoursesScreen(),

@@ -219,6 +219,18 @@ class _AboutScreenState extends State<AboutScreen> {
             ],
             // Botón de sincronización oculto por seguridad/destructividad
             const SizedBox(height: 30),
+            // Política de Privacidad
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/privacy-policy');
+              },
+              icon: const Icon(Icons.privacy_tip_outlined, size: 18),
+              label: const Text('Política de Privacidad'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.brown,
+              ),
+            ),
+            const SizedBox(height: 10),
             // Créditos
             const Text(
               '© 2024 Manos del Pueblo',
