@@ -155,7 +155,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   icon: Icons.email,
                   color: Colors.grey[700]!,
                   onTap: () =>
-                      _launchURL('mailto:marcelosaizestudio@gmail.com'),
+                      _launchURL('mailto:contacto@manos-del-pueblo.ar'),
                 ),
                 const SizedBox(width: 20),
                 _buildSocialButton(

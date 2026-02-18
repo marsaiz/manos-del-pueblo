@@ -366,7 +366,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
-                  'Email: contacto@manosdelpueblo.ar',
+                  'Email: contacto@manos-del-pueblo.ar',
                   'Sitio web: https://www.manos-del-pueblo.ar',
                 ]),
                 const SizedBox(height: 12),

@@ -348,7 +348,7 @@ class _UploadImagesTabState extends State<_UploadImagesTab> {
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<Artisan>(
-                        value: _selectedArtisan,
+                        initialValue: _selectedArtisan,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.person),

@@ -5,7 +5,6 @@ import '../models/artisan.dart';
 import '../models/product.dart';
 import 'home_screen.dart'; // Para reusar ProductCard
 import '../services/firestore_service.dart';
-import '../widgets/app_drawer.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});

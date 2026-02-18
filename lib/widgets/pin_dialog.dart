@@ -21,7 +21,7 @@ class PinDialog extends StatefulWidget {
 
 class _PinDialogState extends State<PinDialog> {
   final _pinController = TextEditingController();
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void dispose() {
