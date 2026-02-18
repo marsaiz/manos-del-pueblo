@@ -230,6 +230,20 @@ class _AboutScreenState extends State<AboutScreen> {
                 foregroundColor: Colors.brown,
               ),
             ),
+            const SizedBox(height: 5),
+            // Solicitud de Eliminación de Datos (para artesanos)
+            TextButton.icon(
+              onPressed: () {
+                _launchURL(
+                  'mailto:contacto@manos-del-pueblo.ar?subject=Solicitud de eliminación de datos de artesano&body=Nombre del artesano:%0D%0ALocalidad:%0D%0AMotivo de la solicitud:%0D%0A%0D%0APor favor, proporciona la información necesaria para verificar tu identidad como artesano registrado.',
+                );
+              },
+              icon: const Icon(Icons.delete_outline, size: 18),
+              label: const Text('Solicitar Eliminación de Datos'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red[700],
+              ),
+            ),
             const SizedBox(height: 10),
             // Créditos
             const Text(

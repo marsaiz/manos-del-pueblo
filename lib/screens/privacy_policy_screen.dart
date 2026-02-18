@@ -376,6 +376,49 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 ),
               ],
             ),
+            _buildSection(
+              '11. Eliminación de Datos de Artesanos',
+              [
+                const Text(
+                  'Si eres un artesano registrado en nuestra plataforma y deseas que eliminemos tu información (nombre, fotos, productos, datos de contacto), tienes derecho a solicitarlo en cualquier momento.',
+                  style: TextStyle(fontSize: 16, height: 1.6),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Para solicitar la eliminación de tus datos:',
+                  style: TextStyle(fontSize: 16, height: 1.6, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Envía un email a contacto@manos-del-pueblo.ar con el asunto "Solicitud de eliminación de datos"',
+                  'Incluye tu nombre completo, localidad y una breve descripción del motivo',
+                  'Procesaremos tu solicitud dentro de 30 días hábiles',
+                  'Te confirmaremos por email cuando tus datos hayan sido eliminados',
+                ]),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Nota: Esta opción es solo para artesanos registrados que deseen ser removidos de la plataforma. Los usuarios de la app no tienen datos personales almacenados que eliminar.',
+                          style: TextStyle(fontSize: 14, height: 1.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 40),
             const Divider(),
             const SizedBox(height: 20),
