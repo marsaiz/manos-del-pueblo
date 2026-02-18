@@ -34,55 +34,162 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text(
-              'En Manos del Pueblo, nos comprometemos a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos y protegemos tu información cuando utilizas nuestra aplicación móvil.',
+              'En Manos del Pueblo, respetamos tu privacidad. Esta Política de Privacidad explica qué información recopilamos, cómo la usamos y tus derechos cuando utilizas nuestra aplicación móvil.',
               style: TextStyle(fontSize: 16, height: 1.6),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Importante',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Manos del Pueblo NO requiere registro de usuario, NO recopila datos personales identificables (nombre, email, teléfono), y NO almacena información personal en nuestros servidores.',
+                    style: TextStyle(fontSize: 14, height: 1.5),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 24),
             _buildSection(
               '1. Información que Recopilamos',
               [
                 _buildSubsection(
-                  '1.1 Información que Proporcionas',
-                  'Cuando utilizas Manos del Pueblo, podemos recopilar la siguiente información que nos proporcionas voluntariamente:',
+                  '1.1 Información que NO Recopilamos',
+                  'Nuestra aplicación NO recopila ni almacena:',
                   [
-                    'Información de contacto: Nombre, dirección de correo electrónico, número de teléfono (si decides contactar directamente con los artesanos)',
-                    'Información de navegación: Productos que visualizas, artesanos que sigues, búsquedas realizadas',
+                    'Nombre, apellido o información de identidad personal',
+                    'Dirección de correo electrónico',
+                    'Número de teléfono',
+                    'Dirección física o ubicación precisa',
+                    'Información de pago o tarjetas de crédito',
+                    'Contraseñas o credenciales de acceso (no hay sistema de login)',
                   ],
                 ),
                 _buildSubsection(
                   '1.2 Información Recopilada Automáticamente',
-                  'Cuando utilizas la aplicación, recopilamos automáticamente cierta información:',
+                  'Cuando utilizas la aplicación, recopilamos automáticamente información anónima de uso a través de Firebase Analytics:',
                   [
-                    'Información del dispositivo: Tipo de dispositivo, sistema operativo, versión de la aplicación',
-                    'Datos de uso: Páginas visitadas, tiempo de uso, interacciones con la aplicación',
-                    'Datos analíticos: Utilizamos Firebase Analytics para entender cómo se usa la aplicación y mejorar la experiencia del usuario',
+                    'Tipo de dispositivo y modelo (ej: Samsung Galaxy, iPhone 12)',
+                    'Sistema operativo y versión (ej: Android 13, iOS 16)',
+                    'Versión de la aplicación instalada',
+                    'Idioma del dispositivo',
+                    'Identificador anónimo del dispositivo (para analytics, no vinculado a tu identidad)',
+                    'Páginas y productos visualizados dentro de la app',
+                    'Tiempo de uso y frecuencia de uso',
+                    'Interacciones con la aplicación (toques, deslizamientos)',
+                    'Eventos de la aplicación (ej: apertura de perfil de artesano, visualización de producto)',
                   ],
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Esta información es completamente anónima y no puede ser utilizada para identificarte personalmente.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.6,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ],
             ),
             _buildSection(
-              '2. Cómo Utilizamos tu Información',
+              '2. Cómo Utilizamos la Información',
               [
                 const Text(
-                  'Utilizamos la información recopilada para:',
+                  'Utilizamos la información anónima recopilada exclusivamente para:',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
-                  'Proporcionar y mantener la funcionalidad de la aplicación',
-                  'Mejorar y personalizar tu experiencia de usuario',
-                  'Facilitar la comunicación entre usuarios y artesanos',
-                  'Analizar el uso de la aplicación para mejorar nuestros servicios',
-                  'Enviar notificaciones importantes sobre la aplicación (si has dado tu consentimiento)',
-                  'Detectar, prevenir y abordar problemas técnicos',
+                  'Mantener y mejorar la funcionalidad de la aplicación',
+                  'Analizar patrones de uso para optimizar la experiencia del usuario',
+                  'Identificar y corregir errores técnicos',
+                  'Entender qué contenido es más popular (productos, artesanos)',
+                  'Mejorar el rendimiento y la velocidad de la aplicación',
+                  'Generar estadísticas agregadas y anónimas sobre el uso de la app',
+                ]),
+                const SizedBox(height: 12),
+                const Text(
+                  'NO utilizamos esta información para:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Identificarte personalmente',
+                  'Enviarte publicidad o marketing',
+                  'Vender o compartir tus datos con terceros',
+                  'Rastrear tu ubicación física',
+                  'Crear perfiles de usuario',
                 ]),
               ],
             ),
             _buildSection(
-              '3. Compartir Información',
+              '3. Contacto con Artesanos',
               [
                 const Text(
-                  'No vendemos ni alquilamos tu información personal a terceros.',
+                  'Nuestra aplicación muestra información de contacto de artesanos (teléfono, WhatsApp, redes sociales). Cuando decides contactar a un artesano:',
+                  style: TextStyle(fontSize: 16, height: 1.6),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'El contacto se realiza FUERA de nuestra aplicación (a través de WhatsApp, llamada telefónica, etc.)',
+                  'Nosotros NO vemos, almacenamos ni tenemos acceso a las conversaciones o información que compartes con los artesanos',
+                  'Cualquier información personal que compartas con un artesano es directamente entre tú y el artesano',
+                  'No somos responsables del uso que los artesanos hagan de tu información personal',
+                ]),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.amber.shade200),
+                  ),
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.warning_amber, color: Colors.orange, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Recomendamos tener precaución al compartir información personal con terceros y verificar la identidad de los artesanos antes de realizar transacciones.',
+                          style: TextStyle(fontSize: 14, height: 1.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            _buildSection(
+              '4. Compartir Información',
+              [
+                const Text(
+                  'NO vendemos, alquilamos ni compartimos tu información personal con terceros porque NO recopilamos información personal identificable.',
                   style: TextStyle(
                     fontSize: 16,
                     height: 1.6,
@@ -91,44 +198,61 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Podemos compartir tu información en las siguientes circunstancias:',
+                  'La información anónima de analytics es procesada por:',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
-                  'Con artesanos: Cuando decides contactar a un artesano, compartimos la información de contacto que proporcionas',
-                  'Proveedores de servicios: Compartimos información con proveedores que nos ayudan a operar la aplicación (ej: Firebase, servicios de hosting)',
-                  'Cumplimiento legal: Si es requerido por ley o para proteger nuestros derechos legales',
+                  'Firebase Analytics (Google): Procesa datos anónimos de uso de la aplicación',
+                  'Google Play Services: Servicios del sistema Android (solo en dispositivos Android)',
                 ]),
+                const SizedBox(height: 12),
+                const Text(
+                  'Estos servicios procesan datos de forma agregada y anónima, sin vincularlos a tu identidad personal.',
+                  style: TextStyle(fontSize: 16, height: 1.6),
+                ),
               ],
             ),
             _buildSection(
-              '4. Servicios de Terceros',
+              '5. Servicios de Terceros',
               [
                 const Text(
-                  'Nuestra aplicación utiliza los siguientes servicios de terceros:',
+                  'Nuestra aplicación utiliza los siguientes servicios de terceros que pueden recopilar información anónima:',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
-                  'Firebase (Google): Para analytics, almacenamiento de datos y notificaciones push',
-                  'Google Play Services: Para funcionalidades del sistema Android',
+                  'Firebase Analytics (Google): Para análisis de uso anónimo y mejora de la aplicación',
+                  'Firebase Cloud Firestore: Para almacenar información de productos y artesanos (NO datos de usuarios)',
+                  'Firebase Storage: Para almacenar imágenes de productos y artesanos',
+                  'Google Play Services: Servicios del sistema Android (solo en dispositivos Android)',
+                ]),
+                const SizedBox(height: 12),
+                const Text(
+                  'Políticas de privacidad de terceros:',
+                  style: TextStyle(fontSize: 16, height: 1.6, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Firebase: https://firebase.google.com/support/privacy',
+                  'Google Privacy Policy: https://policies.google.com/privacy',
                 ]),
               ],
             ),
             _buildSection(
-              '5. Seguridad de los Datos',
+              '6. Seguridad de los Datos',
               [
                 const Text(
-                  'Implementamos medidas de seguridad técnicas y organizativas para proteger tu información personal:',
+                  'Aunque no recopilamos información personal identificable, implementamos medidas de seguridad para proteger la información anónima que procesamos:',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
                   'Cifrado de datos en tránsito (HTTPS/SSL)',
-                  'Almacenamiento seguro en servidores de Firebase',
-                  'Acceso restringido a información personal',
+                  'Almacenamiento seguro en servidores de Firebase (Google Cloud)',
+                  'Acceso restringido a la base de datos de productos y artesanos',
                   'Monitoreo regular de vulnerabilidades de seguridad',
+                  'Actualizaciones periódicas de la aplicación',
                 ]),
                 const SizedBox(height: 12),
                 const Text(
@@ -138,57 +262,99 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ],
             ),
             _buildSection(
-              '6. Retención de Datos',
+              '7. Retención de Datos',
               [
                 const Text(
-                  'Conservamos tu información personal solo durante el tiempo necesario para cumplir con los propósitos descritos en esta política, a menos que la ley requiera o permita un período de retención más largo.',
+                  'Los datos anónimos de analytics se conservan según las políticas de Firebase Analytics (generalmente 14 meses). No conservamos información personal porque no la recopilamos.',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
               ],
             ),
             _buildSection(
-              '7. Tus Derechos',
+              '8. Tus Derechos',
               [
                 const Text(
-                  'Tienes derecho a:',
+                  'Dado que NO recopilamos información personal identificable:',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
-                  'Acceder: Solicitar una copia de la información personal que tenemos sobre ti',
-                  'Rectificar: Solicitar la corrección de información inexacta',
-                  'Eliminar: Solicitar la eliminación de tu información personal',
-                  'Oponerte: Oponerte al procesamiento de tu información personal',
-                  'Portabilidad: Solicitar la transferencia de tus datos a otro servicio',
+                  'No almacenamos datos personales que puedan ser accedidos, rectificados o eliminados',
+                  'No creamos perfiles de usuario',
+                  'No rastreamos tu identidad personal',
                 ]),
                 const SizedBox(height: 12),
                 const Text(
-                  'Para ejercer estos derechos, contáctanos usando la información proporcionada al final de esta política.',
+                  'Si deseas limitar la recopilación de datos anónimos de analytics:',
+                  style: TextStyle(fontSize: 16, height: 1.6, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Puedes desinstalar la aplicación en cualquier momento',
+                  'Puedes desactivar el seguimiento de analytics en la configuración de tu dispositivo (Android: Configuración > Google > Anuncios > Desactivar personalización de anuncios)',
+                ]),
+              ],
+            ),
+            _buildSection(
+              '9. Privacidad de los Niños',
+              [
+                const Text(
+                  'Nuestra aplicación es apta para todas las edades. No recopilamos intencionalmente información personal de niños menores de 13 años ni de ningún otro usuario. La información anónima de analytics que recopilamos no puede ser utilizada para identificar a menores.',
+                  style: TextStyle(fontSize: 16, height: 1.6),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Si eres padre o tutor y crees que tu hijo ha proporcionado información personal a través de contacto directo con artesanos (fuera de nuestra app), por favor contacta directamente al artesano correspondiente.',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
               ],
             ),
             _buildSection(
-              '8. Privacidad de los Niños',
+              '10. Cambios a esta Política',
               [
                 const Text(
-                  'Nuestra aplicación no está dirigida a menores de 13 años. No recopilamos intencionalmente información personal de niños menores de 13 años. Si descubrimos que hemos recopilado información de un niño menor de 13 años, eliminaremos esa información inmediatamente.',
+                  'Podemos actualizar nuestra Política de Privacidad periódicamente. Te notificaremos sobre cualquier cambio significativo mediante:',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
-              ],
-            ),
-            _buildSection(
-              '9. Cambios a esta Política',
-              [
-                const Text(
-                  'Podemos actualizar nuestra Política de Privacidad periódicamente. Te notificaremos sobre cualquier cambio publicando la nueva Política de Privacidad en esta página y actualizando la fecha de "Última actualización".',
-                  style: TextStyle(fontSize: 16, height: 1.6),
-                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Actualización de la fecha de "Última actualización" en esta página',
+                  'Notificación dentro de la aplicación (para cambios importantes)',
+                  'Publicación en nuestro sitio web',
+                ]),
                 const SizedBox(height: 12),
                 const Text(
                   'Te recomendamos revisar esta Política de Privacidad periódicamente para estar informado sobre cómo protegemos tu información.',
                   style: TextStyle(fontSize: 16, height: 1.6),
                 ),
+              ],
+            ),
+            _buildSection(
+              '11. Permisos de la Aplicación',
+              [
+                const Text(
+                  'Nuestra aplicación puede solicitar los siguientes permisos del sistema:',
+                  style: TextStyle(fontSize: 16, height: 1.6),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Internet: Para cargar información de productos y artesanos desde Firebase',
+                  'Almacenamiento: Para cachear imágenes y mejorar el rendimiento (opcional)',
+                ]),
+                const SizedBox(height: 12),
+                const Text(
+                  'NO solicitamos permisos para:',
+                  style: TextStyle(fontSize: 16, height: 1.6, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                _buildBulletList([
+                  'Ubicación (GPS)',
+                  'Cámara',
+                  'Micrófono',
+                  'Contactos',
+                  'Calendario',
+                  'Llamadas telefónicas',
+                ]),
               ],
             ),
             _buildSection(
@@ -200,8 +366,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 _buildBulletList([
-                  'Email: privacidad@manosdelpueblo.ar',
-                  'Sitio web: https://manosdelpueblo.ar',
+                  'Email: contacto@manosdelpueblo.ar',
+                  'Sitio web: https://www.manos-del-pueblo.ar',
                 ]),
                 const SizedBox(height: 12),
                 const Text(
@@ -223,7 +389,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 80),
+            const SizedBox(height: 120),
           ],
         ),
       ),

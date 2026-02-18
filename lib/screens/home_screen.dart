@@ -302,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: filteredProducts.isNotEmpty
                         ? GridView.builder(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
                             itemCount: filteredProducts.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
