@@ -248,10 +248,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       fillColor: Colors.grey[50],
                     ),
                     hint: const Text("Selecciona el artesano"),
+                    isExpanded: true, // Permite que el dropdown use todo el ancho disponible
                     items: artisans.map((artisan) {
                       return DropdownMenuItem<String>(
                         value: artisan.id,
-                        child: Text(artisan.nombre),
+                        child: Text(
+                          artisan.nombre,
+                          overflow: TextOverflow.ellipsis, // Corta el texto con "..."
+                          maxLines: 1,
+                        ),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -311,10 +316,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   fillColor: Colors.grey[50],
                 ),
                 hint: const Text("Selecciona una categoría"),
+                isExpanded: true, // Permite que el dropdown use todo el ancho disponible
                 items: [..._categorias, 'Otro...'].map((categoria) {
                   return DropdownMenuItem<String>(
                     value: categoria,
-                    child: Text(categoria),
+                    child: Text(
+                      categoria,
+                      overflow: TextOverflow.ellipsis, // Corta el texto con "..."
+                      maxLines: 1,
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {

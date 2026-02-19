@@ -93,4 +93,30 @@ class ImageUploadService {
       debugPrint('Error al eliminar carpeta de Storage: $e');
     }
   }
+
+  // Elimina las imágenes de un producto específico
+  static Future<void> deleteProductImages(List<String> imageUrls) async {
+    if (imageUrls.isEmpty) {
+      debugPrint("ℹ️  No hay imágenes para eliminar");
+      return;
+    }
+
+    try {
+      for (var url in imageUrls) {
+        if (url.isNotEmpty && url.startsWith('http')) {
+          try {
+            final ref = _storage.refFromURL(url);
+            await ref.delete();
+            debugPrint("✅ Imagen eliminada: ${ref.name}");
+          } catch (e) {
+            debugPrint("⚠️  Error al eliminar imagen $url: $e");
+            // Continuar con las demás imágenes aunque una falle
+          }
+        }
+      }
+      debugPrint("✅ Todas las imágenes del producto eliminadas de Storage");
+    } catch (e) {
+      debugPrint('Error al eliminar imágenes del producto: $e');
+    }
+  }
 }

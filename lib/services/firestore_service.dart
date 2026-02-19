@@ -5,6 +5,7 @@ import '../models/artisan.dart';
 import '../models/product.dart';
 import '../models/course.dart';
 import '../data/database.dart';
+import 'image_upload_service.dart';
 
 class FirestoreService {
   static FirebaseFirestore get _db => FirebaseFirestore.instance;
@@ -194,32 +195,78 @@ class FirestoreService {
   }
 
   static Future<void> deleteProduct(String productId) async {
+    // 1. Primero obtener el producto para acceder a sus imágenes
+    final productDoc = await _db.collection('products').doc(productId).get();
+    
+    if (productDoc.exists) {
+      final data = productDoc.data();
+      if (data != null) {
+        // Obtener las URLs de las imágenes
+        List<String> imageUrls = [];
+        if (data.containsKey('imagePaths')) {
+          imageUrls = List<String>.from(data['imagePaths'] ?? []);
+        } else if (data.containsKey('imagePath')) {
+          final imagePath = data['imagePath'] ?? '';
+          if (imagePath.isNotEmpty) {
+            imageUrls = [imagePath];
+          }
+        }
+        
+        // 2. Eliminar las imágenes de Storage
+        if (imageUrls.isNotEmpty) {
+          // Importar ImageUploadService si no está importado
+          await ImageUploadService.deleteProductImages(imageUrls);
+        }
+      }
+    }
+    
+    // 3. Eliminar el documento de Firestore
     await _db.collection('products').doc(productId).delete();
     debugPrint("✅ Producto eliminado de Firestore");
   }
 
   // --- ELIMINACIÓN EN CASCADA ---
   static Future<void> deleteArtisanCascade(String artisanId) async {
-    final batch = _db.batch();
-
     // 1. Obtener todos los productos del artesano
     final productsSnapshot = await _db
         .collection('products')
         .where('artisanId', isEqualTo: artisanId)
         .get();
 
-    // 2. Marcar productos para eliminar en el batch
+    // 2. Eliminar imágenes de cada producto de Storage
+    for (var doc in productsSnapshot.docs) {
+      final data = doc.data();
+      List<String> imageUrls = [];
+      
+      if (data.containsKey('imagePaths')) {
+        imageUrls = List<String>.from(data['imagePaths'] ?? []);
+      } else if (data.containsKey('imagePath')) {
+        final imagePath = data['imagePath'] ?? '';
+        if (imagePath.isNotEmpty) {
+          imageUrls = [imagePath];
+        }
+      }
+      
+      if (imageUrls.isNotEmpty) {
+        await ImageUploadService.deleteProductImages(imageUrls);
+      }
+    }
+
+    // 3. Crear batch para eliminar documentos de Firestore
+    final batch = _db.batch();
+
+    // 4. Marcar productos para eliminar en el batch
     for (var doc in productsSnapshot.docs) {
       batch.delete(doc.reference);
     }
 
-    // 3. Marcar al artesano para eliminar
+    // 5. Marcar al artesano para eliminar
     batch.delete(_db.collection('artisans').doc(artisanId));
 
-    // 4. Ejecutar todas las eliminaciones en Firestore
+    // 6. Ejecutar todas las eliminaciones en Firestore
     await batch.commit();
 
-    debugPrint("✅ Artesano y sus productos eliminados de Firestore");
+    debugPrint("✅ Artesano, sus productos e imágenes eliminados");
   }
 
   // --- CURSOS ---

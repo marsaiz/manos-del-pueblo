@@ -123,8 +123,9 @@ flutter_launcher_icons:
   image_path: "assets/logo.png"
   
   # Configuración para Android Adaptive Icons
+  # Usando logo con padding para que no se vea cortado
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/logo.png"
+  adaptive_icon_foreground: "assets/logo_adaptive_balanced.png"
   
   # Configuración para iOS
   remove_alpha_ios: true
