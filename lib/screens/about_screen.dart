@@ -39,9 +39,10 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sobre Nosotros')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
@@ -66,7 +67,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 child: ClipOval(
                   child: Center(
                     child: Image.asset(
-                      'assets/logo_manos.png',
+                      'assets/logo.png',
                       fit: BoxFit.contain,
                       filterQuality: FilterQuality.high,
                       isAntiAlias: true,
@@ -254,8 +255,10 @@ class _AboutScreenState extends State<AboutScreen> {
               '© 2024 Manos del Pueblo',
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
+            const SizedBox(height: 40), // Espacio adicional para botones de navegación
           ],
         ),
+      ),
       ),
     );
   }
@@ -312,11 +315,31 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'No se pudo abrir $url';
+    try {
+      final Uri uri = Uri.parse(url);
+      // Usar mode: LaunchMode.externalApplication para abrir en apps externas
+      final bool launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No se pudo abrir: $url'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al abrir el enlace: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

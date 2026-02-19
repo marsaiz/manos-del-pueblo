@@ -5,6 +5,7 @@ import '../models/artisan.dart';
 import '../models/product.dart';
 import '../services/firestore_service.dart';
 import '../services/image_upload_service.dart'; // Para borrar carpeta de Storage
+import '../services/pin_service.dart';
 import 'home_screen.dart';
 
 class ArtisanProfileScreen extends StatelessWidget {
@@ -104,8 +105,13 @@ class ArtisanProfileScreen extends StatelessWidget {
             child: const Text('CANCELAR'),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (pinController.text.trim() == '4628') {
+            onPressed: () async {
+              // Obtener el PIN desde Firebase
+              final correctPin = await PinService.getPin('artisan_delete');
+              
+              if (!context.mounted) return;
+              
+              if (pinController.text.trim() == correctPin) {
                 Navigator.pop(context, true);
               } else {
                 ScaffoldMessenger.of(

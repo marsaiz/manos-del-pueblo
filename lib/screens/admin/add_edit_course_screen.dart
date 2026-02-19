@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../../models/course.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../services/pin_service.dart';
 
 class AddEditCourseScreen extends StatefulWidget {
   final Course? course;
@@ -94,13 +95,18 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
   Future<void> _saveCourse() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_pinController.text != '4628') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN de seguridad incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    // Obtener el PIN desde Firebase
+    final correctPin = await PinService.getPin('product_management');
+    
+    if (_pinController.text != correctPin) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PIN de seguridad incorrecto'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -124,13 +130,19 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
       } else {
         await FirestoreService.updateCourse(course);
       }
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -142,11 +154,12 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                   children: [
                     _buildImageSection(),
                     const SizedBox(height: 24),
@@ -232,10 +245,12 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                         widget.course == null ? 'Crear' : 'Guardar Cambios',
                       ),
                     ),
+                    const SizedBox(height: 40), // Espacio adicional para botones de navegación
                   ],
                 ),
               ),
             ),
+          ),
     );
   }
 

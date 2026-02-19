@@ -220,8 +220,10 @@ class _UploadImagesTabState extends State<_UploadImagesTab> {
     );
   }
 
-  void _verifyPin() {
-    if (_pinController.text == '4628') {
+  Future<void> _verifyPin() async {
+    final correctPin = await PinService.getPin('admin_access');
+    
+    if (_pinController.text == correctPin) {
       setState(() => _isPinVerified = true);
       _showSnack('✅ PIN correcto');
     } else {

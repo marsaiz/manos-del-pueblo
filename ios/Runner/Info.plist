@@ -45,5 +45,23 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Configuración para url_launcher: esquemas de URL permitidos -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<!-- Para abrir navegadores web -->
+		<string>http</string>
+		<string>https</string>
+		<!-- Para abrir apps de email -->
+		<string>mailto</string>
+		<!-- Para hacer llamadas telefónicas -->
+		<string>tel</string>
+		<!-- Para enviar SMS -->
+		<string>sms</string>
+		<!-- Para abrir apps de redes sociales -->
+		<string>fb</string>
+		<string>instagram</string>
+		<string>twitter</string>
+		<string>whatsapp</string>
+	</array>
 </dict>
 </plist>

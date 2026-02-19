@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../services/pin_service.dart';
 
 class AddArtisanScreen extends StatefulWidget {
   const AddArtisanScreen({super.key});
@@ -13,7 +14,6 @@ class AddArtisanScreen extends StatefulWidget {
 
 class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _formKey = GlobalKey<FormState>();
-  static const String _adminCode = '4628';
 
   // Controladores
   final _nombreController = TextEditingController();
@@ -91,16 +91,20 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     }
   }
 
-  void _verifyPin() {
-    if (_pinController.text.trim() == _adminCode) {
+  Future<void> _verifyPin() async {
+    final correctPin = await PinService.getPin('admin_access');
+    
+    if (_pinController.text.trim() == correctPin) {
       setState(() => _isPinVerified = true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('PIN incorrecto'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PIN incorrecto'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

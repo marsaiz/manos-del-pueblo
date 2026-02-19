@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/firestore_service.dart';
+import '../../services/pin_service.dart';
 import '../../models/artisan.dart';
 import '../../models/product.dart';
 
@@ -44,8 +45,10 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _verifyPin() {
-    if (_pinController.text == '4628') {
+  Future<void> _verifyPin() async {
+    final correctPin = await PinService.getPin('admin_access');
+    
+    if (_pinController.text == correctPin) {
       setState(() => _isPinVerified = true);
       _showSnack('✅ PIN correcto');
     } else {
