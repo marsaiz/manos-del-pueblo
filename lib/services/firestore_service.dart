@@ -287,7 +287,32 @@ class FirestoreService {
   }
 
   static Future<void> deleteCourse(String courseId) async {
-    await _db.collection('courses').doc(courseId).delete();
-    debugPrint("✅ Curso eliminado de Firestore");
+    try {
+      // Primero obtener el curso para acceder a su imageUrl
+      final courseDoc = await _db.collection('courses').doc(courseId).get();
+      
+      if (courseDoc.exists) {
+        final courseData = courseDoc.data();
+        final imageUrl = courseData?['imageUrl'] as String?;
+        
+        // Eliminar la imagen del Storage si existe
+        if (imageUrl != null && imageUrl.isNotEmpty && imageUrl.startsWith('http')) {
+          try {
+            await ImageUploadService.deleteImage(imageUrl);
+            debugPrint("✅ Imagen del curso eliminada de Storage");
+          } catch (e) {
+            debugPrint("⚠️  Error al eliminar imagen del curso: $e");
+            // Continuar con la eliminación del documento aunque falle la imagen
+          }
+        }
+      }
+      
+      // Eliminar el documento de Firestore
+      await _db.collection('courses').doc(courseId).delete();
+      debugPrint("✅ Curso eliminado de Firestore");
+    } catch (e) {
+      debugPrint("❌ Error al eliminar curso: $e");
+      rethrow;
+    }
   }
 }
