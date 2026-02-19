@@ -4,6 +4,7 @@ import '../../models/artisan.dart';
 import '../../models/product.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -102,12 +103,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
+    final productPin = await PinService.getPin('product_management');
+    
+    if (!mounted) return;
+
     // Mostrar diálogo de PIN antes de guardar
     showPinDialog(
       context: context,
       title: 'Confirmar Producto',
       message: '¿Deseas guardar este producto?',
-      correctPin: '1234',
+      correctPin: productPin,
       onConfirm: () async {
         await _performSave();
       },

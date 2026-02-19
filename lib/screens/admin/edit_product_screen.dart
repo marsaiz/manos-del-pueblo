@@ -4,6 +4,7 @@ import '../../models/artisan.dart';
 import '../../models/product.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 
 class EditProductScreen extends StatefulWidget {
@@ -133,12 +134,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
 
+    final productPin = await PinService.getPin('product_management');
+    
+    if (!mounted) return;
+
     // Mostrar diálogo de PIN antes de actualizar
     showPinDialog(
       context: context,
       title: 'Confirmar Actualización',
       message: '¿Deseas actualizar este producto?',
-      correctPin: '1234',
+      correctPin: productPin,
       onConfirm: () async {
         await _performUpdate();
       },
@@ -186,11 +191,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> _deleteProduct() async {
+    final productPin = await PinService.getPin('product_management');
+    
+    if (!mounted) return;
+    
     showPinDialog(
       context: context,
       title: 'Confirmar Eliminación',
       message: '¿Estás seguro de que deseas eliminar el producto "${widget.product.nombre}"?\n\nEsta acción no se puede deshacer.',
-      correctPin: '1234',
+      correctPin: productPin,
       onConfirm: () async {
         await FirestoreService.deleteProduct(widget.product.id);
         if (mounted) {

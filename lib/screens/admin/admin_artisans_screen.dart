@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'add_artisan_screen.dart';
 import 'upload_image_screen.dart';
@@ -16,10 +17,29 @@ class AdminArtisansScreen extends StatefulWidget {
 class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
   bool _isPinVerified = false;
   final _pinController = TextEditingController();
-  static const String _adminCode = '4628';
-  static const String _deleteCode = '919345';
+  String? _adminCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminPin();
+  }
+
+  Future<void> _loadAdminPin() async {
+    _adminCode = await PinService.getPin('admin_access');
+  }
 
   void _verifyPin() {
+    if (_adminCode == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cargando configuración...'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     if (_pinController.text.trim() == _adminCode) {
       setState(() => _isPinVerified = true);
     } else {
@@ -75,11 +95,15 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
   }
 
   Future<void> _confirmDelete(Artisan artisan) async {
+    final deletePin = await PinService.getPin('artisan_delete');
+    
+    if (!mounted) return;
+    
     showPinDialog(
       context: context,
       title: 'Confirmar Eliminación',
       message: 'Se eliminará el artesano "${artisan.nombre}" y sus productos. Esta acción no se puede deshacer.',
-      correctPin: _deleteCode,
+      correctPin: deletePin,
       onConfirm: () async {
         showDialog(
           context: context,

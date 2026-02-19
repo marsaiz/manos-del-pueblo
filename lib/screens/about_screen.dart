@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/pin_dialog.dart';
+import '../services/pin_service.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -12,16 +13,19 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  static const String _adminCode = '4628';
   bool _adminUnlocked = false;
 
   Future<void> _promptAdminCode() async {
+    final adminPin = await PinService.getPin('admin_access');
+    
+    if (!mounted) return;
+    
     showDialog(
       context: context,
       builder: (context) => PinDialog(
         title: 'Código de administración',
         message: 'Ingresa el código para desbloquear el modo administrador',
-        correctPin: _adminCode,
+        correctPin: adminPin,
         onSuccess: () {
           setState(() {
             _adminUnlocked = true;

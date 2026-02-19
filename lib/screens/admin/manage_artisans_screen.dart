@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'package:flutter/services.dart';
 
@@ -67,10 +68,15 @@ class _ListArtisansTab extends StatelessWidget {
   const _ListArtisansTab();
 
   Future<void> _deleteArtisan(BuildContext context, Artisan artisan) async {
+    final deletePin = await PinService.getPin('artisan_delete');
+    
+    if (!context.mounted) return;
+    
     showPinDialog(
       context: context,
       title: '¿Eliminar Artesano?',
       message: 'Vas a eliminar a "${artisan.nombre}" y todos sus productos e imágenes.',
+      correctPin: deletePin,
       onConfirm: () async {
         showDialog(
           context: context,

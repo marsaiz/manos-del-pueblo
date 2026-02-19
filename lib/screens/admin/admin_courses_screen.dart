@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/course.dart';
 import '../../services/firestore_service.dart';
+import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'add_edit_course_screen.dart';
 
@@ -83,11 +84,16 @@ class AdminCoursesScreen extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, Course course) {
+  void _confirmDelete(BuildContext context, Course course) async {
+    final productPin = await PinService.getPin('product_management');
+    
+    if (!context.mounted) return;
+    
     showPinDialog(
       context: context,
       title: 'Eliminar Curso',
       message: '¿Estás seguro de que deseas eliminar el curso "${course.title}"?',
+      correctPin: productPin,
       onConfirm: () async {
         await FirestoreService.deleteCourse(course.id);
       },
