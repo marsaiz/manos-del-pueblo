@@ -1,0 +1,84 @@
+INSTRUCCIONES DE PRUEBA - MANOS DEL PUEBLO
+
+═══════════════════════════════════════════════════════════════
+
+📌 CREDENCIALES DE ACCESO
+
+PIN Administración: 4628
+PIN Gestión Productos: 1234
+PIN Eliminar Artesano: 919345
+
+═══════════════════════════════════════════════════════════════
+
+👨‍💼 PRUEBAS COMO ADMINISTRADOR
+
+1. ACCEDER AL PANEL
+   • Ir a pestaña "Sobre Nosotros"
+   • Tocar "Gestionar Artesanos"
+   • Ingresar PIN: 4628
+
+2. CREAR ARTESANO
+   • Pestaña "Añadir" → "IR A FORMULARIO"
+   • Completar datos y foto
+   • Guardar
+
+3. EDITAR ARTESANO
+   • Pestaña "Lista"
+   • Tocar ícono lápiz azul
+   • Modificar datos
+   • Ingresar PIN: 4628
+
+4. ELIMINAR ARTESANO
+   • Pestaña "Lista"
+   • Tocar ícono basura rojo
+   • Ingresar PIN: 919345
+
+5. GESTIONAR CATEGORÍAS
+   • Pestaña "Categorías" → "Abrir"
+   • Crear/editar/eliminar categorías
+
+═══════════════════════════════════════════════════════════════
+
+🎨 PRUEBAS COMO ARTESANO
+
+1. CREAR PRODUCTO
+   • Menú hamburguesa (☰) → "Administrar Productos"
+   • Ingresar PIN: 1234
+   • Tocar botón "+"
+   • Completar formulario (hasta 3 fotos)
+   • Guardar → PIN: 1234
+
+2. EDITAR PRODUCTO
+   • En lista de productos, tocar ícono lápiz
+   • Modificar datos/fotos
+   • Actualizar → PIN: 1234
+
+3. ELIMINAR PRODUCTO
+   • En pantalla de edición
+   • Tocar "ELIMINAR PRODUCTO" (botón rojo)
+   • Confirmar con PIN: 1234
+
+═══════════════════════════════════════════════════════════════
+
+🔍 OTRAS FUNCIONALIDADES
+
+• Búsqueda: Barra superior en Home
+• Filtros: Botones de categorías
+• Favoritos: Ícono corazón en productos
+• Compartir: Ícono compartir en detalle producto
+• Contacto: Botones WhatsApp/Instagram/Facebook en perfil
+• Cursos: Pestaña "Cursos" para ver talleres
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ NOTAS IMPORTANTES
+
+• Sesión administrativa: 30 minutos
+• Máximo 3 imágenes por producto
+• Eliminación de artesano incluye productos e imágenes
+• Categorías dinámicas desde Firebase
+• Imágenes antiguas se eliminan automáticamente
+
+═══════════════════════════════════════════════════════════════
+
+Contacto: contacto@manos-del-pueblo.ar

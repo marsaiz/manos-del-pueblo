@@ -1,0 +1,9 @@
+CREDENCIALES: PIN Admin=4628, Productos=1234, Eliminar=919345
+
+ADMIN: Pestaña "Sobre Nosotros" → "Gestionar Artesanos" → PIN 4628. Crear/editar/eliminar artesanos y categorías.
+
+PRODUCTOS: Menú hamburguesa (☰) → "Añadir Producto" → PIN 1234. Crear/editar/eliminar productos (hasta 3 fotos).
+
+OTRAS: Búsqueda, filtros, favoritos, compartir, contacto WhatsApp/Instagram/Facebook, cursos.
+
+Sin login tradicional. Sesión admin: 30 min. contacto@manos-del-pueblo.ar
