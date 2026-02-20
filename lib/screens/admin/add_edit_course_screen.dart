@@ -70,6 +70,9 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
   }
 
   Future<void> _pickAndUploadImage() async {
+    // Guardar la URL anterior antes de subir la nueva
+    final oldImageUrl = _imageUrlController.text;
+    
     setState(() => _isUploadingImage = true);
     try {
       // Usamos una carpeta específica para cursos
@@ -80,6 +83,16 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
 
       if (url != null) {
         setState(() => _imageUrlController.text = url);
+        
+        // Eliminar la imagen anterior del Storage si existía
+        if (oldImageUrl.isNotEmpty && oldImageUrl.startsWith('http')) {
+          try {
+            await ImageUploadService.deleteImage(oldImageUrl);
+            debugPrint("✅ Imagen anterior del curso eliminada: $oldImageUrl");
+          } catch (e) {
+            debugPrint("⚠️ Error al eliminar imagen anterior: $e");
+          }
+        }
       }
     } catch (e) {
       if (mounted) {

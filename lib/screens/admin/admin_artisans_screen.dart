@@ -6,6 +6,7 @@ import '../../services/pin_service.dart';
 import '../../services/admin_session_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'add_artisan_screen.dart';
+import 'edit_artisan_screen.dart';
 import 'manage_categories_screen.dart';
 
 class AdminArtisansScreen extends StatefulWidget {
@@ -172,10 +173,27 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen>
               ),
               title: Text(artisan.nombre),
               subtitle: Text('${artisan.localidad} • ID: ${artisan.id}'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () => _confirmDelete(artisan),
-                tooltip: 'Eliminar',
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditArtisanScreen(artisan: artisan),
+                        ),
+                      );
+                    },
+                    tooltip: 'Editar',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _confirmDelete(artisan),
+                    tooltip: 'Eliminar',
+                  ),
+                ],
               ),
             );
           },

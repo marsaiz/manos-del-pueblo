@@ -209,6 +209,24 @@ class FirestoreService {
     });
   }
 
+  static Future<void> updateArtisan(Artisan artisan) async {
+    await _db.collection('artisans').doc(artisan.id).update({
+      'nombre': artisan.nombre,
+      'historia': artisan.historia,
+      'fotoPerfil': artisan.fotoPerfil,
+      'telefono': artisan.telefono,
+      'whatsapp': artisan.whatsapp,
+      'ubicacion': artisan.ubicacion,
+      'direccion': artisan.direccion,
+      'localidad': artisan.localidad,
+      'codigoPostal': artisan.codigoPostal,
+      'provincia': artisan.provincia,
+      'instagram': artisan.instagram,
+      'facebook': artisan.facebook,
+    });
+    debugPrint("✅ Artesano actualizado en Firestore");
+  }
+
   static Future<void> addProduct(Product product) async {
     await _db.collection('products').doc(product.id).set({
       'id': product.id,

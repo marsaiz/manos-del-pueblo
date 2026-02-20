@@ -131,7 +131,27 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _removeImage(int index) {
+  Future<void> _removeImage(int index) async {
+    final urlToDelete = _fotoUrls[index];
+    
+    if (urlToDelete != null && urlToDelete.startsWith('http')) {
+      try {
+        // Eliminar la imagen del Storage
+        await ImageUploadService.deleteImage(urlToDelete);
+        debugPrint("✅ Imagen eliminada del Storage: $urlToDelete");
+      } catch (e) {
+        debugPrint("⚠️ Error al eliminar imagen del Storage: $e");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Advertencia: No se pudo eliminar la imagen del servidor'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    }
+    
     setState(() {
       _fotoUrls[index] = null;
     });
@@ -173,6 +193,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     // Filtramos las URLs nulas para guardar solo las válidas
     final List<String> validUrls = _fotoUrls.whereType<String>().toList();
+
+    // Identificar imágenes que fueron eliminadas (estaban en el producto original pero ya no están)
+    final List<String> originalUrls = widget.product.imagePaths;
+    final List<String> deletedUrls = originalUrls
+        .where((url) => !validUrls.contains(url))
+        .toList();
+
+    // Eliminar las imágenes huérfanas del Storage
+    for (final url in deletedUrls) {
+      if (url.startsWith('http')) {
+        try {
+          await ImageUploadService.deleteImage(url);
+          debugPrint("✅ Imagen huérfana eliminada del Storage: $url");
+        } catch (e) {
+          debugPrint("⚠️ Error al eliminar imagen huérfana: $e");
+        }
+      }
+    }
 
     final updatedProduct = Product(
       id: widget.product.id,
@@ -453,7 +491,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   top: 4,
                   right: 4,
                   child: GestureDetector(
-                    onTap: () => _removeImage(index),
+                    onTap: () async => await _removeImage(index),
                     child: Container(
                       padding: const EdgeInsets.all(2),
                       decoration: const BoxDecoration(

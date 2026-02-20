@@ -101,7 +101,27 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  void _removeImage(int index) {
+  Future<void> _removeImage(int index) async {
+    final urlToDelete = _fotoUrls[index];
+    
+    if (urlToDelete != null && urlToDelete.startsWith('http')) {
+      try {
+        // Eliminar la imagen del Storage
+        await ImageUploadService.deleteImage(urlToDelete);
+        debugPrint("✅ Imagen eliminada del Storage: $urlToDelete");
+      } catch (e) {
+        debugPrint("⚠️ Error al eliminar imagen del Storage: $e");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Advertencia: No se pudo eliminar la imagen del servidor'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    }
+    
     setState(() {
       _fotoUrls[index] = null;
     });
@@ -384,7 +404,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   top: 4,
                   right: 4,
                   child: GestureDetector(
-                    onTap: () => _removeImage(index),
+                    onTap: () async => await _removeImage(index),
                     child: Container(
                       padding: const EdgeInsets.all(2),
                       decoration: const BoxDecoration(
