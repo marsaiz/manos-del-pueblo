@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permiso requerido para ID de publicidad en Android 13+ -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    
     <application
         android:label="manos_del_pueblo"
         android:name="${applicationName}"
