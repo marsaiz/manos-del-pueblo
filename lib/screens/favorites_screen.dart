@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/favorites_provider.dart';
 import '../models/artisan.dart';
 import '../models/product.dart';
-import 'home_screen.dart'; // Para reusar ProductCard
+import '../widgets/product_card.dart';
 import '../services/firestore_service.dart';
 
 class FavoritesScreen extends StatelessWidget {

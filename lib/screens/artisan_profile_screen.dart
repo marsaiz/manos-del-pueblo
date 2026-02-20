@@ -6,6 +6,7 @@ import '../models/product.dart';
 import '../services/firestore_service.dart';
 import '../services/image_upload_service.dart'; // Para borrar carpeta de Storage
 import '../services/pin_service.dart';
+import '../widgets/product_card.dart';
 import 'home_screen.dart';
 
 class ArtisanProfileScreen extends StatelessWidget {
