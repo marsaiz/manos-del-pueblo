@@ -4,6 +4,7 @@ import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/pin_service.dart';
+import '../../services/admin_session_service.dart';
 
 class AddArtisanScreen extends StatefulWidget {
   const AddArtisanScreen({super.key});
@@ -14,6 +15,7 @@ class AddArtisanScreen extends StatefulWidget {
 
 class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _sessionService = AdminSessionService();
 
   // Generar ID único al inicio
   late final String _artisanId;
@@ -31,8 +33,8 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _instagramController = TextEditingController();
   final _facebookController = TextEditingController();
 
-  bool _isPinVerified = false;
   final _pinController = TextEditingController();
+  String? _adminCode;
 
   String? _fotoUrl;
   bool _isUploading = false;
@@ -43,6 +45,36 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     super.initState();
     // Generar ID único al inicializar
     _artisanId = "a${DateTime.now().millisecondsSinceEpoch}";
+    _loadAdminPin();
+  }
+
+  Future<void> _loadAdminPin() async {
+    _adminCode = await PinService.getPin('admin_access');
+  }
+
+  void _verifyPin() {
+    if (_adminCode == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cargando configuración...'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (_pinController.text.trim() == _adminCode) {
+      setState(() {
+        _sessionService.login();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PIN incorrecto'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _pickAndUploadImage() async {
@@ -98,23 +130,6 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     }
   }
 
-  Future<void> _verifyPin() async {
-    final correctPin = await PinService.getPin('admin_access');
-    
-    if (_pinController.text.trim() == correctPin) {
-      setState(() => _isPinVerified = true);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('PIN incorrecto'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   Widget _buildPinGate() {
     return Center(
       child: Card(
@@ -159,9 +174,14 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Extender la sesión si está autenticado
+    if (_sessionService.isAuthenticated) {
+      _sessionService.extendSession();
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Añadir Nuevo Artesano'), elevation: 0),
-      body: !_isPinVerified
+      body: !_sessionService.isAuthenticated
           ? _buildPinGate()
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),

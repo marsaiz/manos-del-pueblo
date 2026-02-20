@@ -3,9 +3,9 @@ import '../../models/artisan.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/pin_service.dart';
+import '../../services/admin_session_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'add_artisan_screen.dart';
-import 'upload_image_screen.dart';
 import 'manage_categories_screen.dart';
 
 class AdminArtisansScreen extends StatefulWidget {
@@ -15,15 +15,25 @@ class AdminArtisansScreen extends StatefulWidget {
   State<AdminArtisansScreen> createState() => _AdminArtisansScreenState();
 }
 
-class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
-  bool _isPinVerified = false;
+class _AdminArtisansScreenState extends State<AdminArtisansScreen>
+    with SingleTickerProviderStateMixin {
   final _pinController = TextEditingController();
+  final _sessionService = AdminSessionService();
   String? _adminCode;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     _loadAdminPin();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _pinController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadAdminPin() async {
@@ -42,7 +52,9 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
     }
 
     if (_pinController.text.trim() == _adminCode) {
-      setState(() => _isPinVerified = true);
+      setState(() {
+        _sessionService.login();
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -218,69 +230,76 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
+    // Extender la sesión cada vez que se construye la pantalla
+    if (_sessionService.isAuthenticated) {
+      _sessionService.extendSession();
+    }
+
+    if (!_sessionService.isAuthenticated) {
+      return Scaffold(
         appBar: AppBar(
           title: const Text('Administrar Artesanos'),
-          bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.white,
-            tabs: [
-              Tab(icon: Icon(Icons.list), text: 'Lista'),
-              Tab(icon: Icon(Icons.add), text: 'Añadir'),
-              Tab(icon: Icon(Icons.image), text: 'Imagenes'),
-              Tab(icon: Icon(Icons.category), text: 'Categorías'),
-            ],
-          ),
         ),
-        body: !_isPinVerified
-            ? _buildPinGate()
-            : TabBarView(
-                children: [
-                  _buildListTab(),
-                  _buildActionTab(
-                    title: 'Añadir artesano',
-                    description: 'Crear un perfil nuevo desde el celular.',
-                    icon: Icons.person_add,
-                    onOpen: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddArtisanScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildActionTab(
-                    title: 'Subir imagenes',
-                    description: 'Cargar imagenes para artesanos y productos.',
-                    icon: Icons.cloud_upload,
-                    onOpen: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const UploadImageScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildActionTab(
-                    title: 'Gestionar Categorías',
-                    description: 'Agregar, editar o eliminar categorías de productos.',
-                    icon: Icons.category,
-                    onOpen: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ManageCategoriesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+        body: _buildPinGate(),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Administrar Artesanos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar sesión',
+            onPressed: () {
+              _sessionService.logout();
+              setState(() {});
+            },
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+          tabs: const [
+            Tab(icon: Icon(Icons.list), text: 'Lista'),
+            Tab(icon: Icon(Icons.add), text: 'Añadir'),
+            Tab(icon: Icon(Icons.category), text: 'Categorías'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildListTab(),
+          _buildActionTab(
+            title: 'Añadir artesano',
+            description: 'Crear un perfil nuevo desde el celular.',
+            icon: Icons.person_add,
+            onOpen: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddArtisanScreen(),
+                ),
+              );
+            },
+          ),
+          _buildActionTab(
+            title: 'Gestionar Categorías',
+            description: 'Agregar, editar o eliminar categorías de productos.',
+            icon: Icons.category,
+            onOpen: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ManageCategoriesScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

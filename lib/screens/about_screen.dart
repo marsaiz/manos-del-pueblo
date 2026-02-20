@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../widgets/pin_dialog.dart';
-import '../services/pin_service.dart';
+import '../services/admin_session_service.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -13,27 +12,7 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  bool _adminUnlocked = false;
-
-  Future<void> _promptAdminCode() async {
-    final adminPin = await PinService.getPin('admin_access');
-    
-    if (!mounted) return;
-    
-    showDialog(
-      context: context,
-      builder: (context) => PinDialog(
-        title: 'Código de administración',
-        message: 'Ingresa el código para desbloquear el modo administrador',
-        correctPin: adminPin,
-        onSuccess: () {
-          setState(() {
-            _adminUnlocked = true;
-          });
-        },
-      ),
-    );
-  }
+  final _sessionService = AdminSessionService();
 
   @override
   Widget build(BuildContext context) {
@@ -185,43 +164,21 @@ class _AboutScreenState extends State<AboutScreen> {
                     color: Color(0xFF5D4037),
                   ),
                 ),
-                if (!_adminUnlocked)
-                  IconButton(
-                    icon: const Icon(Icons.lock_outline, color: Colors.brown),
-                    onPressed: _promptAdminCode,
-                    tooltip: 'Activar Modo Administrador',
-                  )
-                else
-                  const Icon(Icons.lock_open, color: Colors.green),
               ],
             ),
             const SizedBox(height: 10),
 
-            if (!_adminUnlocked)
-              ListTile(
-                leading: const Icon(
-                  Icons.admin_panel_settings,
-                  color: Colors.grey,
-                ),
-                title: const Text('Acceso Restringido'),
-                subtitle: const Text(
-                  'Toca el candado para desbloquear opciones',
-                ),
-                onTap: _promptAdminCode,
-              )
-            else ...[
-              ListTile(
-                leading: const Icon(Icons.people_outline, color: Colors.brown),
-                title: const Text('Gestionar Artesanos'),
-                subtitle: const Text(
-                  'Ver lista, añadir, eliminar o subir imágenes',
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  Navigator.pushNamed(context, '/admin-artisans');
-                },
+            ListTile(
+              leading: const Icon(Icons.people_outline, color: Colors.brown),
+              title: const Text('Gestionar Artesanos'),
+              subtitle: const Text(
+                'Ver lista, añadir y gestionar categorías',
               ),
-            ],
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.pushNamed(context, '/admin-artisans');
+              },
+            ),
             // Botón de sincronización oculto por seguridad/destructividad
             const SizedBox(height: 30),
             // Política de Privacidad
