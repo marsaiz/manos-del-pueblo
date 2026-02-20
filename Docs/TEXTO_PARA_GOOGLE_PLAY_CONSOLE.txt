@@ -1,0 +1,55 @@
+═══════════════════════════════════════════════════════════
+CREDENCIALES DE PRUEBA - MANOS DEL PUEBLO
+═══════════════════════════════════════════════════════════
+
+La aplicación utiliza PINs para proteger funciones administrativas.
+
+📌 PINES DE ACCESO:
+
+1. PIN ADMINISTRATIVO: 4628
+   Uso: Acceso general a panel de administración
+   Ubicación: Menú → "Sobre Nosotros" → Candado 🔒
+
+2. PIN DE PRODUCTOS: 1234
+   Uso: Agregar/editar/eliminar productos y cursos
+   Ubicación: Al guardar cambios en productos o cursos
+
+3. PIN DE ELIMINACIÓN: 919345
+   Uso: Eliminar artesanos (operación destructiva)
+   Ubicación: Panel de administración → Eliminar artesano
+
+═══════════════════════════════════════════════════════════
+FLUJO DE PRUEBA RÁPIDO:
+═══════════════════════════════════════════════════════════
+
+SIN PIN (Funciones públicas):
+• Navegar catálogo de productos
+• Ver perfiles de artesanos
+• Filtrar y buscar
+• Agregar favoritos
+• Ver cursos
+• Compartir productos
+
+CON PIN 4628 (Administración):
+• Menú → "Sobre Nosotros" → Candado → Ingresar "4628"
+• Acceder a "Gestionar Artesanos"
+• Ver lista, agregar artesanos, subir imágenes, gestionar categorías
+
+CON PIN 1234 (Productos):
+• Menú → "Añadir Producto" → Completar formulario → Ingresar "1234"
+• Editar cualquier producto → Ingresar "1234"
+
+CON PIN 919345 (Eliminación):
+• Panel admin → Lista artesanos → Eliminar → Ingresar "919345"
+• ⚠️ Por favor no eliminar artesanos reales, solo verificar funcionamiento
+
+═══════════════════════════════════════════════════════════
+NOTAS IMPORTANTES:
+═══════════════════════════════════════════════════════════
+
+✓ Los PINs se cambiarán después de la aprobación
+✓ La app contiene datos reales de artesanos locales
+✓ Pueden agregar productos de prueba y eliminarlos
+✓ Preferiblemente no eliminar artesanos o categorías existentes
+
+Contacto: contacto@manos-del-pueblo.ar

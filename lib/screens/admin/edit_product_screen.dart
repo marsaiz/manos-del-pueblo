@@ -251,6 +251,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   }
 
                   return DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: _selectedArtesano?.id,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.person, color: Colors.brown),
@@ -261,7 +262,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       fillColor: Colors.grey[50],
                     ),
                     hint: const Text("Selecciona el artesano"),
-                    isExpanded: true, // Permite que el dropdown use todo el ancho disponible
                     items: artisans.map((artisan) {
                       return DropdownMenuItem<String>(
                         value: artisan.id,
@@ -319,6 +319,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
               _buildSectionTitle("Categoría"),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: _selectedCategoria,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.category, color: Colors.brown),
@@ -329,7 +330,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   fillColor: Colors.grey[50],
                 ),
                 hint: const Text("Selecciona una categoría"),
-                isExpanded: true, // Permite que el dropdown use todo el ancho disponible
                 items: [..._categorias, 'Otro...'].map((categoria) {
                   return DropdownMenuItem<String>(
                     value: categoria,

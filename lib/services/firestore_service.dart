@@ -148,9 +148,46 @@ class FirestoreService {
     String productId,
     String photoUrl,
   ) async {
+    // Obtener el producto actual
+    final productDoc = await _db.collection('products').doc(productId).get();
+    
+    if (!productDoc.exists) {
+      debugPrint("❌ Producto no encontrado: $productId");
+      return;
+    }
+    
+    final data = productDoc.data();
+    List<String> currentImages = [];
+    
+    // Obtener las imágenes actuales
+    if (data != null) {
+      if (data.containsKey('imagePaths')) {
+        currentImages = List<String>.from(data['imagePaths'] ?? []);
+      } else if (data.containsKey('imagePath')) {
+        final imagePath = data['imagePath'] ?? '';
+        if (imagePath.isNotEmpty) {
+          currentImages = [imagePath];
+        }
+      }
+    }
+    
+    // Agregar la nueva imagen solo si no existe y hay espacio (máximo 3)
+    if (!currentImages.contains(photoUrl) && currentImages.length < 3) {
+      currentImages.add(photoUrl);
+    } else if (currentImages.contains(photoUrl)) {
+      debugPrint("⚠️  La imagen ya existe en el producto");
+      return;
+    } else {
+      debugPrint("⚠️  El producto ya tiene 3 imágenes (máximo permitido)");
+      return;
+    }
+    
+    // Actualizar con la lista completa
     await _db.collection('products').doc(productId).update({
-      'imagePath': photoUrl,
+      'imagePaths': currentImages,
     });
+    
+    debugPrint("✅ Imagen agregada al producto. Total: ${currentImages.length}");
   }
 
   // --- NUEVAS ALTAS ---

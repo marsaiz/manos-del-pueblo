@@ -181,12 +181,17 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                         }
                         return DropdownButtonFormField<String>(
                           initialValue: _selectedArtisanId,
+                          isExpanded: true,
                           items: artisans.map((Artisan a) {
                             final nombre = a.nombre;
                             final id = a.id;
                             return DropdownMenuItem<String>(
                               value: id,
-                              child: Text('$nombre (ID: $id)'),
+                              child: Text(
+                                '$nombre (ID: $id)',
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
                             );
                           }).toList(),
                           onChanged: (value) {
@@ -237,12 +242,17 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                           }
                           return DropdownButtonFormField<String>(
                             initialValue: _selectedProductId,
+                            isExpanded: true,
                             items: filteredProducts.map((Product p) {
                               final nombre = p.nombre;
                               final id = p.id;
                               return DropdownMenuItem<String>(
                                 value: id,
-                                child: Text('$nombre (ID: $id)'),
+                                child: Text(
+                                  '$nombre (ID: $id)',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
                               );
                             }).toList(),
                             onChanged: (value) {
