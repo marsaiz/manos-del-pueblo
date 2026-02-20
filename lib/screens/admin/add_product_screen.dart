@@ -1,7 +1,9 @@
 // lib/screens/admin/add_product_screen.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../models/product.dart';
+import '../../models/category.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/pin_service.dart';
@@ -23,22 +25,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _precioController = TextEditingController();
   final _customCategoriaController = TextEditingController();
 
-  final List<String> _categorias = [
-    'Indumentaria',
-    'Herramientas',
-    'Juguetes',
-    'Hogar',
-    'Deco',
-    'Cocina',
-    'Alimentos',
-    'Bebidas',
-    'Utensilios',
-    'Joyería',
-    'Útiles Escolares',
-    'Jardinería',
-    'Instrumentos Musicales',
-    'Otros',
-  ];
+  List<String> _categorias = [];
+  bool _loadingCategories = true;
+  StreamSubscription<List<Category>>? _categoriesSubscription;
 
   Artisan? _selectedArtisan;
   String? _selectedCategoria;
@@ -48,6 +37,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final List<bool> _isUploadingList = [false, false, false];
 
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  void _loadCategories() {
+    _categoriesSubscription?.cancel(); // Cancelar suscripción anterior si existe
+    _categoriesSubscription = FirestoreService.getCategories().listen((categories) {
+      if (mounted) {
+        setState(() {
+          // Limpiar y reconstruir la lista de categorías
+          _categorias = categories.map((c) => c.nombre).toList();
+          
+          // Agregar "Otro..." solo si no existe
+          if (!_categorias.contains('Otro...')) {
+            _categorias.add('Otro...');
+          }
+          
+          _loadingCategories = false;
+        });
+      }
+    });
+  }
 
   Future<void> _pickAndUploadImage(int index) async {
     if (_selectedArtisan == null) {
@@ -162,6 +176,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   void dispose() {
+    _categoriesSubscription?.cancel();
     _nombreController.dispose();
     _descripcionController.dispose();
     _precioController.dispose();

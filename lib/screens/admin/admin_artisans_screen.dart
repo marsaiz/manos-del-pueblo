@@ -6,6 +6,7 @@ import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'add_artisan_screen.dart';
 import 'upload_image_screen.dart';
+import 'manage_categories_screen.dart';
 
 class AdminArtisansScreen extends StatefulWidget {
   const AdminArtisansScreen({super.key});
@@ -218,7 +219,7 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Administrar Artesanos'),
@@ -230,6 +231,7 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
               Tab(icon: Icon(Icons.list), text: 'Lista'),
               Tab(icon: Icon(Icons.add), text: 'Añadir'),
               Tab(icon: Icon(Icons.image), text: 'Imagenes'),
+              Tab(icon: Icon(Icons.category), text: 'Categorías'),
             ],
           ),
         ),
@@ -260,6 +262,19 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const UploadImageScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildActionTab(
+                    title: 'Gestionar Categorías',
+                    description: 'Agregar, editar o eliminar categorías de productos.',
+                    icon: Icons.category,
+                    onOpen: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ManageCategoriesScreen(),
                         ),
                       );
                     },

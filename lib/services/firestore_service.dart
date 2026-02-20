@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/artisan.dart';
 import '../models/product.dart';
 import '../models/course.dart';
+import '../models/category.dart';
 import '../data/database.dart';
 import 'image_upload_service.dart';
 
@@ -314,5 +315,61 @@ class FirestoreService {
       debugPrint("❌ Error al eliminar curso: $e");
       rethrow;
     }
+  }
+
+  // --- CATEGORÍAS ---
+  static Stream<List<Category>> getCategories() {
+    return _db
+        .collection('categories')
+        .orderBy('orden')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return Category.fromMap(doc.data());
+      }).toList();
+    });
+  }
+
+  static Future<void> addCategory(Category category) async {
+    await _db.collection('categories').doc(category.id).set(category.toMap());
+    debugPrint("✅ Categoría agregada a Firestore");
+  }
+
+  static Future<void> updateCategory(Category category) async {
+    await _db
+        .collection('categories')
+        .doc(category.id)
+        .update(category.toMap());
+    debugPrint("✅ Categoría actualizada en Firestore");
+  }
+
+  static Future<void> deleteCategory(String categoryId) async {
+    await _db.collection('categories').doc(categoryId).delete();
+    debugPrint("✅ Categoría eliminada de Firestore");
+  }
+
+  // Inicializar categorías por defecto (ejecutar una vez)
+  static Future<void> initializeDefaultCategories() async {
+    final categories = [
+      Category(id: 'cat_1', nombre: 'Indumentaria', orden: 1),
+      Category(id: 'cat_2', nombre: 'Herramientas', orden: 2),
+      Category(id: 'cat_3', nombre: 'Juguetes', orden: 3),
+      Category(id: 'cat_4', nombre: 'Hogar', orden: 4),
+      Category(id: 'cat_5', nombre: 'Deco', orden: 5),
+      Category(id: 'cat_6', nombre: 'Cocina', orden: 6),
+      Category(id: 'cat_7', nombre: 'Alimentos', orden: 7),
+      Category(id: 'cat_8', nombre: 'Bebidas', orden: 8),
+      Category(id: 'cat_9', nombre: 'Utensilios', orden: 9),
+      Category(id: 'cat_10', nombre: 'Joyería', orden: 10),
+      Category(id: 'cat_11', nombre: 'Útiles Escolares', orden: 11),
+      Category(id: 'cat_12', nombre: 'Jardinería', orden: 12),
+      Category(id: 'cat_13', nombre: 'Instrumentos Musicales', orden: 13),
+      Category(id: 'cat_14', nombre: 'Otros', orden: 14),
+    ];
+
+    for (var category in categories) {
+      await addCategory(category);
+    }
+    debugPrint("✅ Categorías por defecto inicializadas");
   }
 }

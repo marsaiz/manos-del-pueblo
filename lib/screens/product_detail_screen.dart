@@ -33,7 +33,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void _shareProduct() async {
     final String mensaje =
         "¡Mira esta artesanía de ${widget.artisan.nombre}!\n\n"
-        "*${widget.product.nombre}* - ${double.tryParse(widget.product.precio) != null ? '\${widget.product.precio}' : widget.product.precio}\n\n"
+        "*${widget.product.nombre}* - ${double.tryParse(widget.product.precio) != null ? '\$${widget.product.precio}' : widget.product.precio}\n\n"
         "Ver más aquí: https://manos-del-pueblo.ar";
 
     await Share.share(mensaje);
@@ -189,7 +189,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Text(
                     double.tryParse(widget.product.precio) != null
-                        ? '\${widget.product.precio}'
+                        ? '\$${widget.product.precio}'
                         : widget.product.precio,
                     style: const TextStyle(
                       fontSize: 28,

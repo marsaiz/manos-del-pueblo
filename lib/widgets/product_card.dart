@@ -170,7 +170,7 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     double.tryParse(product.precio) != null
-                        ? '\${product.precio}'
+                        ? '\$${product.precio}'
                         : product.precio,
                     style: const TextStyle(
                       color: Colors.brown,

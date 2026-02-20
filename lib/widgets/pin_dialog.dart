@@ -68,15 +68,15 @@ class _PinDialogState extends State<PinDialog> {
           TextField(
             controller: _pinController,
             keyboardType: TextInputType.number,
-            maxLength: 4,
+            maxLength: widget.correctPin.length > 4 ? widget.correctPin.length : null,
             obscureText: true,
             autofocus: true,
             enabled: !_isLoading,
-            decoration: const InputDecoration(
-              hintText: 'PIN de 4 dígitos',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: 'PIN de ${widget.correctPin.length} dígitos',
+              border: const OutlineInputBorder(),
               counterText: '',
-              prefixIcon: Icon(Icons.lock),
+              prefixIcon: const Icon(Icons.lock),
             ),
             onSubmitted: (_) => _verifyPin(),
           ),

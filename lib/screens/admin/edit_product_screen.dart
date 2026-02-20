@@ -1,7 +1,9 @@
 // lib/screens/admin/edit_product_screen.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/artisan.dart';
 import '../../models/product.dart';
+import '../../models/category.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/pin_service.dart';
@@ -24,20 +26,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
   late TextEditingController _precioController;
   late TextEditingController _customCategoriaController;
 
-  final List<String> _categorias = [
-    'Indumentaria',
-    'Herramientas',
-    'Juguetes',
-    'Hogar',
-    'Deco',
-    'Cocina',
-    'Alimentos',
-    'Bebidas',
-    'Utensilios',
-    'Joyería',
-    'Útiles Escolares',
-    'Otros',
-  ];
+  List<String> _categorias = [];
+  bool _loadingCategories = true;
+  StreamSubscription<List<Category>>? _categoriesSubscription;
 
   Artisan? _selectedArtesano;
   String? _selectedCategoria;
@@ -51,6 +42,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void initState() {
     super.initState();
+    _loadCategories();
     _nombreController = TextEditingController(text: widget.product.nombre);
     _descripcionController = TextEditingController(
       text: widget.product.descripcion,
@@ -61,20 +53,41 @@ class _EditProductScreenState extends State<EditProductScreen> {
     for (int i = 0; i < widget.product.imagePaths.length && i < 3; i++) {
       _fotoUrls[i] = widget.product.imagePaths[i];
     }
+  }
 
-    if (_categorias.contains(widget.product.categoria)) {
-      _selectedCategoria = widget.product.categoria;
-      _customCategoriaController = TextEditingController();
-    } else {
-      _selectedCategoria = 'Otro...';
-      _customCategoriaController = TextEditingController(
-        text: widget.product.categoria,
-      );
-    }
+  void _loadCategories() {
+    _categoriesSubscription?.cancel(); // Cancelar suscripción anterior si existe
+    _categoriesSubscription = FirestoreService.getCategories().listen((categories) {
+      if (mounted) {
+        setState(() {
+          // Limpiar y reconstruir la lista de categorías
+          _categorias = categories.map((c) => c.nombre).toList();
+          
+          // Agregar "Otro..." solo si no existe
+          if (!_categorias.contains('Otro...')) {
+            _categorias.add('Otro...');
+          }
+          
+          _loadingCategories = false;
+
+          // Inicializar categoría seleccionada después de cargar las categorías
+          if (_categorias.contains(widget.product.categoria)) {
+            _selectedCategoria = widget.product.categoria;
+            _customCategoriaController = TextEditingController();
+          } else {
+            _selectedCategoria = 'Otro...';
+            _customCategoriaController = TextEditingController(
+              text: widget.product.categoria,
+            );
+          }
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    _categoriesSubscription?.cancel();
     _nombreController.dispose();
     _descripcionController.dispose();
     _precioController.dispose();

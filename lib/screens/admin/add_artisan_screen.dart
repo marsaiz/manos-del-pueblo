@@ -15,6 +15,9 @@ class AddArtisanScreen extends StatefulWidget {
 class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  // Generar ID único al inicio
+  late final String _artisanId;
+
   // Controladores
   final _nombreController = TextEditingController();
   final _historiaController = TextEditingController();
@@ -35,12 +38,18 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   bool _isUploading = false;
   bool _isSaving = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Generar ID único al inicializar
+    _artisanId = "a${DateTime.now().millisecondsSinceEpoch}";
+  }
+
   Future<void> _pickAndUploadImage() async {
     setState(() => _isUploading = true);
     try {
-      // Usamos un ID temporal para la carpeta de Storage
-      final tempId = "new_${DateTime.now().millisecondsSinceEpoch}";
-      final url = await ImageUploadService.uploadArtisanProfileImage(tempId);
+      // Usar el ID real del artesano para la carpeta de Storage
+      final url = await ImageUploadService.uploadArtisanProfileImage(_artisanId);
       setState(() => _fotoUrl = url);
     } catch (e) {
       debugPrint("Error subiendo imagen: $e");
@@ -53,11 +62,9 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
 
-    // Generar ID único
-    final String newId = "a${DateTime.now().millisecondsSinceEpoch}";
-
+    // Usar el ID generado al inicio
     final newArtisan = Artisan(
-      id: newId,
+      id: _artisanId,
       nombre: _nombreController.text.trim(),
       historia: _historiaController.text.trim(),
       fotoPerfil: _fotoUrl ?? '',
