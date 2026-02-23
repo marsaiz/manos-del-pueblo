@@ -53,6 +53,11 @@ Thumbs.db
 *.jks
 *.keystore
 
+# Archivos de compilacion iOS (muy pesados, no subir)
+*.ipa
+*.app
+*.dSYM.zip
+
 /linux/flutter/generated_plugin_registrant.*
 /linux/flutter/generated_plugins.cmake
 /macos/Flutter/GeneratedPluginRegistrant.swift

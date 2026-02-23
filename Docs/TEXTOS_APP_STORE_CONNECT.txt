@@ -1,0 +1,280 @@
+═══════════════════════════════════════════════════════════════
+TEXTOS PARA APP STORE CONNECT - MANOS DEL PUEBLO
+═══════════════════════════════════════════════════════════════
+
+VERSION: 1.2.0
+FECHA: Febrero 2026
+BUNDLE ID: ar.manosdelpueblo.app
+
+═══════════════════════════════════════════════════════════════
+1. TEXTO PROMOCIONAL (170 caracteres max)
+═══════════════════════════════════════════════════════════════
+
+Descubre artesanias unicas hechas a mano por artesanos locales. Conecta directamente con los creadores y apoya el comercio justo.
+
+═══════════════════════════════════════════════════════════════
+2. DESCRIPCION (4000 caracteres max)
+═══════════════════════════════════════════════════════════════
+
+Manos del Pueblo es una plataforma digital que visibiliza y potencia el trabajo de artesanos locales. Funciona como un catalogo interactivo donde puedes explorar productos unicos, conocer la historia de sus creadores y contactarlos directamente.
+
+CARACTERISTICAS PRINCIPALES
+
+Catalogo de Artesanias
+Explora una amplia variedad de productos hechos a mano: ceramica, textiles, joyeria, decoracion y mucho mas. Cada pieza cuenta una historia.
+
+Conoce a los Artesanos
+Descubre quienes estan detras de cada creacion. Lee sus historias, conoce sus tecnicas y conecta con su trabajo.
+
+Busqueda Inteligente
+Encuentra productos por nombre, categoria o artesano en tiempo real. Filtra por tipo de artesania para descubrir exactamente lo que buscas.
+
+Favoritos
+Guarda tus productos y artesanos favoritos para encontrarlos facilmente mas tarde.
+
+Contacto Directo
+Comunicate directamente con los artesanos a traves de WhatsApp, Instagram o Facebook. Sin intermediarios.
+
+Cursos y Talleres
+Descubre talleres y cursos ofrecidos por los artesanos. Aprende tecnicas tradicionales directamente de los maestros.
+
+Comercio Justo
+Apoya el comercio local y justo. Cada compra beneficia directamente al artesano y su comunidad.
+
+PARA ARTESANOS
+
+Si eres artesano, puedes gestionar tu perfil y productos de forma sencilla:
+- Crea tu perfil con fotos y descripcion
+- Publica tus productos con hasta 3 imagenes
+- Actualiza precios y disponibilidad
+- Comparte tus redes sociales
+- Ofrece cursos y talleres
+
+POR QUE MANOS DEL PUEBLO
+
+- Sin comisiones por venta
+- Contacto directo con compradores
+- Visibilidad para tu trabajo
+- Comunidad de artesanos
+- Facil de usar
+
+Manos del Pueblo es mas que una app, es un movimiento para valorar el trabajo artesanal, preservar tecnicas tradicionales y fortalecer la economia local.
+
+Descarga la app y descubre el talento de los artesanos de tu region.
+
+═══════════════════════════════════════════════════════════════
+3. PALABRAS CLAVE (100 caracteres max, separadas por comas)
+═══════════════════════════════════════════════════════════════
+
+artesanos,artesanias,hecho a mano,comercio justo,productos locales,ceramica,textiles,joyeria
+
+═══════════════════════════════════════════════════════════════
+4. URL DE SOPORTE
+═══════════════════════════════════════════════════════════════
+
+https://manos-del-pueblo.ar
+
+═══════════════════════════════════════════════════════════════
+5. URL DE MARKETING (opcional)
+═══════════════════════════════════════════════════════════════
+
+https://manos-del-pueblo.ar
+
+═══════════════════════════════════════════════════════════════
+6. URL DE POLITICA DE PRIVACIDAD (obligatorio)
+═══════════════════════════════════════════════════════════════
+
+https://manos-del-pueblo.ar/privacidad
+
+NOTA: Si no existe esta pagina, necesitas crearla antes de enviar a revision.
+
+═══════════════════════════════════════════════════════════════
+7. INFORMACION DE COPYRIGHT
+═══════════════════════════════════════════════════════════════
+
+2024 Manos del Pueblo
+
+═══════════════════════════════════════════════════════════════
+8. NOTAS DE LA VERSION (Que hay de nuevo - 4000 caracteres max)
+═══════════════════════════════════════════════════════════════
+
+Primera version de Manos del Pueblo en iOS.
+
+Caracteristicas incluidas:
+- Catalogo completo de productos artesanales
+- Perfiles de artesanos con informacion de contacto
+- Busqueda y filtros por categoria
+- Sistema de favoritos
+- Compartir productos
+- Visualizacion de cursos y talleres
+- Gestion de productos para artesanos
+- Panel de administracion
+
+Gracias por apoyar el trabajo artesanal local!
+
+═══════════════════════════════════════════════════════════════
+9. CREDENCIALES DE PRUEBA (para revisores de Apple)
+═══════════════════════════════════════════════════════════════
+
+NOMBRE DE USUARIO:
+admin@manos-del-pueblo.ar
+
+CONTRASEÑA:
+PINes: Admin=4628, Productos=1234, Eliminar=919345
+
+NOTAS ADICIONALES:
+
+INSTRUCCIONES DE PRUEBA
+
+La app usa PINes en lugar de login tradicional.
+
+ACCESO ADMINISTRADOR:
+1. Pestana Sobre Nosotros (ultima pestana)
+2. Desplazar abajo - Gestionar Artesanos
+3. Ingresar PIN: 4628
+
+GESTION DE PRODUCTOS:
+1. Menu hamburguesa - Administrar Productos
+2. Ingresar PIN: 1234
+3. Crear/editar productos (hasta 3 fotos)
+
+OTRAS FUNCIONES:
+- Busqueda en pantalla principal
+- Filtros por categoria
+- Favoritos (icono corazon)
+- Compartir productos
+- Contacto WhatsApp/Instagram/Facebook
+- Ver cursos disponibles
+
+NOTAS:
+- Sin registro de usuario
+- Sesion admin dura 30 minutos
+- Datos reales de artesanos locales
+
+Contacto: contacto@manos-del-pueblo.ar
+
+═══════════════════════════════════════════════════════════════
+10. CATEGORIAS
+═══════════════════════════════════════════════════════════════
+
+PRIMARIA: Shopping (Compras)
+SECUNDARIA: Lifestyle (Estilo de vida)
+
+═══════════════════════════════════════════════════════════════
+11. CLASIFICACION POR EDAD
+═══════════════════════════════════════════════════════════════
+
+Responde el cuestionario de Apple con:
+
+- Contenido violento: NO
+- Contenido sexual: NO
+- Lenguaje ofensivo: NO
+- Drogas/alcohol: NO
+- Contenido medico: NO
+- Juegos de azar: NO
+- Horror/miedo: NO
+
+RESULTADO ESPERADO: 4+ (Para todas las edades)
+
+═══════════════════════════════════════════════════════════════
+12. INFORMACION DE CONTACTO (para Apple, no publico)
+═══════════════════════════════════════════════════════════════
+
+NOMBRE: [Tu nombre]
+APELLIDO: [Tu apellido]
+TELEFONO: [Tu telefono con codigo de pais]
+EMAIL: contacto@manos-del-pueblo.ar
+
+═══════════════════════════════════════════════════════════════
+13. INFORMACION DE REVISION (App Review Information)
+═══════════════════════════════════════════════════════════════
+
+NOMBRE: [Tu nombre completo]
+TELEFONO: [Tu telefono]
+EMAIL: contacto@manos-del-pueblo.ar
+
+NOTAS PARA EL REVISOR:
+
+Esta aplicacion conecta artesanos locales con compradores. No procesa pagos dentro de la app, solo facilita el contacto directo entre usuarios y artesanos via WhatsApp, Instagram o Facebook.
+
+Los PINes de seguridad protegen funciones administrativas. Por favor no eliminar artesanos reales durante la revision, solo verificar el funcionamiento.
+
+═══════════════════════════════════════════════════════════════
+14. EXPORT COMPLIANCE (Cumplimiento de exportacion)
+═══════════════════════════════════════════════════════════════
+
+PREGUNTA: Does your app use encryption?
+
+RESPUESTA: NO
+
+EXPLICACION: La app solo usa HTTPS estandar para comunicacion con Firebase. No implementa encriptacion personalizada.
+
+═══════════════════════════════════════════════════════════════
+15. ADVERTISING IDENTIFIER (IDFA)
+═══════════════════════════════════════════════════════════════
+
+PREGUNTA: Does this app use the Advertising Identifier (IDFA)?
+
+RESPUESTA: NO
+
+EXPLICACION: La app no muestra publicidad ni usa servicios de tracking publicitario.
+
+═══════════════════════════════════════════════════════════════
+CHECKLIST ANTES DE ENVIAR
+═══════════════════════════════════════════════════════════════
+
+[ ] Screenshots subidos (minimo 3 por tamano requerido)
+[ ] Icono de app 1024x1024 subido
+[ ] Descripcion completada
+[ ] Palabras clave agregadas
+[ ] URLs de soporte y privacidad funcionando
+[ ] Credenciales de prueba verificadas
+[ ] Categorias seleccionadas
+[ ] Clasificacion por edad completada
+[ ] Build seleccionado de TestFlight
+[ ] Informacion de contacto completada
+[ ] Export Compliance respondido
+[ ] IDFA respondido
+[ ] Privacidad de la app completada
+
+═══════════════════════════════════════════════════════════════
+CONFIGURACION DE DISPOSITIVOS
+═══════════════════════════════════════════════════════════════
+
+La app esta configurada SOLO para iPhone (no iPad).
+
+Archivos modificados:
+- ios/Runner.xcodeproj/project.pbxproj: TARGETED_DEVICE_FAMILY = "1"
+- ios/Runner/Info.plist: Eliminada configuracion de iPad
+
+Esto significa que:
+- Solo necesitas screenshots de iPhone
+- No necesitas screenshots de iPad
+- La app no aparecera en iPad App Store
+
+═══════════════════════════════════════════════════════════════
+NOTAS IMPORTANTES
+═══════════════════════════════════════════════════════════════
+
+1. POLITICA DE PRIVACIDAD: Debes tener una pagina web con la politica
+   de privacidad antes de enviar a revision. Es OBLIGATORIO.
+
+2. SCREENSHOTS: Apple requiere screenshots especificos:
+   - iPhone 6.7" (1290 x 2796 px) - OBLIGATORIO
+   - iPhone 6.5" (1242 x 2688 px) - OBLIGATORIO
+   - Minimo 3, maximo 10 por tamano
+
+3. ICONO: 1024x1024 px, sin transparencia, sin bordes redondeados
+
+4. TIEMPO DE REVISION: Usualmente 24-48 horas
+
+5. RECHAZOS COMUNES:
+   - Falta politica de privacidad
+   - Screenshots de baja calidad
+   - Credenciales de prueba no funcionan
+   - Contenido inapropiado
+   - Bugs o crashes
+
+═══════════════════════════════════════════════════════════════
+FIN DEL DOCUMENTO
+═══════════════════════════════════════════════════════════════
