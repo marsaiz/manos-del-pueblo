@@ -22,15 +22,15 @@ class RemoteConfigService {
       'home_banner_enabled': true,
       'home_banner_text': 'Bienvenidos a Manos del Pueblo',
       // Configuración de versiones con prefijo para no conflictuar con otras apps
-      'manos_min_version_android': '1.0.0',
-      'manos_min_version_ios': '1.0.0',
-      'manos_latest_version_android': '1.0.0',
-      'manos_latest_version_ios': '1.0.0',
+      'manos_min_version_android': '1.2.1',
+      'manos_min_version_ios': '1.2.1',
+      'manos_latest_version_android': '1.2.1',
+      'manos_latest_version_ios': '1.2.1',
       'manos_force_update': false,
       'manos_update_message': 'Hay una nueva versión disponible. Por favor actualiza la aplicación.',
       'manos_force_update_message': 'Esta versión ya no es compatible. Debes actualizar para continuar.',
       'manos_android_store_url': 'https://play.google.com/store/apps/details?id=ar.manosdelpueblo.app',
-      'manos_ios_store_url': 'https://apps.apple.com/app/id123456789',
+      'manos_ios_store_url': 'https://apps.apple.com/ar/app/manos-del-pueblo/id6759227694',
     });
 
     await _remoteConfig.fetchAndActivate();
