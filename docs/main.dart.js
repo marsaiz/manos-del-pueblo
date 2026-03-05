@@ -101663,7 +101663,7 @@ for(;;)switch(s){case 0:o=q.a
 n=o.gm2()
 s=2
 return A.m(n.qG(new A.anW(B.J6,B.Jj)),$async$eS)
-case 2:p=A.ar(["home_banner_enabled",!0,"home_banner_text","Bienvenidos a Manos del Pueblo","manos_min_version_android","1.0.0","manos_min_version_ios","1.0.0","manos_latest_version_android","1.0.0","manos_latest_version_ios","1.0.0","manos_force_update",!1,"manos_update_message","Hay una nueva versi\xf3n disponible. Por favor actualiza la aplicaci\xf3n.","manos_force_update_message","Esta versi\xf3n ya no es compatible. Debes actualizar para continuar.","manos_android_store_url","https://play.google.com/store/apps/details?id=ar.manosdelpueblo.app","manos_ios_store_url","https://apps.apple.com/app/id123456789"],t.N,t.z)
+case 2:p=A.ar(["home_banner_enabled",!0,"home_banner_text","Bienvenidos a Manos del Pueblo","manos_min_version_android","1.2.1","manos_min_version_ios","1.2.1","manos_latest_version_android","1.2.1","manos_latest_version_ios","1.2.1","manos_force_update",!1,"manos_update_message","Hay una nueva versi\xf3n disponible. Por favor actualiza la aplicaci\xf3n.","manos_force_update_message","Esta versi\xf3n ya no es compatible. Debes actualizar para continuar.","manos_android_store_url","https://play.google.com/store/apps/details?id=ar.manosdelpueblo.app","manos_ios_store_url","https://apps.apple.com/ar/app/manos-del-pueblo/id6759227694"],t.N,t.z)
 p.aj(0,o.gabu())
 s=3
 return A.m(n.qH(p),$async$eS)
