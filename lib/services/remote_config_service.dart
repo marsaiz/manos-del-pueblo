@@ -24,13 +24,16 @@ class RemoteConfigService {
       // Configuración de versiones con prefijo para no conflictuar con otras apps
       'manos_min_version_android': '1.2.1',
       'manos_min_version_ios': '1.2.1',
+      'manos_min_version_web': '1.2.1',
       'manos_latest_version_android': '1.2.1',
       'manos_latest_version_ios': '1.2.1',
+      'manos_latest_version_web': '1.2.1',
       'manos_force_update': false,
       'manos_update_message': 'Hay una nueva versión disponible. Por favor actualiza la aplicación.',
       'manos_force_update_message': 'Esta versión ya no es compatible. Debes actualizar para continuar.',
       'manos_android_store_url': 'https://play.google.com/store/apps/details?id=ar.manosdelpueblo.app',
       'manos_ios_store_url': 'https://apps.apple.com/ar/app/manos-del-pueblo/id6759227694',
+      'manos_web_url': 'https://manos-del-pueblo.ar',
     });
 
     await _remoteConfig.fetchAndActivate();
@@ -50,6 +53,8 @@ class RemoteConfigService {
       return getString('manos_min_version_android');
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return getString('manos_min_version_ios');
+    } else if (kIsWeb) {
+      return getString('manos_min_version_web');
     }
     return '1.0.0';
   }
@@ -60,6 +65,8 @@ class RemoteConfigService {
       return getString('manos_latest_version_android');
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return getString('manos_latest_version_ios');
+    } else if (kIsWeb) {
+      return getString('manos_latest_version_web');
     }
     return '1.0.0';
   }
@@ -70,6 +77,8 @@ class RemoteConfigService {
       return getString('manos_android_store_url');
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return getString('manos_ios_store_url');
+    } else if (kIsWeb) {
+      return getString('manos_web_url');
     }
     return '';
   }
