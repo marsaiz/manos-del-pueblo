@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scrollBehavior: const MyCustomScrollBehavior(),
       debugShowCheckedModeBanner: false,
       title: 'Manos del Pueblo',
       theme: ThemeData(
@@ -152,4 +154,14 @@ class _AppInitializerState extends State<AppInitializer> {
 
     return const HomeScreen();
   }
+}
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  const MyCustomScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }

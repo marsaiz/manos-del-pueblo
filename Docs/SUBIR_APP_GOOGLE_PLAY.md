@@ -26,10 +26,10 @@
 
 - [x] **App Bundle**: `build/app/outputs/bundle/release/app-release.aab`
 - [x] **Keystore**: `~/manos-del-pueblo-upload-keystore.jks`
-- [ ] **Ícono**: 512x512 px (PNG, 32-bit)
-- [ ] **Feature Graphic**: 1024x500 px (PNG o JPG)
-- [ ] **Screenshots**: Mínimo 2 por dispositivo
-- [ ] **Política de Privacidad**: URL pública
+- [x] **Ícono**: 512x512 px (PNG, 32-bit)
+- [x] **Feature Graphic**: 1024x500 px (PNG o JPG)
+- [x] **Screenshots**: Mínimo 2 por dispositivo
+- [x] **Política de Privacidad**: URL pública
 
 ---
 

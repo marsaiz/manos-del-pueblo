@@ -56,5 +56,11 @@
 		<string>twitter</string>
 		<string>whatsapp</string>
 	</array>
+	<!-- Configuración de encriptación para App Store -->
+	<!-- La app solo usa HTTPS estándar, no encriptación personalizada -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+</dict>
+</plist>
 </dict>
 </plist>
