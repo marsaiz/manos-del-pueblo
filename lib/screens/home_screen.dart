@@ -75,10 +75,38 @@ class _HomeScreenState extends State<HomeScreen> {
         (a, b) => a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()),
       );
     } else {
-      // Orden aleatorio persistente durante la sesión
+      // Orden equitativo y aleatorio persistente durante la sesión
       if (_shuffledProductIds.isEmpty && allProducts.isNotEmpty) {
-        final ids = allProducts.map((p) => p.id).toList()..shuffle();
-        _shuffledProductIds = ids;
+        // 1. Agrupar productos por artesano
+        final Map<String, List<Product>> productsByArtisan = {};
+        for (final p in allProducts) {
+          productsByArtisan.putIfAbsent(p.artisanId, () => []).add(p);
+        }
+
+        // 2. Mezclar los productos internamente para cada artesano
+        for (final list in productsByArtisan.values) {
+          list.shuffle();
+        }
+
+        final List<String> interleavedIds = [];
+        bool addedAny = true;
+
+        // 3. Repartir como cartas: uno de cada artesano por ronda
+        while (addedAny) {
+          addedAny = false;
+          // Mezclar el orden de los artesanos en cada ronda para más aleatoriedad
+          final artisanIds = productsByArtisan.keys.toList()..shuffle();
+
+          for (final artisanId in artisanIds) {
+            final list = productsByArtisan[artisanId]!;
+            if (list.isNotEmpty) {
+              interleavedIds.add(list.removeAt(0).id);
+              addedAny = true;
+            }
+          }
+        }
+        
+        _shuffledProductIds = interleavedIds;
       }
 
       // Ordenamos según el orden aleatorio generado
@@ -182,33 +210,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 artisans,
               );
 
-              return Column(
-                children: [
-                  // 1. BARRA DE BÚSQUEDA
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (value) {
-                        setState(() {
-                          _searchText = value;
-                          if (value.isNotEmpty) _filtroActivo = 'Búsqueda';
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Buscar artesanías...',
-                        hintText: 'Ej: Mate, Decoración, Córdoba...',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        prefixIcon: Icon(Icons.search),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 15,
+              return CustomScrollView(
+                slivers: [
+                  // 1. BARRA DE BÚSQUEDA Y FILTROS INTEGRADOS (Collapsible)
+                  SliverAppBar(
+                    pinned: true,
+                    automaticallyImplyLeading: false, // Evitar botón de menú duplicado
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    surfaceTintColor: Colors.transparent,
+                    elevation: 0,
+                    toolbarHeight: 76.0,
+                    expandedHeight: 241.0, // 76 (search) + 44 (loc) + 10 (espacio) + 110 (art) + 1 (div)
+                    titleSpacing: 0,
+                    title: Container(
+                      height: 76.0,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            _searchText = value;
+                            if (value.isNotEmpty) _filtroActivo = 'Búsqueda';
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Buscar artesanías...',
+                          hintText: 'Ej: Mate, Decoración, Córdoba...',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          prefixIcon: Icon(Icons.search),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 15,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-
-                  // 1.5 FILTRO DE LOCALIDADES
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // 1.5 FILTRO DE LOCALIDADES
                   SizedBox(
                     height: 44,
                     child: ListView(
@@ -293,42 +338,52 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const Divider(height: 1),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
 
                   // 3. GRILLA DE PRODUCTOS
-                  Expanded(
-                    child: filteredProducts.isNotEmpty
-                        ? GridView.builder(
-                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
-                            itemCount: filteredProducts.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.70,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                ),
-                            itemBuilder: (context, index) {
-                              return ProductCard(
-                                product: filteredProducts[index],
-                                artisans: artisans,
-                              );
-                            },
-                          )
-                        : const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.search_off,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(height: 10),
-                                Text("No hay productos aquí"),
-                              ],
+                  if (filteredProducts.isNotEmpty)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.70,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            return ProductCard(
+                              product: filteredProducts[index],
+                              artisans: artisans,
+                            );
+                          },
+                          childCount: filteredProducts.length,
+                        ),
+                      ),
+                    )
+                  else
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.search_off,
+                              size: 50,
+                              color: Colors.grey,
                             ),
-                          ),
-                  ),
+                            SizedBox(height: 10),
+                            Text("No hay productos aquí"),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               );
             },
@@ -397,4 +452,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

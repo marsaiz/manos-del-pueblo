@@ -196,6 +196,18 @@ class ArtisanProfileScreen extends StatelessWidget {
                 expandedHeight: 250.0,
                 pinned: true,
                 backgroundColor: const Color(0xFF5D4037),
+                leading: IconButton(
+                  icon: const Icon(Icons.home, color: Colors.white),
+                  tooltip: 'Volver al Inicio',
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                ),
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
                     artisan.nombre,

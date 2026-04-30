@@ -205,31 +205,33 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextStyle(fontSize: 16),
                       ),
                       const SizedBox(width: 8),
-                      ActionChip(
-                        avatar: CircleAvatar(
-                          backgroundImage:
-                              (widget.artisan.fotoPerfil.startsWith('http'))
-                              ? NetworkImage(widget.artisan.fotoPerfil)
-                              : AssetImage(widget.artisan.fotoPerfil)
-                                    as ImageProvider,
+                      Flexible(
+                        child: ActionChip(
+                          avatar: CircleAvatar(
+                            backgroundImage:
+                                (widget.artisan.fotoPerfil.startsWith('http'))
+                                ? NetworkImage(widget.artisan.fotoPerfil)
+                                : AssetImage(widget.artisan.fotoPerfil)
+                                      as ImageProvider,
+                          ),
+                          label: Text(
+                            widget.artisan.nombre,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          backgroundColor: Colors.brown[50],
+                          side: BorderSide.none,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ArtisanProfileScreen(artisan: widget.artisan),
+                              ),
+                            );
+                          },
                         ),
-                        label: Text(
-                          widget.artisan.nombre,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        backgroundColor: Colors.brown[50],
-                        side: BorderSide.none,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ArtisanProfileScreen(artisan: widget.artisan),
-                            ),
-                          );
-                        },
                       ),
                     ],
                   ),

@@ -2,7 +2,7 @@ name: manos_del_pueblo
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.2.2+8
+version: 1.2.3+9
 
 environment:
   sdk: ^3.9.2
@@ -46,11 +46,11 @@ dependencies:
   firebase_storage: ^12.2.0
   cloud_firestore: ^5.6.2
   firebase_remote_config: ^5.5.0
-  
+
   # Para subir archivos en web
   image_picker_web: ^4.0.0
   image_picker: ^1.1.2
-  
+
   # Para mostrar imágenes de internet
   cached_network_image: ^3.4.1
 
@@ -71,13 +71,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  
 
   assets:
     - assets/images/
     - assets/logo.png
     - assets/logo_manos.png
-
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
@@ -109,7 +107,7 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-# Configuración de íconos de la app
+  # Configuración de íconos de la app
 flutter_launcher_icons:
   android: true
   ios: true
@@ -118,16 +116,16 @@ flutter_launcher_icons:
     image_path: "assets/logo.png"
     background_color: "#FFFFFF"
     theme_color: "#5D4037"
-  
+
   # Icono principal (usado para iOS y fallback)
   image_path: "assets/logo.png"
-  
+
   # Configuración para Android Adaptive Icons
   # Usando logo con padding para que no se vea cortado
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/logo_adaptive_balanced.png"
-  
+
   # Configuración para iOS
   remove_alpha_ios: true
-  
+
   min_sdk_android: 21
