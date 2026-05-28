@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5D4037">
+  
+  <title>Descargar Manos del Pueblo - App Oficial</title>
+  <meta name="description" content="Descarga la aplicación móvil de Manos del Pueblo para Android e iOS. Descubre y adquiere las artesanías más hermosas de nuestra comunidad.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://manos-del-pueblo.ar/descargar/">
+  <meta property="og:title" content="Descargar Manos del Pueblo - App Oficial">
+  <meta property="og:description" content="Descarga la aplicación móvil de Manos del Pueblo para Android e iOS. Apoya al arte y los artesanos locales.">
+  <meta property="og:image" content="https://manos-del-pueblo.ar/descargar/qr_descarga.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://manos-del-pueblo.ar/descargar/">
+  <meta property="twitter:title" content="Descargar Manos del Pueblo - App Oficial">
+  <meta property="twitter:description" content="Descarga la aplicación móvil de Manos del Pueblo para Android e iOS. Apoya al arte y los artesanos locales.">
+  <meta property="twitter:image" content="https://manos-del-pueblo.ar/descargar/qr_descarga.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../favicon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-bg-start: hsl(14, 25%, 8%);
+      --color-bg-end: hsl(20, 20%, 5%);
+      --color-primary: hsl(16, 44%, 48%); /* Terracotta */
+      --color-primary-hover: hsl(16, 44%, 55%);
+      --color-primary-light: hsl(16, 44%, 90%);
+      --color-surface: rgba(45, 30, 25, 0.45);
+      --color-surface-border: rgba(93, 64, 55, 0.25);
+      --color-text-main: #FFFFFF;
+      --color-text-muted: hsl(20, 20%, 75%);
+      --font-title: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+      color: var(--color-text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient background lights */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(141, 110, 99, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      top: -100px;
+      left: -100px;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(93, 64, 55, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+      bottom: -150px;
+      right: -100px;
+      z-index: 0;
+    }
+
+    main {
+      width: 100%;
+      max-width: 480px;
+      z-index: 1;
+      text-align: center;
+    }
+
+    /* App Logo Header */
+    .brand {
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .brand-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .brand-logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #FFFFFF, var(--color-text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Glass Card Container */
+    .card {
+      background: var(--color-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--color-surface-border);
+      border-radius: 28px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      animation: scaleUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .headline {
+      font-family: var(--font-title);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* Redirection Loading Overlay (Active during auto redirect) */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255, 255, 255, 0.08);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+      box-shadow: 0 0 15px rgba(215, 128, 96, 0.2);
+    }
+
+    .loading-text {
+      font-weight: 500;
+      color: var(--color-text-muted);
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Download Buttons */
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .btn-download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--color-text-main);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 14px 20px;
+      border-radius: 16px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .btn-playstore {
+      background: var(--color-primary);
+      box-shadow: 0 6px 20px rgba(184, 87, 54, 0.25);
+    }
+
+    .btn-playstore:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(184, 87, 54, 0.35);
+    }
+
+    .btn-appstore {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-appstore:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-icon {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    /* QR scan for Desktop */
+    .qr-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .qr-divider::before,
+    .qr-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .qr-divider:not(:empty)::before {
+      margin-right: 1em;
+    }
+
+    .qr-divider:not(:empty)::after {
+      margin-left: 1em;
+    }
+
+    .qr-wrapper {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      margin-bottom: 16px;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .qr-wrapper:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    .qr-image {
+      display: block;
+      width: 180px;
+      height: 180px;
+      border-radius: 6px;
+    }
+
+    .qr-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+    }
+
+    /* Footer branding */
+    footer {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.35);
+      animation: fadeIn 1s ease 0.5s both;
+    }
+
+    footer a {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: var(--color-text-main);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleUp {
+      from {
+        opacity: 0;
+        transform: scale(0.94);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .card {
+        padding: 24px 18px;
+        border-radius: 24px;
+      }
+      .brand-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 18px;
+      }
+      .brand-title {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <!-- Brand Header -->
+    <div class="brand">
+      <img src="../assets/assets/logo.png" alt="Manos del Pueblo Logo" class="brand-logo" id="app-logo">
+      <h1 class="brand-title">Manos del Pueblo</h1>
+    </div>
+
+    <!-- Glass Card Container -->
+    <div class="card">
+      
+      <!-- Auto Redirect Section (Visible by default on mobile load) -->
+      <div id="loading-view" class="loading-container">
+        <div class="spinner"></div>
+        <p class="loading-text" id="redirect-status">Detectando dispositivo...</p>
+      </div>
+
+      <!-- Main Download Options Section (Visible if redirect bypass, desktop, or fallback) -->
+      <div id="options-view" style="display: none;">
+        <h2 class="headline">Consigue la aplicación</h2>
+        <p class="description">Descarga la app oficial para explorar artesanías tradicionales directamente desde tu dispositivo.</p>
+        
+        <div class="buttons-container">
+          <!-- Google Play Store Button -->
+          <a href="https://play.google.com/store/apps/details?id=ar.manosdelpueblo.app" class="btn-download btn-playstore" id="btn-playstore">
+            <!-- Google Play SVG Icon -->
+            <svg class="btn-icon" viewBox="0 0 24 24">
+              <path d="M5.25 2.25c-.21 0-.41.04-.61.12l10.96 10.96 3.65-3.65-13.4-7.73c-.2-.12-.4-.2-.6-.2zm-1.8.84c-.12.2-.2.42-.2.66v16.5c0 .24.08.46.2.66l9.34-9.34L3.45 3.09zm13.37 10.07l-3.37 3.37 9.34 9.34c.12-.2.2-.42.2-.66V3.66c0-.24-.08-.46-.2-.66l-5.97 6.16zm-5.46.54L2.34 22.8c.2.08.4.12.61.12.2 0 .4-.08.6-.2l13.4-7.73-5.93-5.93z"/>
+            </svg>
+            <span>Google Play</span>
+          </a>
+
+          <!-- Apple App Store Button -->
+          <a href="https://apps.apple.com/ar/app/manos-del-pueblo/id6759227694" class="btn-download btn-appstore" id="btn-appstore">
+            <!-- Apple SVG Icon -->
+            <svg class="btn-icon" viewBox="0 0 24 24">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-.96.04-2.13.64-2.82 1.45-.6.7-1.13 1.84-.99 2.94.97.08 2.06-.52 2.82-1.33z"/>
+            </svg>
+            <span>App Store</span>
+          </a>
+        </div>
+
+        <!-- QR scan for Desktop -->
+        <div class="qr-divider">o escanea el código</div>
+        
+        <div class="qr-wrapper">
+          <img src="qr_descarga.png" alt="Código QR de descarga" class="qr-image">
+        </div>
+        <p class="qr-caption">Apunta la cámara de tu celular para descargar</p>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Manos del Pueblo. Todos los derechos reservados.</p>
+      <p style="margin-top: 6px;"><a href="https://manos-del-pueblo.ar">Volver al sitio web</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Configuración de URLs de las tiendas
+    const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ar.manosdelpueblo.app';
+    const APP_STORE_URL = 'https://apps.apple.com/ar/app/manos-del-pueblo/id6759227694';
+
+    // Función para detectar el sistema operativo
+    function getMobileOS() {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      
+      // Android
+      if (/android/i.test(userAgent)) {
+        return 'android';
+      }
+      
+      // iOS (iPhone, iPad, iPod)
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return 'ios';
+      }
+      
+      // iPad con iOS 13+ que se reporta como Mac
+      if (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /Macintosh/.test(userAgent)) {
+        return 'ios';
+      }
+      
+      return 'desktop';
+    }
+
+    // Lógica de visualización y redirección
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const noRedirect = params.get('noredirect') === 'true';
+      const forceOS = params.get('os'); // Permite probar redirecciones simulando un OS
+      
+      const loadingView = document.getElementById('loading-view');
+      const optionsView = document.getElementById('options-view');
+      const statusText = document.getElementById('redirect-status');
+      
+      const os = forceOS || getMobileOS();
+      
+      if (noRedirect || os === 'desktop') {
+        // Mostrar opciones de descarga si se indica no redireccionar o si es desktop
+        loadingView.style.display = 'none';
+        optionsView.style.display = 'block';
+      } else {
+        // Redirección automática
+        if (os === 'android') {
+          statusText.textContent = 'Redirigiendo a Google Play Store...';
+          setTimeout(() => {
+            window.location.replace(PLAY_STORE_URL);
+          }, 800);
+        } else if (os === 'ios') {
+          statusText.textContent = 'Redirigiendo a App Store...';
+          setTimeout(() => {
+            window.location.replace(APP_STORE_URL);
+          }, 800);
+        } else {
+          // Por seguridad, si el OS es desconocido, mostrar opciones de descarga
+          loadingView.style.display = 'none';
+          optionsView.style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

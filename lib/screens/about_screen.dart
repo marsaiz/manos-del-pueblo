@@ -137,28 +137,44 @@ class _AboutScreenState extends State<AboutScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildSocialButton(
-                  icon: FontAwesomeIcons.facebook,
+                  iconWidget: const FaIcon(
+                    FontAwesomeIcons.facebook,
+                    color: Color(0xFF3b5998),
+                    size: 24,
+                  ),
                   color: const Color(0xFF3b5998),
                   onTap: () =>
                       _launchURL('https://facebook.com/manosdelpueblo'),
                 ),
                 const SizedBox(width: 20),
                 _buildSocialButton(
-                  icon: FontAwesomeIcons.instagram,
+                  iconWidget: const FaIcon(
+                    FontAwesomeIcons.instagram,
+                    color: Color(0xFFE1306C),
+                    size: 24,
+                  ),
                   color: const Color(0xFFE1306C),
                   onTap: () =>
                       _launchURL('https://instagram.com/manosdelpueblo'),
                 ),
                 const SizedBox(width: 20),
                 _buildSocialButton(
-                  icon: Icons.email,
+                  iconWidget: Icon(
+                    Icons.email,
+                    color: Colors.grey[700]!,
+                    size: 24,
+                  ),
                   color: Colors.grey[700]!,
                   onTap: () =>
                       _launchURL('mailto:contacto@manos-del-pueblo.ar'),
                 ),
                 const SizedBox(width: 20),
                 _buildSocialButton(
-                  icon: Icons.phone,
+                  iconWidget: const Icon(
+                    Icons.phone,
+                    color: Colors.green,
+                    size: 24,
+                  ),
                   color: Colors.green,
                   onTap: () => _launchURL('tel:+5492302609175'),
                 ),
@@ -277,7 +293,7 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   Widget _buildSocialButton({
-    required IconData icon,
+    required Widget iconWidget,
     required Color color,
     required VoidCallback onTap,
   }) {
@@ -292,7 +308,7 @@ class _AboutScreenState extends State<AboutScreen> {
           shape: BoxShape.circle,
           border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
         ),
-        child: Icon(icon, color: color, size: 24),
+        child: Center(child: iconWidget),
       ),
     );
   }
