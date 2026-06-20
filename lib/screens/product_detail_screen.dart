@@ -4,6 +4,7 @@ import '../models/product.dart';
 import '../models/artisan.dart';
 import 'artisan_profile_screen.dart';
 import 'admin/edit_product_screen.dart';
+import '../widgets/adaptive_app_bar.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -42,7 +43,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AdaptiveAppBar(
         title: Text(
           widget.product.nombre,
           maxLines: 2,
@@ -100,9 +101,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 tag: index == 0
                                     ? 'product_image_${widget.product.id}'
                                     : 'product_image_${widget.product.id}_$index',
-                                child: (path.startsWith('http'))
-                                    ? Image.network(path, fit: BoxFit.contain)
-                                    : Image.asset(path, fit: BoxFit.contain),
+                                child: Semantics(
+                                  label: 'Foto ${index + 1} de ${widget.product.imagePaths.length} de ${widget.product.nombre}',
+                                  image: true,
+                                  child: (path.startsWith('http'))
+                                      ? Image.network(path, fit: BoxFit.contain)
+                                      : Image.asset(path, fit: BoxFit.contain),
+                                ),
                               ),
                             );
                           },
@@ -133,7 +138,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           decoration: BoxDecoration(
                             color: _currentPage == index
                                 ? Colors.brown
-                                : Colors.brown.withOpacity(0.3),
+                                : Colors.brown.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),

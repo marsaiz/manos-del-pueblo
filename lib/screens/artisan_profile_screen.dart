@@ -226,15 +226,19 @@ class ArtisanProfileScreen extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        (artisan.fotoPerfil.startsWith('http'))
-                            ? Image.network(
-                                artisan.fotoPerfil,
-                                fit: BoxFit.contain,
-                              )
-                            : Image.asset(
-                                artisan.fotoPerfil,
-                                fit: BoxFit.contain,
-                              ),
+                        Semantics(
+                          label: 'Foto de perfil de ${artisan.nombre}',
+                          image: true,
+                          child: (artisan.fotoPerfil.startsWith('http'))
+                              ? Image.network(
+                                  artisan.fotoPerfil,
+                                  fit: BoxFit.contain,
+                                )
+                              : Image.asset(
+                                  artisan.fotoPerfil,
+                                  fit: BoxFit.contain,
+                                ),
+                        ),
                         // Degradado para legibilidad (opcional con contain, pero mantenido para estilo)
                         const DecoratedBox(
                           decoration: BoxDecoration(
@@ -299,19 +303,23 @@ class ArtisanProfileScreen extends StatelessWidget {
                         children: [
                           // 1. Botón WhatsApp
                           Expanded(
-                            child: ElevatedButton(
-                              onPressed: _launchWhatsApp,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[600],
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
+                            child: Semantics(
+                              label: 'Contactar por WhatsApp a ${artisan.nombre}',
+                              button: true,
+                              child: ElevatedButton(
+                                onPressed: _launchWhatsApp,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green[600],
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                                child: const Icon(Icons.chat),
                               ),
-                              child: const Icon(Icons.chat),
                             ),
                           ),
 
@@ -319,45 +327,50 @@ class ArtisanProfileScreen extends StatelessWidget {
 
                           if (artisan.instagram.isNotEmpty) ...[
                             Expanded(
-                              child: ElevatedButton(
-                                onPressed: _launchInstagram,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(
-                                    0xFFE1306C,
-                                  ), // Color marca Instagram
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
+                              child: Semantics(
+                                label: 'Ver Instagram de ${artisan.nombre}',
+                                button: true,
+                                child: ElevatedButton(
+                                  onPressed: _launchInstagram,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE1306C),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                  child: const FaIcon(
+                                    FontAwesomeIcons.instagram,
+                                    size: 24,
                                   ),
                                 ),
-                                child: const FaIcon(
-                                  FontAwesomeIcons.instagram,
-                                  size: 24,
-                                ), // ✅ ESTO ES LO CORRECTO
                               ),
                             ),
                             const SizedBox(width: 10),
                           ],
 
-                          // 2.5 Botón Facebook (Solo si existe)
                           if (artisan.facebook.isNotEmpty) ...[
                             Expanded(
-                              child: ElevatedButton(
-                                onPressed: _launchFacebook,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1877F2),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
+                              child: Semantics(
+                                label: 'Ver Facebook de ${artisan.nombre}',
+                                button: true,
+                                child: ElevatedButton(
+                                  onPressed: _launchFacebook,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF1877F2),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                                  child: const Icon(Icons.facebook),
                                 ),
-                                child: const Icon(Icons.facebook),
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -365,19 +378,23 @@ class ArtisanProfileScreen extends StatelessWidget {
 
                           // 3. Botón Llamar
                           Expanded(
-                            child: OutlinedButton(
-                              onPressed: _launchCall,
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.brown,
-                                side: const BorderSide(color: Colors.brown),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
+                            child: Semantics(
+                              label: 'Llamar a ${artisan.nombre}',
+                              button: true,
+                              child: OutlinedButton(
+                                onPressed: _launchCall,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.brown,
+                                  side: const BorderSide(color: Colors.brown),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                                child: const Icon(Icons.phone),
                               ),
-                              child: const Icon(Icons.phone),
                             ),
                           ),
                         ],
@@ -393,7 +410,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey,
+                                color: const Color(0xFF616161),
                               ),
                             ),
                           ),
@@ -405,7 +422,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey,
+                                  color: const Color(0xFF616161),
                                 ),
                               ),
                             ),
@@ -418,7 +435,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey,
+                                  color: const Color(0xFF616161),
                                 ),
                               ),
                             ),
@@ -430,7 +447,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey,
+                                color: const Color(0xFF616161),
                               ),
                             ),
                           ),

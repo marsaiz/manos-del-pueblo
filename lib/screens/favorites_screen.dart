@@ -4,6 +4,7 @@ import '../providers/favorites_provider.dart';
 import '../models/artisan.dart';
 import '../models/product.dart';
 import '../widgets/product_card.dart';
+import '../widgets/adaptive_app_bar.dart';
 import '../services/firestore_service.dart';
 
 class FavoritesScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class FavoritesScreen extends StatelessWidget {
     final favoriteIds = Provider.of<FavoritesProvider>(context).favorites;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Mis Favoritos ❤️")),
+      appBar: AdaptiveAppBar(title: const Text("Mis Favoritos")),
       body: StreamBuilder<List<Artisan>>(
         stream: FirestoreService.getArtisans(),
         builder: (context, artisanSnapshot) {

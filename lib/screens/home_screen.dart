@@ -7,6 +7,7 @@ import 'favorites_screen.dart';
 import '../services/firestore_service.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/product_card.dart';
+import '../widgets/adaptive_app_bar.dart';
 
 enum SortMethod { random, alphabetical }
 
@@ -132,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AdaptiveAppBar(
         title: const Text('Manos del Pueblo'),
         actions: [
           IconButton(
@@ -399,56 +400,65 @@ class _HomeScreenState extends State<HomeScreen> {
     String? imagePath,
     required bool isActive,
   }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _filtroActivo = id == 'all' ? 'Todos' : id;
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        width: 70,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isActive ? Colors.brown : Colors.transparent,
-                  width: 2.5,
+    return Semantics(
+      label: isActive
+          ? 'Filtro activo: $nombre'
+          : 'Filtrar por artesano: $nombre',
+      button: true,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _filtroActivo = id == 'all' ? 'Todos' : id;
+          });
+        },
+        borderRadius: BorderRadius.circular(35),
+        focusColor: const Color(0xFF5D4037).withValues(alpha: 0.15),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          width: 70,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isActive ? Colors.brown : Colors.transparent,
+                    width: 2.5,
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.grey[100],
+                  backgroundImage: (imagePath != null && imagePath.isNotEmpty)
+                      ? (imagePath.startsWith('http')
+                            ? NetworkImage(imagePath)
+                            : AssetImage(imagePath) as ImageProvider)
+                      : null,
+                  child: (imagePath == null || imagePath.isEmpty)
+                      ? const Icon(Icons.grid_view, color: Colors.brown)
+                      : null,
                 ),
               ),
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.grey[100],
-                backgroundImage: (imagePath != null && imagePath.isNotEmpty)
-                    ? (imagePath.startsWith('http')
-                          ? NetworkImage(imagePath)
-                          : AssetImage(imagePath) as ImageProvider)
-                    : null,
-                child: (imagePath == null || imagePath.isEmpty)
-                    ? const Icon(Icons.grid_view, color: Colors.brown)
-                    : null,
+              const SizedBox(height: 5),
+              Text(
+                nombre,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textScaler: const TextScaler.linear(1.0),
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1.1,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                  color: isActive ? Colors.brown : Colors.black87,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              nombre,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                height: 1.1,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                color: isActive ? Colors.brown : Colors.black87,
-              ),
-            ),
-          ],
+            ],
         ),
-      ),
+        ), // InkWell
+      ), // Semantics
     );
   }
 }

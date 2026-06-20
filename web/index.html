@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,7 +18,11 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Manos del Pueblo - Artesanías y productos locales de artesanos argentinos">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manos del Pueblo - Artesanías y productos locales de artesanos argentinos. Conectamos artesanos con el mundo.">
+
+  <!-- Accesibilidad: tema de color para navegadores -->
+  <meta name="theme-color" content="#5D4037">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -32,8 +36,32 @@
 
   <title>Manos del Pueblo</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    /* Evita el flash de fondo blanco al cargar */
+    body {
+      background-color: #F5F5DC;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Indicador de foco visible para navegación por teclado (WCAG 2.4.7) */
+    :focus-visible {
+      outline: 3px solid #5D4037;
+      outline-offset: 2px;
+    }
+
+    /* Oculta el outline por defecto solo cuando se usa mouse */
+    :focus:not(:focus-visible) {
+      outline: none;
+    }
+  </style>
 </head>
 <body>
+  <!-- Texto para lectores de pantalla mientras carga la app -->
+  <noscript>
+    <p>Manos del Pueblo requiere JavaScript para funcionar. Por favor habilitá JavaScript en tu navegador.</p>
+  </noscript>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

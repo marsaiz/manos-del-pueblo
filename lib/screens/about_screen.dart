@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../widgets/adaptive_app_bar.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -32,7 +33,7 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sobre Nosotros')),
+      appBar: AdaptiveAppBar(title: const Text('Sobre Nosotros')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
@@ -86,7 +87,7 @@ class _AboutScreenState extends State<AboutScreen> {
               'Conectando artesanos con el mundo',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey,
+                color: Color(0xFF616161), // grey[700] - cumple WCAG AA
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -243,7 +244,7 @@ class _AboutScreenState extends State<AboutScreen> {
               Text(
                 'Versión $_version (Build $_buildNumber)',
                 style: const TextStyle(
-                  color: Colors.grey,
+                  color: Color(0xFF616161), // grey[700] - cumple WCAG AA
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -252,7 +253,10 @@ class _AboutScreenState extends State<AboutScreen> {
             // Créditos
             const Text(
               '© 2024 Manos del Pueblo',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+              style: TextStyle(
+                color: Color(0xFF616161), // grey[700] - cumple WCAG AA
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 40), // Espacio adicional para botones de navegación
           ],

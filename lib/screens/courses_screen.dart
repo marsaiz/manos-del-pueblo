@@ -3,6 +3,7 @@ import '../models/course.dart';
 import '../services/firestore_service.dart';
 import 'course_detail_screen.dart';
 import 'admin/add_edit_course_screen.dart';
+import '../widgets/adaptive_app_bar.dart';
 
 class CoursesScreen extends StatelessWidget {
   const CoursesScreen({super.key});
@@ -10,7 +11,7 @@ class CoursesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AdaptiveAppBar(
         title: const Text('Cursos de Alfarería y Más'),
         actions: [
           IconButton(
@@ -138,7 +139,7 @@ class _CourseCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         course.instructor,
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(color: Color(0xFF616161)),
                       ),
                     ],
                   ),
@@ -153,7 +154,7 @@ class _CourseCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         course.schedule,
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(color: Color(0xFF616161)),
                       ),
                     ],
                   ),

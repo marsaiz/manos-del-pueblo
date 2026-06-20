@@ -50,6 +50,13 @@ class MyApp extends StatelessWidget {
           backgroundColor: Color(0xFF5D4037),
           foregroundColor: Colors.white,
           elevation: 0,
+          // Título con tamaño controlado y ellipsis para textos largos
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
@@ -61,6 +68,35 @@ class MyApp extends StatelessWidget {
           prefixIconColor: Colors.brown,
         ),
       ),
+      // Limita el escalado máximo de fuente a 1.3x para evitar
+      // que layouts se rompan, pero respeta la config del sistema.
+      // En landscape reduce el AppBar para ganar espacio vertical.
+      builder: (context, child) {
+        final isLandscape =
+            MediaQuery.of(context).orientation == Orientation.landscape;
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(
+              MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.3),
+            ),
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              appBarTheme: Theme.of(context).appBarTheme.copyWith(
+                // En landscape: AppBar más compacto (40px) y título más pequeño
+                toolbarHeight: isLandscape ? 40.0 : kToolbarHeight,
+                titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: isLandscape ? 14.0 : 18.0,
+                  fontWeight: FontWeight.w600,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            child: child!,
+          ),
+        );
+      },
       home: const AppInitializer(),
       routes: {
         '/home': (context) => const HomeScreen(),
@@ -152,7 +188,9 @@ class _AppInitializerState extends State<AppInitializer> {
       );
     }
 
-    return const HomeScreen();
+    // SelectionArea aquí dentro de MaterialApp (tiene Overlay disponible)
+    // Permite seleccionar y copiar texto en toda la app, especialmente en web
+    return const SelectionArea(child: HomeScreen());
   }
 }
 

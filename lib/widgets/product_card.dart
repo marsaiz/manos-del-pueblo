@@ -24,23 +24,30 @@ class ProductCard extends StatelessWidget {
     );
     final nombreArtesano = artisan.nombre;
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                ProductDetailScreen(product: product, artisan: artisan),
-          ),
-        );
-      },
+    return Semantics(
+      label: 'Producto: ${product.nombre}, por $nombreArtesano, precio: ${double.tryParse(product.precio) != null ? '\$${product.precio}' : product.precio}. Toca para ver detalle.',
+      button: true,
+      explicitChildNodes: true,
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          // focusColor visible para navegación por teclado (WCAG 2.4.7)
+          focusColor: const Color(0xFF5D4037).withValues(alpha: 0.15),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ProductDetailScreen(product: product, artisan: artisan),
+              ),
+            );
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             Expanded(
               child: Stack(
                 fit: StackFit.expand,
@@ -94,6 +101,8 @@ class ProductCard extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 10,
                               ),
+                              // Badge decorativo: no escala para no romper layout
+                              textScaler: TextScaler.noScaling,
                             ),
                           ],
                         ),
@@ -107,16 +116,24 @@ class ProductCard extends StatelessWidget {
                     child: CircleAvatar(
                       backgroundColor: Colors.white.withValues(alpha: 0.8),
                       radius: 16,
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                          color: isFav ? Colors.red : Colors.grey,
-                          size: 20,
+                      child: Semantics(
+                        label: isFav
+                            ? 'Quitar ${product.nombre} de favoritos'
+                            : 'Agregar ${product.nombre} a favoritos',
+                        button: true,
+                        // Foco independiente de la card padre
+                        excludeSemantics: false,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: isFav ? Colors.red : Colors.grey,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            favoritesProvider.toggleFavorite(product.id);
+                          },
                         ),
-                        onPressed: () {
-                          favoritesProvider.toggleFavorite(product.id);
-                        },
                       ),
                     ),
                   ),
@@ -140,6 +157,8 @@ class ProductCard extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 10,
                         ),
+                        // Badge decorativo: no escala para no romper layout
+                        textScaler: TextScaler.noScaling,
                       ),
                     ),
                   ),
@@ -163,7 +182,7 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     nombreArtesano,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 11),
+                    style: TextStyle(color: Colors.grey[700], fontSize: 11),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -182,8 +201,9 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        ), // Column (InkWell child)
+        ), // InkWell
+      ), // Card
+    ); // Semantics
   }
 }

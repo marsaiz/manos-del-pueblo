@@ -40,11 +40,11 @@ class UpdateDialog extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Versión actual: ${result.currentVersion}',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF616161)),
             ),
             Text(
               'Versión disponible: ${result.latestVersion}',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF616161)),
             ),
           ],
         ),

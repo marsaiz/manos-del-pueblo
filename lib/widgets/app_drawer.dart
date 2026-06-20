@@ -17,60 +17,76 @@ class AppDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                const UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(color: Color(0xFF5D4037)),
-                  accountName: Text(
+                UserAccountsDrawerHeader(
+                  decoration: const BoxDecoration(color: Color(0xFF5D4037)),
+                  accountName: const Text(
                     "Manos del Pueblo",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  accountEmail: Text("Catálogo de Artesanos Locales"),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.storefront,
-                      color: Color(0xFF5D4037),
-                      size: 35,
+                  accountEmail: const Text("Catálogo de Artesanos Locales"),
+                  currentAccountPicture: Semantics(
+                    label: 'Logo de Manos del Pueblo',
+                    image: true,
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.storefront,
+                        color: Color(0xFF5D4037),
+                        size: 35,
+                      ),
                     ),
                   ),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.home, color: Colors.brown),
-                  title: const Text('Inicio'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/',
-                      (route) => false,
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.add_shopping_cart,
-                    color: Colors.brown,
+                Semantics(
+                  label: 'Ir a la pantalla de inicio',
+                  child: ListTile(
+                    leading: const Icon(Icons.home, color: Colors.brown),
+                    title: const Text('Inicio'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/',
+                        (route) => false,
+                      );
+                    },
                   ),
-                  title: const Text('Añadir Producto'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/add-product');
-                  },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.school, color: Colors.brown),
-                  title: const Text('Cursos'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/courses');
-                  },
+                Semantics(
+                  label: 'Agregar un nuevo producto al catálogo',
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.add_shopping_cart,
+                      color: Colors.brown,
+                    ),
+                    title: const Text('Añadir Producto'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/add-product');
+                    },
+                  ),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.info_outline, color: Colors.brown),
-                  title: const Text("Sobre Nosotros"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/about');
-                  },
+                Semantics(
+                  label: 'Ver cursos y talleres disponibles',
+                  child: ListTile(
+                    leading: const Icon(Icons.school, color: Colors.brown),
+                    title: const Text('Cursos'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/courses');
+                    },
+                  ),
+                ),
+                Semantics(
+                  label: 'Información sobre Manos del Pueblo',
+                  child: ListTile(
+                    leading: const Icon(Icons.info_outline, color: Colors.brown),
+                    title: const Text("Sobre Nosotros"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/about');
+                    },
+                  ),
                 ),
                 if (artisans.isNotEmpty) ...[
                   const Divider(),
@@ -79,7 +95,7 @@ class AppDrawer extends StatelessWidget {
                     child: Text(
                       "Nuestros Artesanos",
                       style: TextStyle(
-                        color: Colors.grey,
+                        color: Color(0xFF616161), // grey[700] - cumple WCAG AA
                         fontWeight: FontWeight.bold,
                       ),
                     ),
