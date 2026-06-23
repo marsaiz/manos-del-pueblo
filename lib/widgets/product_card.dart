@@ -24,11 +24,7 @@ class ProductCard extends StatelessWidget {
     );
     final nombreArtesano = artisan.nombre;
 
-    return Semantics(
-      label: 'Producto: ${product.nombre}, por $nombreArtesano, precio: ${double.tryParse(product.precio) != null ? '\$${product.precio}' : product.precio}. Toca para ver detalle.',
-      button: true,
-      explicitChildNodes: true,
-      child: Card(
+    return Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.antiAlias,
@@ -97,6 +93,7 @@ class ProductCard extends StatelessWidget {
                             const SizedBox(width: 2),
                             Text(
                               '${product.imagePaths.length}',
+                              semanticsLabel: '${product.imagePaths.length} fotos',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -153,6 +150,7 @@ class ProductCard extends StatelessWidget {
                       ),
                       child: Text(
                         product.categoria,
+                        semanticsLabel: 'Categoría: ${product.categoria}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -167,9 +165,12 @@ class ProductCard extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              child: Semantics(
+                label: 'Producto: ${product.nombre}, por $nombreArtesano, precio: ${double.tryParse(product.precio) != null ? '\$${product.precio}' : product.precio}. Toca para ver detalle.',
+                excludeSemantics: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Text(
                     product.nombre,
                     style: const TextStyle(
@@ -199,11 +200,11 @@ class ProductCard extends StatelessWidget {
                   ),
                 ],
               ),
+              ), // Semantics
             ),
           ],
         ), // Column (InkWell child)
         ), // InkWell
-      ), // Card
-    ); // Semantics
+      ); // Card
   }
 }
