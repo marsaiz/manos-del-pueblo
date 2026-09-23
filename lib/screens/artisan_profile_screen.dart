@@ -123,7 +123,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                   centerTitle: true,
                   title: Text(
                     artisan.nombre,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
