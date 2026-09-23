@@ -219,41 +219,39 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 stream: FirestoreService.getArtisans(),
                 builder: (context, snapshot) {
                   final artisans = snapshot.data ?? [];
-                  return DropdownButtonFormField<String>(
-                    initialValue: _selectedArtisan?.id,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.person, color: Colors.brown),
+                  return DropdownMenu<String>(
+                    initialSelection: _selectedArtisan?.id,
+                    enableFilter: true, // Habilita escribir para filtrar
+                    enableSearch: true,
+                    expandedInsets: EdgeInsets.zero, // Ocupa todo el ancho
+                    leadingIcon: const Icon(Icons.person, color: Colors.brown),
+                    hintText: "Escribe o selecciona el artesano",
+                    inputDecorationTheme: InputDecorationTheme(
+                      filled: true,
+                      fillColor: Colors.grey[50],
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
                     ),
-                    hint: const Text("Selecciona el artesano"),
-                    isExpanded: true, // Permite que el dropdown use todo el ancho disponible
-                    items: artisans.map((artisan) {
-                      return DropdownMenuItem<String>(
+                    onSelected: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedArtisan = artisans.firstWhere(
+                            (a) => a.id == value,
+                          );
+                          // Reiniciar fotos al cambiar de artesano
+                          for (int i = 0; i < 3; i++) {
+                            _fotoUrls[i] = null;
+                          }
+                        });
+                      }
+                    },
+                    dropdownMenuEntries: artisans.map((artisan) {
+                      return DropdownMenuEntry<String>(
                         value: artisan.id,
-                        child: Text(
-                          artisan.nombre,
-                          overflow: TextOverflow.ellipsis, // Corta el texto con "..."
-                          maxLines: 1,
-                        ),
+                        label: artisan.nombre,
                       );
                     }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedArtisan = artisans.firstWhere(
-                          (a) => a.id == value,
-                        );
-                        // Reiniciar fotos al cambiar de artesano para evitar mezclar carpetas
-                        for (int i = 0; i < 3; i++) {
-                          _fotoUrls[i] = null;
-                        }
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? "Selecciona un artesano" : null,
                   );
                 },
               ),

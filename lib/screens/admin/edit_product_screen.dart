@@ -287,37 +287,35 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     }
                   }
 
-                  return DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue: _selectedArtesano?.id,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.person, color: Colors.brown),
+                  return DropdownMenu<String>(
+                    initialSelection: _selectedArtesano?.id,
+                    enableFilter: true,
+                    enableSearch: true,
+                    expandedInsets: EdgeInsets.zero,
+                    leadingIcon: const Icon(Icons.person, color: Colors.brown),
+                    hintText: "Escribe o selecciona el artesano",
+                    inputDecorationTheme: InputDecorationTheme(
+                      filled: true,
+                      fillColor: Colors.grey[50],
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
                     ),
-                    hint: const Text("Selecciona el artesano"),
-                    items: artisans.map((artisan) {
-                      return DropdownMenuItem<String>(
+                    onSelected: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedArtesano = artisans.firstWhere(
+                            (a) => a.id == value,
+                          );
+                        });
+                      }
+                    },
+                    dropdownMenuEntries: artisans.map((artisan) {
+                      return DropdownMenuEntry<String>(
                         value: artisan.id,
-                        child: Text(
-                          artisan.nombre,
-                          overflow: TextOverflow.ellipsis, // Corta el texto con "..."
-                          maxLines: 1,
-                        ),
+                        label: artisan.nombre,
                       );
                     }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedArtesano = artisans.firstWhere(
-                          (a) => a.id == value,
-                        );
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? "Selecciona un artesano" : null,
                   );
                 },
               ),
