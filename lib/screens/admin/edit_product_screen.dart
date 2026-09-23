@@ -6,6 +6,7 @@ import '../../models/product.dart';
 import '../../models/category.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
+import '../../widgets/pin_dialog.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
