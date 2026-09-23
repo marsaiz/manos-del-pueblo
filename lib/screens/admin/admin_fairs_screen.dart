@@ -5,11 +5,113 @@ import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
 import 'add_edit_fair_screen.dart';
 
-class AdminFairsScreen extends StatelessWidget {
+import '../../services/admin_session_service.dart';
+
+class AdminFairsScreen extends StatefulWidget {
   const AdminFairsScreen({super.key});
 
   @override
+  State<AdminFairsScreen> createState() => _AdminFairsScreenState();
+}
+
+class _AdminFairsScreenState extends State<AdminFairsScreen> {
+  final _pinController = TextEditingController();
+  final _sessionService = AdminSessionService();
+  String? _adminCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminPin();
+  }
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadAdminPin() async {
+    _adminCode = await PinService.getPin('admin_access');
+  }
+
+  void _verifyPin() {
+    if (_adminCode == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cargando configuración...'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (_pinController.text.trim() == _adminCode) {
+      setState(() {
+        _sessionService.login();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PIN incorrecto'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      _pinController.clear();
+    }
+  }
+
+  Widget _buildPinGate() {
+    return Center(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_person, size: 60, color: Colors.brown),
+              const SizedBox(height: 20),
+              const Text(
+                'Acceso Administrativo',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _pinController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Ingresar PIN',
+                  prefixIcon: Icon(Icons.password),
+                ),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                onSubmitted: (_) => _verifyPin(),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _verifyPin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Acceder'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_sessionService.isAuthenticated) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Administrar Ferias')),
+        body: _buildPinGate(),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Administrar Ferias'),
