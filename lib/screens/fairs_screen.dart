@@ -11,17 +11,8 @@ class FairsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AdaptiveAppBar(
-        title: const Text('Ferias de Artesanos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
-            tooltip: 'Administrar Ferias',
-            onPressed: () {
-              Navigator.pushNamed(context, '/admin-fairs');
-            },
-          ),
-        ],
+      appBar: const AdaptiveAppBar(
+        title: Text('Ferias de Artesanos'),
       ),
       body: StreamBuilder<List<Fair>>(
         stream: FirestoreService.getFairs(),

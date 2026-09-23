@@ -11,17 +11,8 @@ class CoursesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AdaptiveAppBar(
-        title: const Text('Cursos de Alfarería y Más'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
-            tooltip: 'Administrar Cursos',
-            onPressed: () {
-              Navigator.pushNamed(context, '/admin-courses');
-            },
-          ),
-        ],
+      appBar: const AdaptiveAppBar(
+        title: Text('Cursos de Alfarería y Más'),
       ),
       body: StreamBuilder<List<Course>>(
         stream: FirestoreService.getCourses(),
