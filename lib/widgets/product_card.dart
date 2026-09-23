@@ -4,12 +4,19 @@ import '../models/product.dart';
 import '../models/artisan.dart';
 import '../providers/favorites_provider.dart';
 import '../screens/product_detail_screen.dart';
+import '../screens/admin/edit_product_screen.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
   final List<Artisan> artisans;
+  final bool showEditButton;
 
-  const ProductCard({super.key, required this.product, required this.artisans});
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.artisans,
+    this.showEditButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +141,31 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // --- BOTÓN DE EDITAR ---
+                  if (showEditButton)
+                    Positioned(
+                      top: 5,
+                      left: 5,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white.withValues(alpha: 0.8),
+                        radius: 16,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.edit, color: Colors.brown, size: 20),
+                          tooltip: 'Editar/Eliminar producto',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => 
+                                    EditProductScreen(product: product),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
 
                   // ------------------------------------
                   Positioned(

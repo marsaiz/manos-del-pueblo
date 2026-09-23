@@ -3,7 +3,6 @@ import 'package:share_plus/share_plus.dart';
 import '../models/product.dart';
 import '../models/artisan.dart';
 import 'artisan_profile_screen.dart';
-import 'admin/edit_product_screen.dart';
 import '../widgets/adaptive_app_bar.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -50,20 +49,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          // Botón de editar
-          IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: 'Editar producto',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      EditProductScreen(product: widget.product),
-                ),
-              );
-            },
-          ),
+
           // Botón de compartir
           IconButton(
             icon: const Icon(Icons.share),

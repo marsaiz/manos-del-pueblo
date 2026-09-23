@@ -4,8 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Para el icon
 import '../models/artisan.dart';
 import '../models/product.dart';
 import '../services/firestore_service.dart';
-import '../services/image_upload_service.dart'; // Para borrar carpeta de Storage
-import '../services/pin_service.dart';
 import '../widgets/product_card.dart';
 import 'home_screen.dart';
 
@@ -72,105 +70,8 @@ class ArtisanProfileScreen extends StatelessWidget {
     }
   }
 
-  // --- 4. Lógica para Eliminar Artesano ---
-  Future<void> _deleteArtisan(BuildContext context) async {
-    final TextEditingController pinController = TextEditingController();
+  // --- 4. Lógica para Eliminar Artesano (Movida a Admin) ---
 
-    // Diálogo de confirmación con PIN
-    final bool? confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('¿Eliminar Artesano?'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Esta acción borrará permanentemente al artesano, todos sus productos e imágenes.',
-              style: TextStyle(color: Colors.red),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: pinController,
-              decoration: const InputDecoration(
-                labelText: 'Ingresa el PIN de seguridad',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-              obscureText: true,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCELAR'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              // Obtener el PIN desde Firebase
-              final correctPin = await PinService.getPin('artisan_delete');
-              
-              if (!context.mounted) return;
-              
-              if (pinController.text.trim() == correctPin) {
-                Navigator.pop(context, true);
-              } else {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('PIN incorrecto')));
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text(
-              'ELIMINAR TODO',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      if (!context.mounted) return;
-      try {
-        // Mostrar indicador de carga
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) =>
-              const Center(child: CircularProgressIndicator()),
-        );
-
-        // A. Eliminar de Firestore (Artisano + Productos)
-        await FirestoreService.deleteArtisanCascade(artisan.id);
-
-        // B. Eliminar carpeta de Storage
-        await ImageUploadService.deleteArtisanFolder(artisan.id);
-
-        if (context.mounted) {
-          // Cerrar cargador
-          Navigator.pop(context);
-          // Ir al home
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Artesano y datos eliminados con éxito'),
-            ),
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          Navigator.pop(context); // Cerrar cargador
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('❌ Error al eliminar: $e')));
-        }
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -508,7 +409,11 @@ class ArtisanProfileScreen extends StatelessWidget {
                 sliver: SliverGrid(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final product = myProducts[index];
-                    return ProductCard(product: product, artisans: [artisan]);
+                    return ProductCard(
+                      product: product, 
+                      artisans: [artisan],
+                      showEditButton: true,
+                    );
                   }, childCount: myProducts.length),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
