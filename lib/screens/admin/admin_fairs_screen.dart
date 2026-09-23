@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../models/course.dart';
+import '../../models/fair.dart';
 import '../../services/firestore_service.dart';
 import '../../services/pin_service.dart';
 import '../../widgets/pin_dialog.dart';
-import 'add_edit_course_screen.dart';
+import 'add_edit_fair_screen.dart';
 
-class AdminCoursesScreen extends StatelessWidget {
-  const AdminCoursesScreen({super.key});
+class AdminFairsScreen extends StatelessWidget {
+  const AdminFairsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Administrar Cursos'),
+        title: const Text('Administrar Ferias'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -20,41 +20,41 @@ class AdminCoursesScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AddEditCourseScreen(),
+                  builder: (context) => const AddEditFairScreen(),
                 ),
               );
             },
           ),
         ],
       ),
-      body: StreamBuilder<List<Course>>(
-        stream: FirestoreService.getCourses(),
+      body: StreamBuilder<List<Fair>>(
+        stream: FirestoreService.getFairs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final courses = snapshot.data ?? [];
+          final fairs = snapshot.data ?? [];
 
-          if (courses.isEmpty) {
-            return const Center(child: Text('No hay cursos registrados.'));
+          if (fairs.isEmpty) {
+            return const Center(child: Text('No hay ferias registradas.'));
           }
 
           return ListView.builder(
-            itemCount: courses.length,
+            itemCount: fairs.length,
             itemBuilder: (context, index) {
-              final course = courses[index];
+              final fair = fairs[index];
               return ListTile(
-                leading: course.imageUrl.isNotEmpty
+                leading: fair.imageUrl.isNotEmpty
                     ? Image.network(
-                        course.imageUrl,
+                        fair.imageUrl,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
                       )
-                    : const Icon(Icons.school, size: 50),
-                title: Text(course.title),
-                subtitle: Text(course.instructor),
+                    : const Icon(Icons.storefront, size: 50),
+                title: Text(fair.title),
+                subtitle: Text(fair.organizer),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -65,14 +65,14 @@ class AdminCoursesScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                AddEditCourseScreen(course: course),
+                                AddEditFairScreen(fair: fair),
                           ),
                         );
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _confirmDelete(context, course),
+                      onPressed: () => _confirmDelete(context, fair),
                     ),
                   ],
                 ),
@@ -84,18 +84,18 @@ class AdminCoursesScreen extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, Course course) async {
+  void _confirmDelete(BuildContext context, Fair fair) async {
     final correctPin = await PinService.getPin('admin_access');
     
     if (!context.mounted) return;
     
     showPinDialog(
       context: context,
-      title: 'Eliminar Curso',
-      message: '¿Estás seguro de que deseas eliminar el curso "${course.title}"?',
+      title: 'Eliminar Feria',
+      message: '¿Estás seguro de que deseas eliminar la feria "${fair.title}"?',
       correctPin: correctPin,
       onConfirm: () async {
-        await FirestoreService.deleteCourse(course.id);
+        await FirestoreService.deleteFair(fair.id);
       },
     );
   }

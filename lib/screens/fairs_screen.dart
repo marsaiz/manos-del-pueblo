@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
-import '../models/course.dart';
+import '../models/fair.dart';
 import '../services/firestore_service.dart';
-import 'course_detail_screen.dart';
-import 'admin/add_edit_course_screen.dart';
+import 'fair_detail_screen.dart';
+import 'admin/add_edit_fair_screen.dart';
 import '../widgets/adaptive_app_bar.dart';
 
-class CoursesScreen extends StatelessWidget {
-  const CoursesScreen({super.key});
+class FairsScreen extends StatelessWidget {
+  const FairsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AdaptiveAppBar(
-        title: const Text('Cursos de Alfarería y Más'),
+        title: const Text('Ferias de Artesanos'),
         actions: [
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),
-            tooltip: 'Administrar Cursos',
+            tooltip: 'Administrar Ferias',
             onPressed: () {
-              Navigator.pushNamed(context, '/admin-courses');
+              Navigator.pushNamed(context, '/admin-fairs');
             },
           ),
         ],
       ),
-      body: StreamBuilder<List<Course>>(
-        stream: FirestoreService.getCourses(),
+      body: StreamBuilder<List<Fair>>(
+        stream: FirestoreService.getFairs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -34,20 +34,20 @@ class CoursesScreen extends StatelessWidget {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
 
-          final courses = snapshot.data ?? [];
+          final fairs = snapshot.data ?? [];
 
-          final activeCourses = courses.where((c) => !c.isFinished).toList();
-          final finishedCourses = courses.where((c) => c.isFinished).toList();
+          final activeFairs = fairs.where((f) => !f.isFinished).toList();
+          final finishedFairs = fairs.where((f) => f.isFinished).toList();
 
-          if (courses.isEmpty) {
+          if (fairs.isEmpty) {
             return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.school, size: 80, color: Colors.brown),
+                  Icon(Icons.storefront, size: 80, color: Colors.brown),
                   SizedBox(height: 16),
                   Text(
-                    'Próximamente nuevos cursos...',
+                    'Próximamente nuevas ferias...',
                     style: TextStyle(fontSize: 18, color: Colors.brown),
                   ),
                 ],
@@ -58,11 +58,11 @@ class CoursesScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              if (activeCourses.isNotEmpty) ...[
+              if (activeFairs.isNotEmpty) ...[
                 const Padding(
                   padding: EdgeInsets.only(bottom: 16),
                   child: Text(
-                    'Cursos Vigentes',
+                    'Ferias Vigentes',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -70,13 +70,13 @@ class CoursesScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...activeCourses.map((course) => _CourseCard(course: course)),
+                ...activeFairs.map((fair) => _FairCard(fair: fair)),
               ],
-              if (finishedCourses.isNotEmpty) ...[
+              if (finishedFairs.isNotEmpty) ...[
                 const Padding(
                   padding: EdgeInsets.only(top: 16, bottom: 16),
                   child: Text(
-                    'Cursos Finalizados',
+                    'Ferias Finalizadas',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -84,9 +84,9 @@ class CoursesScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...finishedCourses.map((course) => Opacity(
+                ...finishedFairs.map((fair) => Opacity(
                   opacity: 0.6,
-                  child: _CourseCard(course: course),
+                  child: _FairCard(fair: fair),
                 )),
               ],
             ],
@@ -98,7 +98,7 @@ class CoursesScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddEditCourseScreen(),
+              builder: (context) => const AddEditFairScreen(),
             ),
           );
         },
@@ -109,10 +109,10 @@ class CoursesScreen extends StatelessWidget {
   }
 }
 
-class _CourseCard extends StatelessWidget {
-  final Course course;
+class _FairCard extends StatelessWidget {
+  final Fair fair;
 
-  const _CourseCard({required this.course});
+  const _FairCard({required this.fair});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +125,7 @@ class _CourseCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CourseDetailScreen(course: course),
+              builder: (context) => FairDetailScreen(fair: fair),
             ),
           );
         },
@@ -137,9 +137,9 @@ class _CourseCard extends StatelessWidget {
                 top: Radius.circular(15),
               ),
               child: Hero(
-                tag: 'course-${course.id}',
+                tag: 'fair-${fair.id}',
                 child: Image.network(
-                  course.imageUrl,
+                  fair.imageUrl,
                   height: 180,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
@@ -156,7 +156,7 @@ class _CourseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    course.title,
+                    fair.title,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -169,29 +169,46 @@ class _CourseCard extends StatelessWidget {
                       const Icon(Icons.person, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
-                        course.instructor,
+                        fair.organizer,
                         style: const TextStyle(color: Color(0xFF616161)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
+                  if (fair.startDate.isNotEmpty) ...[
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.event,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Inicio: ${fair.startDate}',
+                          style: const TextStyle(color: Color(0xFF616161)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                  ],
                   Row(
                     children: [
                       const Icon(
-                        Icons.calendar_today,
+                        Icons.access_time,
                         size: 16,
                         color: Colors.grey,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        course.schedule,
+                        fair.schedule,
                         style: const TextStyle(color: Color(0xFF616161)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    course.description,
+                    fair.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: Colors.grey[800]),

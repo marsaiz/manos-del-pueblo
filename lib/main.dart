@@ -11,6 +11,8 @@ import 'screens/admin/add_artisan_screen.dart';
 import 'screens/admin/add_product_screen.dart';
 import 'screens/admin/admin_courses_screen.dart';
 import 'screens/courses_screen.dart';
+import 'screens/fairs_screen.dart';
+import 'screens/admin/admin_fairs_screen.dart';
 import 'services/remote_config_service.dart';
 import 'services/version_check_service.dart';
 import 'widgets/update_dialog.dart';
@@ -106,6 +108,8 @@ class MyApp extends StatelessWidget {
         '/add-product': (context) => const AddProductScreen(),
         '/courses': (context) => const CoursesScreen(),
         '/admin-courses': (context) => const AdminCoursesScreen(),
+        '/fairs': (context) => const FairsScreen(),
+        '/admin-fairs': (context) => const AdminFairsScreen(),
         '/admin-artisans': (context) => const AdminArtisansScreen(),
       },
     );

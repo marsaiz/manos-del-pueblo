@@ -1,29 +1,29 @@
-class Course {
+class Fair {
   final String id;
   final String title;
   final String description;
-  final String instructor;
-  final String schedule; // e.g., "Lunes y Miércoles 18:00"
+  final String organizer;
+  final String startDate;
+  final String endDate;
+  final String schedule;
   final String location;
   final String imageUrl;
-  final String contactWhatsApp; // WhatsApp number for inquiries
-  final String price;
-  final String startDate; // Fecha de inicio
-  final String endDate; // Fecha de fin
-  final bool isFinished; // Indica si el curso ya terminó
+  final String contactWhatsApp;
+  final String entryFee;
+  final bool isFinished;
 
-  Course({
+  Fair({
     required this.id,
     required this.title,
     required this.description,
-    required this.instructor,
+    required this.organizer,
+    this.startDate = '',
+    this.endDate = '',
     required this.schedule,
     required this.location,
     required this.imageUrl,
     required this.contactWhatsApp,
-    required this.price,
-    this.startDate = '',
-    this.endDate = '',
+    required this.entryFee,
     this.isFinished = false,
   });
 
@@ -32,31 +32,31 @@ class Course {
       'id': id,
       'title': title,
       'description': description,
-      'instructor': instructor,
+      'organizer': organizer,
+      'startDate': startDate,
+      'endDate': endDate,
       'schedule': schedule,
       'location': location,
       'imageUrl': imageUrl,
       'contactWhatsApp': contactWhatsApp,
-      'price': price,
-      'startDate': startDate,
-      'endDate': endDate,
+      'entryFee': entryFee,
       'isFinished': isFinished,
     };
   }
 
-  factory Course.fromMap(Map<String, dynamic> map) {
-    return Course(
+  factory Fair.fromMap(Map<String, dynamic> map) {
+    return Fair(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      instructor: map['instructor'] ?? '',
+      organizer: map['organizer'] ?? '',
+      startDate: map['startDate'] ?? '',
+      endDate: map['endDate'] ?? '',
       schedule: map['schedule'] ?? '',
       location: map['location'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
       contactWhatsApp: map['contactWhatsApp'] ?? '',
-      price: (map['price'] ?? '').toString(),
-      startDate: map['startDate'] ?? '',
-      endDate: map['endDate'] ?? '',
+      entryFee: (map['entryFee'] ?? '').toString(),
       isFinished: map['isFinished'] ?? false,
     );
   }

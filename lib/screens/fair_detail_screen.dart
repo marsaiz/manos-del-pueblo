@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/course.dart';
+import '../models/fair.dart';
 
-class CourseDetailScreen extends StatelessWidget {
-  final Course course;
+class FairDetailScreen extends StatelessWidget {
+  final Fair fair;
 
-  const CourseDetailScreen({super.key, required this.course});
+  const FairDetailScreen({super.key, required this.fair});
 
   Future<void> _launchWhatsApp() async {
     final message =
-        'Hola, me interesa el curso de "${course.title}". ¿Podrías darme más información?';
+        'Hola, me interesa la feria "${fair.title}". ¿Podrías darme más información?';
     final url =
-        'https://wa.me/${course.contactWhatsApp}?text=${Uri.encodeComponent(message)}';
+        'https://wa.me/${fair.contactWhatsApp}?text=${Uri.encodeComponent(message)}';
 
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -28,16 +28,16 @@ class CourseDetailScreen extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
-                course.title,
+                fair.title,
                 style: const TextStyle(
                   color: Colors.white,
                   shadows: [Shadow(color: Colors.black, blurRadius: 10)],
                 ),
               ),
               background: Hero(
-                tag: 'course-${course.id}',
+                tag: 'fair-${fair.id}',
                 child: Image.network(
-                  course.imageUrl,
+                  fair.imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     color: Colors.brown[100],
@@ -60,7 +60,7 @@ class CourseDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        if (course.isFinished) ...[
+                        if (fair.isFinished) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
@@ -69,7 +69,7 @@ class CourseDetailScreen extends StatelessWidget {
                               border: Border.all(color: Colors.red),
                             ),
                             child: const Text(
-                              'CURSO FINALIZADO',
+                              'FERIA FINALIZADA',
                               style: TextStyle(
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold,
@@ -80,49 +80,49 @@ class CourseDetailScreen extends StatelessWidget {
                         ],
                         _InfoRow(
                           icon: Icons.person,
-                          label: 'Instructor',
-                          value: course.instructor,
+                          label: 'Organizador',
+                          value: fair.organizer,
                         ),
                         const Divider(),
-                        if (course.startDate.isNotEmpty) ...[
+                        if (fair.startDate.isNotEmpty) ...[
                           _InfoRow(
                             icon: Icons.event,
                             label: 'Fecha de Inicio',
-                            value: course.startDate,
+                            value: fair.startDate,
                           ),
                           const Divider(),
                         ],
-                        if (course.endDate.isNotEmpty) ...[
+                        if (fair.endDate.isNotEmpty) ...[
                           _InfoRow(
                             icon: Icons.event_busy,
                             label: 'Fecha de Fin',
-                            value: course.endDate,
+                            value: fair.endDate,
                           ),
                           const Divider(),
                         ],
                         _InfoRow(
                           icon: Icons.access_time,
                           label: 'Horarios',
-                          value: course.schedule,
+                          value: fair.schedule,
                         ),
                         const Divider(),
                         _InfoRow(
                           icon: Icons.location_on,
                           label: 'Ubicación',
-                          value: course.location,
+                          value: fair.location,
                         ),
                         const Divider(),
                         _InfoRow(
                           icon: Icons.payments,
-                          label: 'Precio',
+                          label: 'Entrada',
                           value:
-                              course.price.toLowerCase() == '0' ||
-                                  course.price.toLowerCase() == 'gratis' ||
-                                  course.price.toLowerCase() == 'gratuito'
-                              ? 'Gratuito'
-                              : course.price.contains('\$')
-                              ? course.price
-                              : '\$${course.price}',
+                              fair.entryFee.toLowerCase() == '0' ||
+                                  fair.entryFee.toLowerCase() == 'gratis' ||
+                                  fair.entryFee.toLowerCase() == 'gratuito'
+                              ? 'Gratuita'
+                              : fair.entryFee.contains('\$')
+                              ? fair.entryFee
+                              : '\$${fair.entryFee}',
                         ),
                       ],
                     ),
@@ -130,7 +130,7 @@ class CourseDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  'Descripción del Curso',
+                  'Descripción de la Feria',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -139,7 +139,7 @@ class CourseDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  course.description,
+                  fair.description,
                   style: const TextStyle(fontSize: 16, height: 1.5),
                 ),
                 const SizedBox(height: 40),
@@ -189,21 +189,23 @@ class _InfoRow extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.brown, size: 24),
           const SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(color: Color(0xFF616161), fontSize: 12),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: Color(0xFF616161), fontSize: 12),
                 ),
-              ),
-            ],
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

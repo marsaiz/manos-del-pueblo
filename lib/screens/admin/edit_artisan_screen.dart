@@ -30,6 +30,7 @@ class _EditArtisanScreenState extends State<EditArtisanScreen> {
   late TextEditingController _provinciaController;
   late TextEditingController _instagramController;
   late TextEditingController _facebookController;
+  late TextEditingController _artisanPinController;
 
   String? _fotoUrl;
   bool _isUploading = false;
@@ -50,6 +51,7 @@ class _EditArtisanScreenState extends State<EditArtisanScreen> {
     _provinciaController = TextEditingController(text: widget.artisan.provincia);
     _instagramController = TextEditingController(text: widget.artisan.instagram);
     _facebookController = TextEditingController(text: widget.artisan.facebook);
+    _artisanPinController = TextEditingController(text: widget.artisan.pin);
     
     _fotoUrl = widget.artisan.fotoPerfil;
   }
@@ -140,6 +142,7 @@ class _EditArtisanScreenState extends State<EditArtisanScreen> {
       provincia: _provinciaController.text.trim(),
       instagram: _instagramController.text.trim(),
       facebook: _facebookController.text.trim(),
+      pin: _artisanPinController.text.trim(),
     );
 
     try {
@@ -249,6 +252,25 @@ class _EditArtisanScreenState extends State<EditArtisanScreen> {
               _buildTextField(_cpController, "Código Postal", Icons.markunread_mailbox),
               _buildTextField(_provinciaController, "Provincia", Icons.map),
               _buildTextField(_ubicacionController, "Ubicación (Coordenadas)", Icons.place),
+
+              const SizedBox(height: 24),
+              _buildSectionTitle("Seguridad"),
+              TextFormField(
+                controller: _artisanPinController,
+                decoration: const InputDecoration(
+                  labelText: 'PIN del Artesano (4 dígitos)',
+                  prefixIcon: Icon(Icons.lock_outline),
+                  border: OutlineInputBorder(),
+                ),
+                maxLength: 4,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.trim().length != 4) {
+                    return 'Debe tener exactamente 4 dígitos';
+                  }
+                  return null;
+                },
+              ),
 
               const SizedBox(height: 40),
               SizedBox(

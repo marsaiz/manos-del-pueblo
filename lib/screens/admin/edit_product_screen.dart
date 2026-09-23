@@ -167,7 +167,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
 
-    final productPin = await PinService.getPin('product_management');
+    final productPin = _selectedArtesano!.pin;
     
     if (!mounted) return;
 
@@ -242,7 +242,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> _deleteProduct() async {
-    final productPin = await PinService.getPin('product_management');
+    final productPin = _selectedArtesano!.pin;
     
     if (!mounted) return;
     

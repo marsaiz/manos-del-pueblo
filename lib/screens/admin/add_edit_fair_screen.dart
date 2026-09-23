@@ -1,103 +1,103 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import '../../models/course.dart';
+import '../../models/fair.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
 import '../../services/pin_service.dart';
 
-class AddEditCourseScreen extends StatefulWidget {
-  final Course? course;
+class AddEditFairScreen extends StatefulWidget {
+  final Fair? fair;
 
-  const AddEditCourseScreen({super.key, this.course});
+  const AddEditFairScreen({super.key, this.fair});
 
   @override
-  State<AddEditCourseScreen> createState() => _AddEditCourseScreenState();
+  State<AddEditFairScreen> createState() => _AddEditFairScreenState();
 }
 
-class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
+class _AddEditFairScreenState extends State<AddEditFairScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
-  late TextEditingController _instructorController;
+  late TextEditingController _organizerController;
+  late TextEditingController _startDateController;
+  late TextEditingController _endDateController;
   late TextEditingController _scheduleController;
   late TextEditingController _locationController;
   late TextEditingController _imageUrlController;
   late TextEditingController _whatsappController;
-  late TextEditingController _priceController;
-  late TextEditingController _startDateController;
-  late TextEditingController _endDateController;
+  late TextEditingController _entryFeeController;
   late TextEditingController _pinController;
-  
-  bool _isFinished = false;
 
+  bool _isFinished = false;
+  
   bool _isLoading = false;
   bool _isUploadingImage = false;
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.course?.title ?? '');
+    _titleController = TextEditingController(text: widget.fair?.title ?? '');
     _descriptionController = TextEditingController(
-      text: widget.course?.description ?? '',
+      text: widget.fair?.description ?? '',
     );
-    _instructorController = TextEditingController(
-      text: widget.course?.instructor ?? '',
+    _organizerController = TextEditingController(
+      text: widget.fair?.organizer ?? '',
+    );
+    _startDateController = TextEditingController(
+      text: widget.fair?.startDate ?? '',
+    );
+    _endDateController = TextEditingController(
+      text: widget.fair?.endDate ?? '',
     );
     _scheduleController = TextEditingController(
-      text: widget.course?.schedule ?? '',
+      text: widget.fair?.schedule ?? '',
     );
     _locationController = TextEditingController(
-      text: widget.course?.location ?? '',
+      text: widget.fair?.location ?? '',
     );
     _imageUrlController = TextEditingController(
-      text: widget.course?.imageUrl ?? '',
+      text: widget.fair?.imageUrl ?? '',
     );
     _whatsappController = TextEditingController(
-      text: widget.course?.contactWhatsApp ?? '',
+      text: widget.fair?.contactWhatsApp ?? '',
     );
-    _priceController = TextEditingController(text: widget.course?.price ?? '');
-    _startDateController = TextEditingController(text: widget.course?.startDate ?? '');
-    _endDateController = TextEditingController(text: widget.course?.endDate ?? '');
+    _entryFeeController = TextEditingController(text: widget.fair?.entryFee ?? '');
     _pinController = TextEditingController();
-    _isFinished = widget.course?.isFinished ?? false;
+    _isFinished = widget.fair?.isFinished ?? false;
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _instructorController.dispose();
+    _organizerController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
     _scheduleController.dispose();
     _locationController.dispose();
     _imageUrlController.dispose();
     _whatsappController.dispose();
-    _priceController.dispose();
-    _startDateController.dispose();
-    _endDateController.dispose();
+    _entryFeeController.dispose();
     _pinController.dispose();
     super.dispose();
   }
 
   Future<void> _pickAndUploadImage() async {
-    // Guardar la URL anterior antes de subir la nueva
     final oldImageUrl = _imageUrlController.text;
     
     setState(() => _isUploadingImage = true);
     try {
-      // Usamos una carpeta específica para cursos
       final url = await ImageUploadService.uploadProductImage(
-        'admin', // Usamos 'admin' como ID de artesano para cursos generales
-        'course_${DateTime.now().millisecondsSinceEpoch}',
+        'admin',
+        'fair_${DateTime.now().millisecondsSinceEpoch}',
       );
 
       if (url != null) {
         setState(() => _imageUrlController.text = url);
         
-        // Eliminar la imagen anterior del Storage si existía
         if (oldImageUrl.isNotEmpty && oldImageUrl.startsWith('http')) {
           try {
             await ImageUploadService.deleteImage(oldImageUrl);
-            debugPrint("✅ Imagen anterior del curso eliminada: $oldImageUrl");
           } catch (e) {
             debugPrint("⚠️ Error al eliminar imagen anterior: $e");
           }
@@ -114,10 +114,9 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
     }
   }
 
-  Future<void> _saveCourse() async {
+  Future<void> _saveFair() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Obtener el PIN desde Firebase
     final correctPin = await PinService.getPin('admin_access');
     
     if (_pinController.text != correctPin) {
@@ -134,26 +133,26 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
 
     setState(() => _isLoading = true);
 
-    final course = Course(
-      id: widget.course?.id ?? const Uuid().v4(),
+    final fair = Fair(
+      id: widget.fair?.id ?? const Uuid().v4(),
       title: _titleController.text,
       description: _descriptionController.text,
-      instructor: _instructorController.text,
+      organizer: _organizerController.text,
+      startDate: _startDateController.text,
+      endDate: _endDateController.text,
       schedule: _scheduleController.text,
       location: _locationController.text,
       imageUrl: _imageUrlController.text,
       contactWhatsApp: _whatsappController.text,
-      price: _priceController.text,
-      startDate: _startDateController.text,
-      endDate: _endDateController.text,
+      entryFee: _entryFeeController.text,
       isFinished: _isFinished,
     );
 
     try {
-      if (widget.course == null) {
-        await FirestoreService.addCourse(course);
+      if (widget.fair == null) {
+        await FirestoreService.addFair(fair);
       } else {
-        await FirestoreService.updateCourse(course);
+        await FirestoreService.updateFair(fair);
       }
       if (mounted) {
         Navigator.pop(context);
@@ -175,7 +174,7 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.course == null ? 'Nuevo Curso' : 'Editar Curso'),
+        title: Text(widget.fair == null ? 'Nueva Feria' : 'Editar Feria'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -191,7 +190,7 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     TextFormField(
                       controller: _titleController,
                       decoration: const InputDecoration(
-                        labelText: 'Título del Curso',
+                        labelText: 'Nombre de la Feria',
                       ),
                       validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
@@ -206,9 +205,9 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _instructorController,
+                      controller: _organizerController,
                       decoration: const InputDecoration(
-                        labelText: 'Instructor',
+                        labelText: 'Organizador',
                       ),
                       validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
@@ -216,8 +215,9 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     TextFormField(
                       controller: _startDateController,
                       decoration: const InputDecoration(
-                        labelText: 'Fecha de Inicio (opcional)',
+                        labelText: 'Fecha de Inicio (ej: 12 de Octubre)',
                       ),
+                      validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -230,7 +230,7 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     TextFormField(
                       controller: _scheduleController,
                       decoration: const InputDecoration(
-                        labelText: 'Horarios (ej: Lunes 10:00)',
+                        labelText: 'Horarios (ej: 10:00 a 18:00)',
                       ),
                       validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
@@ -242,9 +242,9 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _priceController,
+                      controller: _entryFeeController,
                       decoration: const InputDecoration(
-                        labelText: 'Precio (Ej: 5000 o "Consultar")',
+                        labelText: 'Entrada (Ej: Gratis o \$500)',
                       ),
                       validator: (value) => value!.isEmpty ? 'Requerido' : null,
                     ),
@@ -258,8 +258,8 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text('Marcar como Finalizado'),
-                      subtitle: const Text('Mueve el curso a la sección de eventos pasados'),
+                      title: const Text('Marcar como Finalizada'),
+                      subtitle: const Text('Mueve la feria a la sección de eventos pasados'),
                       value: _isFinished,
                       onChanged: (bool value) {
                         setState(() {
@@ -288,15 +288,15 @@ class _AddEditCourseScreenState extends State<AddEditCourseScreen> {
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
-                      onPressed: _saveCourse,
+                      onPressed: _saveFair,
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
                       ),
                       child: Text(
-                        widget.course == null ? 'Crear' : 'Guardar Cambios',
+                        widget.fair == null ? 'Crear' : 'Guardar Cambios',
                       ),
                     ),
-                    const SizedBox(height: 40), // Espacio adicional para botones de navegación
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),

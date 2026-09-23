@@ -52,20 +52,7 @@ class AppDrawer extends StatelessWidget {
                     },
                   ),
                 ),
-                Semantics(
-                  label: 'Agregar un nuevo producto al catálogo',
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.add_shopping_cart,
-                      color: Colors.brown,
-                    ),
-                    title: const Text('Añadir Producto'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/add-product');
-                    },
-                  ),
-                ),
+
                 Semantics(
                   label: 'Ver cursos y talleres disponibles',
                   child: ListTile(
@@ -74,6 +61,17 @@ class AppDrawer extends StatelessWidget {
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/courses');
+                    },
+                  ),
+                ),
+                Semantics(
+                  label: 'Ver ferias de artesanos',
+                  child: ListTile(
+                    leading: const Icon(Icons.storefront, color: Colors.brown),
+                    title: const Text('Ferias'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/fairs');
                     },
                   ),
                 ),
@@ -100,27 +98,48 @@ class AppDrawer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ...artisans.map(
-                    (artisan) => ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: (artisan.fotoPerfil.startsWith('http'))
-                            ? NetworkImage(artisan.fotoPerfil)
-                            : AssetImage(artisan.fotoPerfil) as ImageProvider,
-                      ),
-                      title: Text(artisan.nombre),
-                      subtitle: Text(artisan.ubicacion),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ArtisanProfileScreen(artisan: artisan),
+                  ...(() {
+                    // Agrupar artesanos por localidad
+                    final Map<String, List<Artisan>> artisansByLocality = {};
+                    for (var artisan in artisans) {
+                      final loc = artisan.localidad.trim().isNotEmpty
+                          ? artisan.localidad.trim()
+                          : 'Otras localidades';
+                      artisansByLocality.putIfAbsent(loc, () => []).add(artisan);
+                    }
+                    final sortedLocalities = artisansByLocality.keys.toList()..sort();
+
+                    return sortedLocalities.map((locality) {
+                      final localArtisans = artisansByLocality[locality]!;
+                      return ExpansionTile(
+                        leading: const Icon(Icons.location_on, color: Colors.brown),
+                        title: Text(
+                          locality,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        children: localArtisans.map((artisan) => ListTile(
+                          contentPadding: const EdgeInsets.only(left: 40, right: 16),
+                          leading: CircleAvatar(
+                            backgroundImage: (artisan.fotoPerfil.startsWith('http'))
+                                ? NetworkImage(artisan.fotoPerfil)
+                                : AssetImage(artisan.fotoPerfil) as ImageProvider,
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                          title: Text(artisan.nombre),
+                          subtitle: Text(artisan.ubicacion),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ArtisanProfileScreen(artisan: artisan),
+                              ),
+                            );
+                          },
+                        )).toList(),
+                      );
+                    });
+                  })(),
                   // Espacio adicional al final para evitar que los botones de navegación tapen el último artesano
                   const SizedBox(height: 40),
                 ],

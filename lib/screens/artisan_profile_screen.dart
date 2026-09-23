@@ -195,6 +195,7 @@ class ArtisanProfileScreen extends StatelessWidget {
               SliverAppBar(
                 expandedHeight: 250.0,
                 pinned: true,
+                centerTitle: true,
                 backgroundColor: const Color(0xFF5D4037),
                 leading: IconButton(
                   icon: const Icon(Icons.home, color: Colors.white),
@@ -208,16 +209,26 @@ class ArtisanProfileScreen extends StatelessWidget {
                     );
                   },
                 ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
+                    tooltip: 'Añadir Producto',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/add-product');
+                    },
+                  ),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
                   title: Text(
                     artisan.nombre,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 18,
                       shadows: [Shadow(blurRadius: 10, color: Colors.black)],
                     ),
                   ),

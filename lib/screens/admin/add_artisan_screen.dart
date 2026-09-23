@@ -32,6 +32,7 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
   final _provinciaController = TextEditingController(text: 'Córdoba');
   final _instagramController = TextEditingController();
   final _facebookController = TextEditingController();
+  final _artisanPinController = TextEditingController(text: '1234');
 
   final _pinController = TextEditingController();
   String? _adminCode;
@@ -109,6 +110,7 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
       provincia: _provinciaController.text.trim(),
       instagram: _instagramController.text.trim(),
       facebook: _facebookController.text.trim(),
+      pin: _artisanPinController.text.trim(),
     );
 
     try {
@@ -303,7 +305,23 @@ class _AddArtisanScreenState extends State<AddArtisanScreen> {
                       "Facebook (URL o Usuario)",
                       Icons.facebook,
                     ),
-
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: _artisanPinController,
+                      decoration: const InputDecoration(
+                        labelText: 'PIN del Artesano (4 dígitos)',
+                        prefixIcon: Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLength: 4,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.trim().length != 4) {
+                          return 'Debe tener exactamente 4 dígitos';
+                        }
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 32),
                     const SizedBox(height: 40),
                     SizedBox(

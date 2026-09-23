@@ -137,7 +137,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    final productPin = await PinService.getPin('product_management');
+    final productPin = _selectedArtisan!.pin;
     
     if (!mounted) return;
 

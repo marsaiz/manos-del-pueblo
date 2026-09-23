@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/artisan.dart';
 import '../models/product.dart';
 import '../models/course.dart';
+import '../models/fair.dart';
 import '../models/category.dart';
 import '../data/database.dart';
 import 'image_upload_service.dart';
@@ -42,6 +43,7 @@ class FirestoreService {
           'provincia': artisan.provincia,
           'instagram': artisan.instagram,
           'facebook': artisan.facebook,
+          'pin': artisan.pin,
         });
       }
 
@@ -102,6 +104,7 @@ class FirestoreService {
           provincia: data['provincia'] ?? '',
           instagram: data['instagram'] ?? '',
           facebook: data['facebook'] ?? '',
+          pin: data['pin'] ?? '1234',
         );
       }).toList();
     });
@@ -206,6 +209,7 @@ class FirestoreService {
       'provincia': artisan.provincia,
       'instagram': artisan.instagram,
       'facebook': artisan.facebook,
+      'pin': artisan.pin,
     });
   }
 
@@ -223,6 +227,7 @@ class FirestoreService {
       'provincia': artisan.provincia,
       'instagram': artisan.instagram,
       'facebook': artisan.facebook,
+      'pin': artisan.pin,
     });
     debugPrint("✅ Artesano actualizado en Firestore");
   }
@@ -368,6 +373,50 @@ class FirestoreService {
       debugPrint("✅ Curso eliminado de Firestore");
     } catch (e) {
       debugPrint("❌ Error al eliminar curso: $e");
+      rethrow;
+    }
+  }
+
+  // --- FAIRS ---
+
+  static Stream<List<Fair>> getFairs() {
+    return _db.collection('fairs').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return Fair.fromMap(doc.data());
+      }).toList();
+    });
+  }
+
+  static Future<void> addFair(Fair fair) async {
+    await _db.collection('fairs').doc(fair.id).set(fair.toMap());
+  }
+
+  static Future<void> updateFair(Fair fair) async {
+    await _db.collection('fairs').doc(fair.id).update(fair.toMap());
+  }
+
+  static Future<void> deleteFair(String fairId) async {
+    try {
+      final fairDoc = await _db.collection('fairs').doc(fairId).get();
+
+      if (fairDoc.exists) {
+        final fairData = fairDoc.data();
+        final imageUrl = fairData?['imageUrl'] as String?;
+
+        if (imageUrl != null && imageUrl.isNotEmpty && imageUrl.startsWith('http')) {
+          try {
+            await ImageUploadService.deleteImage(imageUrl);
+            debugPrint("✅ Imagen de la feria eliminada de Storage");
+          } catch (e) {
+            debugPrint("⚠️  Error al eliminar imagen de la feria: $e");
+          }
+        }
+      }
+
+      await _db.collection('fairs').doc(fairId).delete();
+      debugPrint("✅ Feria eliminada de Firestore");
+    } catch (e) {
+      debugPrint("❌ Error al eliminar feria: $e");
       rethrow;
     }
   }
