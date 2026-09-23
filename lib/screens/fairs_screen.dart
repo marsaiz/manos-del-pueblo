@@ -93,18 +93,6 @@ class FairsScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddEditFairScreen(),
-            ),
-          );
-        },
-        backgroundColor: Colors.brown,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 }

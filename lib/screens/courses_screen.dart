@@ -93,18 +93,6 @@ class CoursesScreen extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddEditCourseScreen(),
-            ),
-          );
-        },
-        backgroundColor: Colors.brown,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 }

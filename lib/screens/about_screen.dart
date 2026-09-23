@@ -211,6 +211,24 @@ class _AboutScreenState extends State<AboutScreen> {
                 Navigator.pushNamed(context, '/admin-artisans');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.school_outlined, color: Colors.brown),
+              title: const Text('Gestionar Cursos'),
+              subtitle: const Text('Ver lista, añadir y modificar cursos'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.pushNamed(context, '/admin-courses');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.storefront_outlined, color: Colors.brown),
+              title: const Text('Gestionar Ferias'),
+              subtitle: const Text('Ver lista, añadir y modificar ferias'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.pushNamed(context, '/admin-fairs');
+              },
+            ),
             // Botón de sincronización oculto por seguridad/destructividad
             const SizedBox(height: 30),
             // Política de Privacidad
