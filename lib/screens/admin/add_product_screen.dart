@@ -6,8 +6,6 @@ import '../../models/product.dart';
 import '../../models/category.dart';
 import '../../services/firestore_service.dart';
 import '../../services/image_upload_service.dart';
-import '../../services/pin_service.dart';
-import '../../widgets/pin_dialog.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -297,19 +295,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
 
               _buildSectionTitle("Categoría"),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedCategoria,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.category, color: Colors.brown),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
-                hint: const Text("Selecciona una categoría"),
-                isExpanded: true, // Permite que el dropdown use todo el ancho disponible
-                items: [..._categorias, 'Otro...'].map((categoria) {
+              _loadingCategories
+                  ? const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()))
+                  : DropdownButtonFormField<String>(
+                      initialValue: _selectedCategoria,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.category, color: Colors.brown),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                      hint: const Text("Selecciona una categoría"),
+                      isExpanded: true, // Permite que el dropdown use todo el ancho disponible
+                      items: _categorias.map((categoria) {
                   return DropdownMenuItem<String>(
                     value: categoria,
                     child: Text(
