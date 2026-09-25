@@ -145,7 +145,7 @@ class ProductCard extends StatelessWidget {
                   // --- BOTÓN DE EDITAR ---
                   if (showEditButton)
                     Positioned(
-                      top: 5,
+                      bottom: 5,
                       left: 5,
                       child: CircleAvatar(
                         backgroundColor: Colors.white.withValues(alpha: 0.8),

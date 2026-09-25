@@ -110706,7 +110706,7 @@ s=l.c
 q=j?"Quitar "+s+" de favoritos":"Agregar "+s+" a favoritos"
 p=j?B.rn:B.ro
 k.push(A.fW(n,A.rZ(d,n,A.aZ(n,!0,n,A.em(n,n,n,A.ih(p,j?B.b3:B.cl,n,20),n,n,n,new A.ar1(o,m),B.M,n,n,n),!1,n,n,n,!1,n,!1,n,n,n,n,n,n,n,n,q,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,B.o,n),16),n,n,n,5,5,n))
-if(o.e)k.push(A.fW(n,A.rZ(B.j.i1(0.8),n,A.em(n,n,n,B.O7,n,n,n,new A.ar2(o,a),B.M,n,n,"Editar/Eliminar producto"),16),n,n,5,n,5,n))
+if(o.e)k.push(A.fW(5,A.rZ(B.j.i1(0.8),n,A.em(n,n,n,B.O7,n,n,n,new A.ar2(o,a),B.M,n,n,"Editar/Eliminar producto"),16),n,n,5,n,n,n))
 d=B.n.i1(0.6)
 q=A.c5(10)
 p=l.r
