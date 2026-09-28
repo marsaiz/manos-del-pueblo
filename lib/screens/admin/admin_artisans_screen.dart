@@ -19,8 +19,10 @@ class AdminArtisansScreen extends StatefulWidget {
 class _AdminArtisansScreenState extends State<AdminArtisansScreen>
     with SingleTickerProviderStateMixin {
   final _pinController = TextEditingController();
+  final _searchController = TextEditingController();
   final _sessionService = AdminSessionService();
   String? _adminCode;
+  String _searchQuery = '';
   late TabController _tabController;
 
   @override
@@ -34,6 +36,7 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen>
   void dispose() {
     _tabController.dispose();
     _pinController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -147,56 +150,98 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen>
         }
 
         final artisans = snapshot.data!;
-        if (artisans.isEmpty) {
-          return const Center(child: Text('No hay artesanos.'));
-        }
+        final filteredArtisans = artisans.where((a) => 
+          a.nombre.toLowerCase().contains(_searchQuery.toLowerCase())
+        ).toList();
 
-        return ListView.separated(
-          padding: const EdgeInsets.all(12),
-          itemCount: artisans.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            final artisan = artisans[index];
-            return ListTile(
-              tileColor: Colors.brown.withValues(alpha: 0.05),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              leading: CircleAvatar(
-                backgroundColor: Colors.brown[50],
-                backgroundImage: artisan.fotoPerfil.startsWith('http')
-                    ? NetworkImage(artisan.fotoPerfil)
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Buscar artesano',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                  suffixIcon: _searchQuery.isNotEmpty 
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
                     : null,
-                child: artisan.fotoPerfil.startsWith('http')
-                    ? null
-                    : const Icon(Icons.person, color: Colors.brown),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
               ),
-              title: Text(artisan.nombre),
-              subtitle: Text('${artisan.localidad} • ID: ${artisan.id}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditArtisanScreen(artisan: artisan),
-                        ),
-                      );
-                    },
-                    tooltip: 'Editar',
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _confirmDelete(artisan),
-                    tooltip: 'Eliminar',
-                  ),
-                ],
+            ),
+            if (filteredArtisans.isEmpty)
+              const Expanded(
+                child: Center(child: Text('No se encontraron artesanos.')),
+              )
+            else
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: filteredArtisans.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final artisan = filteredArtisans[index];
+                    return ListTile(
+                      tileColor: Colors.brown.withValues(alpha: 0.05),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.brown[50],
+                        backgroundImage: artisan.fotoPerfil.startsWith('http')
+                            ? NetworkImage(artisan.fotoPerfil)
+                            : null,
+                        child: artisan.fotoPerfil.startsWith('http')
+                            ? null
+                            : const Icon(Icons.person, color: Colors.brown),
+                      ),
+                      title: Text(artisan.nombre),
+                      subtitle: Text('${artisan.localidad} • ID: ${artisan.id}'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditArtisanScreen(artisan: artisan),
+                                ),
+                              );
+                            },
+                            tooltip: 'Editar',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _confirmDelete(artisan),
+                            tooltip: 'Eliminar',
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            );
-          },
+          ],
         );
       },
     );
