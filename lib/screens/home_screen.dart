@@ -228,22 +228,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Theme.of(context).scaffoldBackgroundColor,
                       alignment: Alignment.center,
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (value) {
-                          setState(() {
-                            _searchText = value;
-                            if (value.isNotEmpty) _filtroActivo = 'Búsqueda';
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Buscar artesanías...',
-                          hintText: 'Ej: Mate, Decoración, Córdoba...',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          prefixIcon: Icon(Icons.search),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
+                      child: Semantics(
+                        label: 'Buscador de artesanías',
+                        hint: 'Escribe para buscar productos o lugares',
+                        textField: true,
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            setState(() {
+                              _searchText = value;
+                              if (value.isNotEmpty) _filtroActivo = 'Búsqueda';
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Buscar artesanías...',
+                            hintText: 'Ej: Mate, Decoración, Córdoba...',
+                            hintStyle: TextStyle(color: Colors.grey),
+                            prefixIcon: Icon(Icons.search),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 15,
+                            ),
                           ),
                         ),
                       ),
