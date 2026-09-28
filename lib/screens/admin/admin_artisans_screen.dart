@@ -160,7 +160,6 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen>
               padding: const EdgeInsets.all(12.0),
               child: Semantics(
                 label: 'Buscador de artesanos',
-                textField: true,
                 child: TextField(
                   controller: _searchController,
                 decoration: InputDecoration(

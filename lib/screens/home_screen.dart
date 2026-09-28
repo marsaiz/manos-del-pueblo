@@ -231,7 +231,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Semantics(
                         label: 'Buscador de artesanías',
                         hint: 'Escribe para buscar productos o lugares',
-                        textField: true,
                         child: TextField(
                           controller: _searchController,
                           onChanged: (value) {
