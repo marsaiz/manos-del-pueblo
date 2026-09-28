@@ -108,8 +108,12 @@ class _CourseCard extends StatelessWidget {
             ),
           );
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Semantics(
+          label: 'Curso: ${course.title}, por ${course.instructor}. Horarios: ${course.schedule}. Presiona para ver más detalles.',
+          excludeSemantics: true,
+          button: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
@@ -179,6 +183,7 @@ class _CourseCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

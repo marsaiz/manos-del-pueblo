@@ -108,9 +108,13 @@ class _FairCard extends StatelessWidget {
             ),
           );
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        child: Semantics(
+          label: 'Feria: ${fair.title}, en ${fair.location}. Inicio: ${fair.startDate}. Presiona para ver más detalles.',
+          excludeSemantics: true,
+          button: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(15),
@@ -196,6 +200,7 @@ class _FairCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

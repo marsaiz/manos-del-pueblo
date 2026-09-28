@@ -158,8 +158,11 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen>
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: TextField(
-                controller: _searchController,
+              child: Semantics(
+                label: 'Buscador de artesanos',
+                textField: true,
+                child: TextField(
+                  controller: _searchController,
                 decoration: InputDecoration(
                   labelText: 'Buscar artesano',
                   prefixIcon: const Icon(Icons.search),
@@ -185,6 +188,7 @@ class _AdminArtisansScreenState extends State<AdminArtisansScreen>
                     _searchQuery = value;
                   });
                 },
+              ),
               ),
             ),
             if (filteredArtisans.isEmpty)
