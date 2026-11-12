@@ -57,6 +57,7 @@ class ManageCategoriesScreen extends StatelessWidget {
 
           return ReorderableListView.builder(
             itemCount: categories.length,
+            // ignore: deprecated_member_use
             onReorder: (oldIndex, newIndex) {
               _reorderCategories(context, categories, oldIndex, newIndex);
             },

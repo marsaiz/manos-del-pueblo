@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../services/firestore_service.dart';
 import 'course_detail_screen.dart';
-import 'admin/add_edit_course_screen.dart';
 import '../widgets/adaptive_app_bar.dart';
 
 class CoursesScreen extends StatelessWidget {

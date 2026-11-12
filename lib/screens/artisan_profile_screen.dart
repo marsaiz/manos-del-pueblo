@@ -322,7 +322,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: const Color(0xFF616161),
+                                color: Color(0xFF616161),
                               ),
                             ),
                           ),
@@ -334,7 +334,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: const Color(0xFF616161),
+                                  color: Color(0xFF616161),
                                 ),
                               ),
                             ),
@@ -347,7 +347,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: const Color(0xFF616161),
+                                  color: Color(0xFF616161),
                                 ),
                               ),
                             ),
@@ -359,7 +359,7 @@ class ArtisanProfileScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 11,
-                                color: const Color(0xFF616161),
+                                color: Color(0xFF616161),
                               ),
                             ),
                           ),

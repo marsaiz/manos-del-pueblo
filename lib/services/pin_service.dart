@@ -1,5 +1,6 @@
 // lib/services/pin_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 /// Servicio para gestionar PINs de seguridad desde Firestore
 class PinService {
@@ -38,7 +39,7 @@ class PinService {
         return _pinCache[pinType] ?? _getDefaultPin(pinType);
       }
     } catch (e) {
-      print('Error obteniendo PIN desde Firestore: $e');
+      debugPrint('Error obteniendo PIN desde Firestore: $e');
     }
     
     // Si falla, usar PIN por defecto
@@ -65,7 +66,7 @@ class PinService {
         return Map.from(_pinCache);
       }
     } catch (e) {
-      print('Error obteniendo PINs desde Firestore: $e');
+      debugPrint('Error obteniendo PINs desde Firestore: $e');
     }
     
     // Si falla, retornar PINs por defecto
@@ -106,7 +107,7 @@ class PinService {
       // Limpiar cache para forzar actualización
       clearCache();
     } catch (e) {
-      print('Error actualizando PIN: $e');
+      debugPrint('Error actualizando PIN: $e');
       rethrow;
     }
   }

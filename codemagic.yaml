@@ -13,7 +13,7 @@ workflows:
         - appstore
       vars:
         BUNDLE_ID: "ar.manosdelpueblo.app"
-        APP_STORE_APPLE_ID: 1234567890  # Reemplazar con tu App Store ID
+        APP_STORE_APPLE_ID: 6759227694
         APPLE_TEAM_ID: "S2668973BN"
       flutter: stable
       xcode: latest

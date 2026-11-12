@@ -266,7 +266,7 @@ class _AddEditFairScreenState extends State<AddEditFairScreen> {
                           _isFinished = value;
                         });
                       },
-                      activeColor: Colors.brown,
+                      activeThumbColor: Colors.brown,
                     ),
                     const SizedBox(height: 16),
                     const Divider(),

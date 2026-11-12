@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/fair.dart';
 import '../services/firestore_service.dart';
 import 'fair_detail_screen.dart';
-import 'admin/add_edit_fair_screen.dart';
 import '../widgets/adaptive_app_bar.dart';
 
 class FairsScreen extends StatelessWidget {
