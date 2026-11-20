@@ -17,6 +17,7 @@ import 'services/remote_config_service.dart';
 import 'services/version_check_service.dart';
 import 'widgets/update_dialog.dart';
 import 'screens/admin/admin_artisans_screen.dart';
+import 'screens/cost_calculator_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,6 +112,7 @@ class MyApp extends StatelessWidget {
         '/fairs': (context) => const FairsScreen(),
         '/admin-fairs': (context) => const AdminFairsScreen(),
         '/admin-artisans': (context) => const AdminArtisansScreen(),
+        '/cost-calculator': (context) => const CostCalculatorScreen(),
       },
     );
   }

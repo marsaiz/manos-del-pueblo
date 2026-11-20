@@ -76,6 +76,20 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 Semantics(
+                  label: 'Abrir calculadora de costos para artesanos',
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.calculate_outlined,
+                      color: Colors.brown,
+                    ),
+                    title: const Text('Calculadora de Costos'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/cost-calculator');
+                    },
+                  ),
+                ),
+                Semantics(
                   label: 'Información sobre Manos del Pueblo',
                   child: ListTile(
                     leading: const Icon(Icons.info_outline, color: Colors.brown),

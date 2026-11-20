@@ -110,6 +110,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
+                const SizedBox(height: 16),
+                _buildSubsection(
+                  '1.3 Almacenamiento Local en tu Dispositivo',
+                  'Algunas funcionalidades guardan preferencias exclusivamente en la memoria local de tu teléfono o navegador:',
+                  [
+                    'Tu lista de productos Favoritos.',
+                    'Los datos que ingreses o guardes en la Calculadora de Costos para Artesanos (valor hora, porcentajes de taller y fichas de costos).',
+                    'Estos datos son 100% privados, nunca se envían ni almacenan en servidores de Manos del Pueblo, y puedes eliminarlos en cualquier momento desde la propia aplicación.',
+                  ],
+                ),
               ],
             ),
             _buildSection(

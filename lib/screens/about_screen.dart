@@ -182,6 +182,33 @@ class _AboutScreenState extends State<AboutScreen> {
               ],
             ),
             const SizedBox(height: 30),
+            // Herramientas para Artesanos (acceso público sin PIN)
+            const Divider(),
+            const SizedBox(height: 20),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Herramientas para Artesanos',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5D4037),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListTile(
+              leading: const Icon(Icons.calculate_outlined, color: Colors.brown),
+              title: const Text('Calculadora de Costos'),
+              subtitle: const Text(
+                'Calcula materiales, tiempo de trabajo, horneado y envíos',
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.pushNamed(context, '/cost-calculator');
+              },
+            ),
+            const SizedBox(height: 20),
             // Sección Administrativa
             const Divider(),
             const SizedBox(height: 20),
